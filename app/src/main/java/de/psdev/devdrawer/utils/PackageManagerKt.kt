@@ -15,15 +15,15 @@ fun PackageManager.getExistingPackages(): List<String> {
     val appSet = mutableSetOf<String>()
 
     activities.forEach { resolveInfo ->
-        var appName = resolveInfo.activityInfo.applicationInfo.packageName
-        appSet.add(appName)
-        while (appName.isNotEmpty()) {
-            val lastIndex = appName.lastIndexOf(".")
+        var packageName = resolveInfo.activityInfo.applicationInfo.packageName
+        appSet.add(packageName)
+        while (packageName.isNotEmpty()) {
+            val lastIndex = packageName.lastIndexOf(".")
             if (lastIndex > 0) {
-                appName = appName.substring(0, lastIndex)
-                appSet.add(appName + ".*")
+                packageName = packageName.substring(0, lastIndex)
+                appSet.add("$packageName.*")
             } else {
-                appName = ""
+                packageName = ""
             }
         }
     }

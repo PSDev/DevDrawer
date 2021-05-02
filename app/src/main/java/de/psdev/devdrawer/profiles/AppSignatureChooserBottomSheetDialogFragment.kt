@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.perf.ktx.performance
 import dagger.hilt.android.AndroidEntryPoint
+import de.psdev.devdrawer.appwidget.isSystemApp
 import de.psdev.devdrawer.appwidget.toAppInfo
 import de.psdev.devdrawer.appwidget.toPackageHashInfo
 import de.psdev.devdrawer.database.DevDrawerDatabase
@@ -42,7 +43,7 @@ class AppSignatureChooserBottomSheetDialogFragment : BottomSheetDialogFragment()
     private val onAppClickListener: AppInfoActionListener = { appInfo ->
         lifecycleScope.launch {
             val packageFilter = PackageFilter(
-                filter = appInfo.signatureSha256,
+                filter = appInfo.signatureHashSha256,
                 type = FilterType.SIGNATURE,
                 description = appInfo.name,
                 profileId = navArgs.widgetProfileId
@@ -76,6 +77,7 @@ class AppSignatureChooserBottomSheetDialogFragment : BottomSheetDialogFragment()
                     val installedPackages = Firebase.performance.trace("widget_profile_packages") {
                         packageManager.getInstalledPackages(PackageManager.GET_SIGNATURES)
                             .asSequence()
+                            .filterNot { it.isSystemApp } // TODO Option to allow system apps?
                             .map { it.toPackageHashInfo() }
                             .distinctBy { it.signatureHashSha256 }
                             .filter { hashInfo -> filters.none { it.type == FilterType.SIGNATURE && it.filter == hashInfo.signatureHashSha256 } }

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">DevDrawer2</string>
 
-    <string name="pref_show_activity_choice">showActivityChoice</string>
+    <string name="pref_show_activity_choice">show_activity_choice</string>
     <bool name="pref_show_activity_choice_default">false</bool>
 
     <string name="pref_sort_order" translatable="false">sort_order</string>
@@ -69,5 +69,23 @@
     <string name="error_profile_in_use">Cannot delete profile, still being used by widgets</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 
+    <!-- WidgetCard -->
+    <string name="widget_id_template">ID: %1$d</string>
+
+    <!-- WidgetProfileListScreen -->
+    <string name="widget_profile_list_create_new">Create new profile</string>
+
+    <!-- WidgetProfileCard -->
+    <string name="widget_profile_id_template">ID: %1$s</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Settings -->
+    <string name="pref_show_activity_choice_title">Show activity choice on launch</string>
+    <string name="pref_sort_order_title">Widget Sorting Options</string>
+    <string name="pref_feature_analytics_opted_in_title">Opt-in to analytics</string>
+    <string name="clear">Clear</string>
+    <string name="delete_profile">Delete profile?</string>
+    <string name="no_apps_available">No apps available or all already added as filter</string>
 </resources>

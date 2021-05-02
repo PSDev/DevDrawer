@@ -30,7 +30,7 @@ class TrackingService @Inject constructor(
     private val application: Application,
     private val remoteConfigService: RemoteConfigService,
 ) {
-    companion object : KLogging() {
+    companion object: KLogging() {
         const val PREF_KEY_OPTED_IN = "feature_analytics_opted_in"
         const val PREF_KEY_OPTED_IN_TIME = "feature_analytics_opted_in_time"
         const val CONFIG_KEY_ENABLED = "feature_analytics_enabled"

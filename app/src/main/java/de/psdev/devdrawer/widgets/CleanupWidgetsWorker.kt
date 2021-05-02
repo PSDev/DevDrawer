@@ -28,9 +28,17 @@ class CleanupWidgetsWorker @AssistedInject constructor(
 
         fun enableWorker(application: Application) {
             val workManager = WorkManager.getInstance(application)
-            val request =
+
+            workManager.enqueueUniqueWork(
+                TAG,
+                ExistingWorkPolicy.APPEND_OR_REPLACE,
+                OneTimeWorkRequestBuilder<CleanupWidgetsWorker>().build()
+            )
+            workManager.enqueueUniquePeriodicWork(
+                TAG,
+                ExistingPeriodicWorkPolicy.REPLACE,
                 PeriodicWorkRequestBuilder<CleanupWidgetsWorker>(30, TimeUnit.MINUTES).build()
-            workManager.enqueueUniquePeriodicWork(TAG, ExistingPeriodicWorkPolicy.REPLACE, request)
+            )
         }
     }
 

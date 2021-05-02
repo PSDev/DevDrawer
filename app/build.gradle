@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.github.triplet.play'
+apply plugin: 'com.dicedmelon.gradle.jacoco-android'
 
 android {
     compileSdkVersion Config.compile_sdk
@@ -28,10 +28,15 @@ android {
         // Version info
         buildConfigField 'String', 'GIT_SHA', "\"${project.ext.gitHash}\""
 
+        vectorDrawables {
+            useSupportLibrary true
+        }
+
         javaCompileOptions.annotationProcessorOptions.arguments['room.schemaLocation'] = rootProject.file('schemas').toString()
     }
     buildFeatures {
         viewBinding true
+        compose true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -45,8 +50,12 @@ android {
                 "-Xopt-in=kotlin.ExperimentalStdlibApi",
                 "-Xopt-in=kotlin.time.ExperimentalTime",
                 "-Xopt-in=kotlinx.coroutines.FlowPreview",
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                "-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi",
+                "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi"
         ]
+        useIR = true
     }
     testOptions {
         unitTests {
@@ -105,6 +114,9 @@ android {
         exclude '**/NOTICE.txt'
         exclude '**/*.gwt.xml'
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion Versions.androidXCompose
+    }
 }
 
 dependencies {
@@ -133,13 +145,17 @@ dependencies {
     implementation Libs.androidx_browser
     implementation Libs.androidx_constraint_layout
     implementation Libs.androidx_core
+    implementation "androidx.core:core-splashscreen:1.0.0-alpha01"
     implementation Libs.androidx_fragment
     implementation Libs.androidx_hilt_work
     implementation Libs.androidx_lifecycle_viewmodel
+    implementation Libs.androidx_lifecycle_livedata
     implementation Libs.androidx_lifecycle_java8
+    implementation Libs.androidx_lifecycle_runtime
     implementation Libs.androidx_lifecycle_process
     implementation Libs.androidx_navigation_fragment
     implementation Libs.androidx_navigation_ui
+    implementation "androidx.navigation:navigation-compose:$Versions.androidXNavigation"
     implementation Libs.androidx_preference
     implementation Libs.androidx_recyclerview
     implementation Libs.androidx_recyclerview_selection
@@ -147,6 +163,20 @@ dependencies {
     implementation Libs.androidx_room_ktx
     implementation Libs.androidx_work_runtime
     implementation Libs.androidx_work_gcm
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.activity:activity-compose:1.3.0-rc02'
+    implementation "androidx.compose.ui:ui:$Versions.androidXCompose"
+    implementation "androidx.compose.foundation:foundation:$Versions.androidXCompose"
+    implementation "androidx.compose.material:material:$Versions.androidXCompose"
+    implementation "androidx.compose.material:material-icons-core:$Versions.androidXCompose"
+    implementation "androidx.compose.material:material-icons-extended:$Versions.androidXCompose"
+//    implementation "androidx.compose.ui:ui-tooling:$Versions.androidXCompose"
+    implementation "androidx.compose.ui:ui-tooling:1.0.0-beta09"
+    implementation "com.google.accompanist:accompanist-insets:0.14.0"
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$Versions.androidXCompose"
     kapt Libs.androidx_room_compiler
     kapt Libs.androidx_hilt_compiler
 
@@ -182,8 +212,8 @@ dependencies {
     implementation Libs.kotlinCoroutinesAndroid
 
     // LeakCanary
-    debugImplementation Libs.leakCanary
-    implementation Libs.leakCanaryPlumberAndroid
+//    debugImplementation Libs.leakCanary
+//    implementation Libs.leakCanaryPlumberAndroid
 
     // Logging
     implementation Libs.slf4jAndroidLogger
@@ -198,6 +228,10 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+jacoco {
+    toolVersion = "0.8.7"
 }
 
 play {

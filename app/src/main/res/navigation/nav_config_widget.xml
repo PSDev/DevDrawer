@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/editWidgetFragment"
-        android:name="de.psdev.devdrawer.widgets.EditWidgetFragment"
+        android:name="de.psdev.devdrawer.widgets.ui.editor.WidgetEditFragment"
         tools:layout="@layout/fragment_widget_edit">
         <argument
             android:name="widgetId"
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/widgetProfileEditFragment"
-        android:name="de.psdev.devdrawer.profiles.WidgetProfileEditFragment"
+        android:name="de.psdev.devdrawer.profiles.ui.editor.WidgetProfileEditFragment"
         tools:layout="@layout/fragment_widget_profile_edit">
         <argument
             android:name="profileId"

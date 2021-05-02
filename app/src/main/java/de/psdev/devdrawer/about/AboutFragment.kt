@@ -13,13 +13,13 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
 import com.mikepenz.aboutlibraries.util.LibsListenerImpl
 import dagger.hilt.android.AndroidEntryPoint
-import de.psdev.devdrawer.BaseFragment
 import de.psdev.devdrawer.R
+import de.psdev.devdrawer.ViewBindingBaseFragment
 import de.psdev.devdrawer.databinding.FragmentAboutBinding
 import de.psdev.devdrawer.utils.consume
 
 @AndroidEntryPoint
-class AboutFragment : BaseFragment<FragmentAboutBinding>() {
+class AboutFragment : ViewBindingBaseFragment<FragmentAboutBinding>() {
 
     override fun createViewBinding(
         inflater: LayoutInflater,

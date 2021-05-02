@@ -29,7 +29,13 @@ class DevDrawerApplication: Application(), Configuration.Provider {
             registerAppInstallationReceiver()
             setupWorkers()
         }.let {
-            logger.warn("{} version {} ({}) took {}ms to init", this::class.java.simpleName, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, it)
+            logger.warn(
+                "{} version {} ({}) took {}ms to init",
+                this::class.java.simpleName,
+                BuildConfig.VERSION_NAME,
+                BuildConfig.VERSION_CODE,
+                it
+            )
         }
     }
 
@@ -37,12 +43,9 @@ class DevDrawerApplication: Application(), Configuration.Provider {
     // Configuration.Provider
     // ==========================================================================================================================
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        logger.warn { "getWorkManagerConfiguration" }
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
+    override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder()
+        .setWorkerFactory(workerFactory)
+        .build()
 
     // ==========================================================================================================================
     // Private API

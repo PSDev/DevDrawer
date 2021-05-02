@@ -19,7 +19,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -30,6 +33,7 @@
             android:name=".appwidget.ClickHandlingActivity"
             android:allowTaskReparenting="false"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:noHistory="true"
             android:taskAffinity=""
             android:theme="@android:style/Theme.NoDisplay">
@@ -46,13 +50,17 @@
             android:taskAffinity=""
             android:theme="@style/AppTheme.Dialog.NoActionBar" />
 
-        <activity android:name=".widgets.WidgetConfigActivity">
+        <activity
+            android:name=".widgets.ui.WidgetConfigActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".appwidget.DDWidgetProvider">
+        <receiver
+            android:name=".appwidget.DDWidgetProvider"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -65,21 +73,19 @@
             android:name=".receivers.UpdateReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name=".receivers.PinWidgetSuccessReceiver"
+            android:exported="false" />
+
         <service
             android:name=".appwidget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!-- Disable auto-init of WorkManager -->
         <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="androidx.work.impl.WorkManagerInitializer"
-                android:value="androidx.startup"
-                tools:node="remove" />
-        </provider>
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            tools:node="remove" />
 
         <!-- Configure Firebase Analytics -->
         <meta-data

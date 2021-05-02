@@ -3,6 +3,7 @@ package de.psdev.devdrawer.profiles
 import android.view.MotionEvent
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
+import de.psdev.devdrawer.profiles.ui.list.WidgetProfilesListAdapter
 
 class WidgetProfilesDetailsLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<String>() {
     override fun getItemDetails(event: MotionEvent): ItemDetails<String>? {

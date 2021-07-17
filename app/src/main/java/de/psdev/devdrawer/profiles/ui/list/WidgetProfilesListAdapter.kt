@@ -1,4 +1,4 @@
-package de.psdev.devdrawer.profiles
+package de.psdev.devdrawer.profiles.ui.list
 
 import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionTracker
@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.databinding.ListItemWidgetProfileBinding
-import de.psdev.devdrawer.profiles.WidgetProfilesListAdapter.WidgetProfileViewHolder
+import de.psdev.devdrawer.profiles.WidgetActionListener
+import de.psdev.devdrawer.profiles.ui.list.WidgetProfilesListAdapter.WidgetProfileViewHolder
 import de.psdev.devdrawer.utils.consume
 import de.psdev.devdrawer.utils.layoutInflater
 

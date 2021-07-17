@@ -1,15 +1,12 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply plugin: 'com.github.ben-manes.versions'
-
 buildscript {
     repositories {
         google()
         mavenCentral()
         jcenter()
-        maven { url "https://plugins.gradle.org/m2" }
+        gradlePluginPortal()
     }
     dependencies {
-        classpath Plugins.android_gradle
+        classpath 'com.android.tools.build:gradle:7.0.0-beta05'
         classpath Plugins.kotlin
         classpath Plugins.navigation_safeargs
         classpath Plugins.google_services_gradle
@@ -18,12 +15,15 @@ buildscript {
         classpath Plugins.firebasePerformancePlugin
         classpath Plugins.daggerHiltPlugin
         classpath Plugins.aboutLibrariesPlugin
-        classpath "com.github.triplet.gradle:play-publisher:3.4.0-agp4.2"
+        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.5'
+
+        classpath "com.github.triplet.gradle:play-publisher:3.5.0-agp7.0"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
+apply plugin: 'com.github.ben-manes.versions'
 apply from: rootProject.file('gradle/versioning.gradle')
 
 allprojects {
@@ -50,10 +50,23 @@ task clean(type: Delete) {
 }
 
 wrapper {
-    gradleVersion = '7.0.2'
+    gradleVersion = '7.1.1'
     distributionType = "all"
 }
 
 task printVersion() {
     println("Version: ${project.version}")
+}
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates").configure {
+    rejectVersionIf {
+        isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+    }
 }

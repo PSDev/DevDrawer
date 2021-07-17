@@ -1,4 +1,4 @@
-package de.psdev.devdrawer.widgets
+package de.psdev.devdrawer.widgets.ui
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
@@ -14,13 +14,14 @@ import de.psdev.devdrawer.R
 import de.psdev.devdrawer.analytics.Events
 import de.psdev.devdrawer.database.DevDrawerDatabase
 import de.psdev.devdrawer.databinding.ActivityWidgetConfigBinding
+import de.psdev.devdrawer.widgets.ui.editor.WidgetEditFragmentArgs
 import mu.KLogging
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WidgetConfigActivity : BaseActivity() {
+class WidgetConfigActivity: BaseActivity() {
 
-    companion object : KLogging() {
+    companion object: KLogging() {
         fun createStartIntent(context: Context, appWidgetId: Int): Intent =
             Intent(context, WidgetConfigActivity::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -57,7 +58,10 @@ class WidgetConfigActivity : BaseActivity() {
         setSupportActionBar(binding.toolbar)
 
         val navController = findNavController(R.id.nav_host_fragment)
-        navController.setGraph(R.navigation.nav_config_widget, EditWidgetFragmentArgs(widgetId).toBundle())
+        navController.setGraph(
+            R.navigation.nav_config_widget,
+            WidgetEditFragmentArgs.Builder(widgetId).build().toBundle()
+        )
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
     }

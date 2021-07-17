@@ -1,58 +1,57 @@
 object Versions {
     // Plugins
-    const val androidGradlePlugin = "4.2.1"
-    const val gradleVersionsPlugin = "0.38.0"
+    const val gradleVersionsPlugin = "0.39.0"
     const val googleServicesVersion = "4.3.8"
-    const val firebaseCrashlyticsPlugin = "2.6.1"
+    const val firebaseCrashlyticsPlugin = "2.7.1"
     const val firebasePerformancePlugin = "1.4.0"
 
     // Platforms
-    const val firebasePlatform = "28.0.1"
+    const val firebasePlatform = "28.2.1"
 
     // Libs
-    const val aboutLibraries = "8.8.5"
-    const val androidXAppCompat = "1.3.0-rc01"
+    const val aboutLibraries = "8.9.0"
+    const val androidXAppCompat = "1.4.0-alpha03"
     const val androidXBrowser = "1.3.0"
+    const val androidXCompose = "1.0.0-rc02"
     const val androidXConstraintLayout = "2.1.0-beta02"
-    const val androidXCore = "1.6.0-alpha03"
-    const val androidXFragment = "1.3.3"
+    const val androidXCore = "1.7.0-alpha01"
+    const val androidXFragment = "1.4.0-alpha04"
     const val androidXHilt = "1.0.0"
-    const val androidXLifecycle = "2.4.0-alpha01"
-    const val androidXNavigation = "2.3.5"
+    const val androidXLifecycle = "2.4.0-alpha02"
+    const val androidXNavigation = "2.4.0-alpha04"
     const val androidXPreference = "1.1.1"
-    const val androidXRecyclerView = "1.2.0"
+    const val androidXRecyclerView = "1.2.1"
     const val androidXRecyclerViewSelection = "1.2.0-alpha01"
-    const val androidXRoom = "2.4.0-alpha02"
-    const val androidXStartup = "1.0.0"
-    const val androidXWorkManager = "2.6.0-alpha02"
-    const val daggerHilt = "2.35.1"
-    const val flowBinding = "1.0.0"
+    const val androidXRoom = "2.4.0-alpha03"
+    const val androidXStartup = "1.1.0-beta01"
+    const val androidXWorkManager = "2.7.0-alpha04"
+    const val daggerHilt = "2.37"
+    const val flowBinding = "1.2.0"
     const val googlePlayCore = "1.10.0"
     const val googlePlayCoreKtx = "1.8.1"
-    const val kotlin = "1.5.0"
-    const val kotlinCoroutines = "1.5.0"
-    const val kotlinLogging = "2.0.6"
+    const val kotlin = "1.5.10"
+    const val kotlinCoroutines = "1.5.1"
+    const val kotlinLogging = "2.0.10"
     const val leakCanary = "2.7"
-    const val materialComponents = "1.4.0-beta01"
+    const val materialComponents = "1.4.0"
     const val okhttp = "4.9.1"
     const val okio = "2.10.0"
     const val slf4jAndroidLogger = "1.0.5"
 
     // Testing
     const val junit = "4.13.2"
-    const val robolectric = "4.6-alpha-1"
-    const val mockk = "1.11.0"
+    const val robolectric = "4.6.1"
+    const val mockk = "1.12.0"
 }
 
 object Config {
     const val min_sdk = 21
-    const val target_sdk = 30
-    const val compile_sdk = 30
+    const val target_sdk = 31
+    const val compile_sdk = 31
     const val build_tools = "30.0.3"
 }
 
 object Plugins {
-    const val android_gradle = "com.android.tools.build:gradle:${Versions.androidGradlePlugin}"
     const val kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val navigation_safeargs = "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.androidXNavigation}"
     const val google_services_gradle = "com.google.gms:google-services:${Versions.googleServicesVersion}"
@@ -61,8 +60,7 @@ object Plugins {
         "com.google.firebase:firebase-crashlytics-gradle:${Versions.firebaseCrashlyticsPlugin}"
     const val firebasePerformancePlugin = "com.google.firebase:perf-plugin:${Versions.firebasePerformancePlugin}"
     const val daggerHiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"
-    const val aboutLibrariesPlugin =
-        "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${Versions.aboutLibraries}"
+    const val aboutLibrariesPlugin = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${Versions.aboutLibraries}"
 }
 
 object Libs {
@@ -79,15 +77,18 @@ object Libs {
     const val androidx_hilt_work = "androidx.hilt:hilt-work:${Versions.androidXHilt}"
     const val androidx_hilt_compiler = "androidx.hilt:hilt-compiler:${Versions.androidXHilt}"
     const val androidx_core = "androidx.core:core-ktx:${Versions.androidXCore}"
+
     const val androidx_lifecycle_viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.androidXLifecycle}"
     const val androidx_lifecycle_livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.androidXLifecycle}"
     const val androidx_lifecycle_java8 = "androidx.lifecycle:lifecycle-common-java8:${Versions.androidXLifecycle}"
     const val androidx_lifecycle_process = "androidx.lifecycle:lifecycle-process:${Versions.androidXLifecycle}"
-    const val androidx_navigation_fragment =
-        "androidx.navigation:navigation-fragment-ktx:${Versions.androidXNavigation}"
+    const val androidx_lifecycle_runtime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.androidXLifecycle}"
+
+    const val androidx_navigation_fragment = "androidx.navigation:navigation-fragment-ktx:${Versions.androidXNavigation}"
     const val androidx_navigation_ui = "androidx.navigation:navigation-ui-ktx:${Versions.androidXNavigation}"
     const val androidx_recyclerview = "androidx.recyclerview:recyclerview:${Versions.androidXRecyclerView}"
-    const val androidx_recyclerview_selection = "androidx.recyclerview:recyclerview-selection:${Versions.androidXRecyclerViewSelection}"
+    const val androidx_recyclerview_selection =
+        "androidx.recyclerview:recyclerview-selection:${Versions.androidXRecyclerViewSelection}"
     const val androidx_room_runtime = "androidx.room:room-runtime:${Versions.androidXRoom}"
     const val androidx_room_ktx = "androidx.room:room-ktx:${Versions.androidXRoom}"
     const val androidx_room_compiler = "androidx.room:room-compiler:${Versions.androidXRoom}"

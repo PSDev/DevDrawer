@@ -1,6 +1,7 @@
 package de.psdev.devdrawer.profiles
 
 import androidx.recyclerview.selection.ItemKeyProvider
+import de.psdev.devdrawer.profiles.ui.list.WidgetProfilesListAdapter
 
 class WidgetProfilesItemKeyProvider(private val adapter: WidgetProfilesListAdapter): ItemKeyProvider<String>(
     SCOPE_MAPPED

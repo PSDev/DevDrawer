@@ -1,4 +1,4 @@
-package de.psdev.devdrawer.widgets
+package de.psdev.devdrawer.widgets.ui.editor
 
 import android.graphics.Color
 import androidx.lifecycle.ViewModel

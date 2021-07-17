@@ -146,7 +146,7 @@ class WidgetAppsListViewFactory(
                     defaultSortOrder
                 )
             )) {
-                SortOrder.FIRST_INSTALLED -> compareByDescending { it.firstInstalledTime }
+                SortOrder.FIRST_INSTALLED -> compareByDescending { it.firstInstallTime }
                 SortOrder.LAST_UPDATED -> compareByDescending { it.lastUpdateTime }
                 SortOrder.NAME -> compareBy { it.name }
                 SortOrder.PACKAGE_NAME -> compareBy { it.packageName }

@@ -1,4 +1,4 @@
-# DevDrawer2 [![Build Status](https://travis-ci.org/PSDev/DevDrawer.svg?branch=master)](https://travis-ci.org/PSDev/DevDrawer)
+# DevDrawer2
 
 An Android application designed to help developers by automatically adding their apps to a widget for easy launching / uninstalling / reinstalling etc.  
 

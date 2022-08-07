@@ -154,7 +154,7 @@ dependencies {
     implementation Libs.material_components
 
     // Color Picker
-    implementation "com.github.dhaval2404:colorpicker:2.0"
+    implementation "com.github.dhaval2404:colorpicker:2.3"
 
     //  Dagger
     implementation Libs.daggerHiltAndroid

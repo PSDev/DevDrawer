@@ -27,7 +27,7 @@ object Versions {
     const val androidXWorkManager = "2.6.0-alpha02"
     const val daggerHilt = "2.35.1"
     const val flowBinding = "1.0.0"
-    const val googlePlayCore = "1.10.0"
+    const val googlePlayCore = "1.10.3"
     const val googlePlayCoreKtx = "1.8.1"
     const val kotlin = "1.5.0"
     const val kotlinCoroutines = "1.5.0"

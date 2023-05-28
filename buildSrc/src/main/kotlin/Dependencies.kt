@@ -1,6 +1,6 @@
 object Versions {
     // Plugins
-    const val androidGradlePlugin = "4.2.1"
+    const val androidGradlePlugin = "4.2.2"
     const val gradleVersionsPlugin = "0.38.0"
     const val googleServicesVersion = "4.3.8"
     const val firebaseCrashlyticsPlugin = "2.6.1"

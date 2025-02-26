@@ -13,7 +13,7 @@ object Versions {
     const val aboutLibraries = "8.8.5"
     const val androidXAppCompat = "1.3.0-rc01"
     const val androidXBrowser = "1.3.0"
-    const val androidXConstraintLayout = "2.1.0-beta02"
+    const val androidXConstraintLayout = "2.2.1"
     const val androidXCore = "1.6.0-alpha03"
     const val androidXFragment = "1.3.3"
     const val androidXHilt = "1.0.0"

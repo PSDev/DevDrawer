@@ -21,7 +21,7 @@ object Versions {
     const val androidXNavigation = "2.3.5"
     const val androidXPreference = "1.1.1"
     const val androidXRecyclerView = "1.2.0"
-    const val androidXRecyclerViewSelection = "1.2.0-alpha01"
+    const val androidXRecyclerViewSelection = "1.2.0"
     const val androidXRoom = "2.4.0-alpha02"
     const val androidXStartup = "1.0.0"
     const val androidXWorkManager = "2.6.0-alpha02"

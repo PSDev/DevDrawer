@@ -17,7 +17,7 @@ object Versions {
     const val androidXCore = "1.6.0-alpha03"
     const val androidXFragment = "1.3.3"
     const val androidXHilt = "1.0.0"
-    const val androidXLifecycle = "2.4.0-alpha01"
+    const val androidXLifecycle = "2.10.0"
     const val androidXNavigation = "2.3.5"
     const val androidXPreference = "1.1.1"
     const val androidXRecyclerView = "1.2.0"

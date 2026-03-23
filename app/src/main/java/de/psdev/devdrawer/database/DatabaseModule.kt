@@ -20,6 +20,7 @@ class DatabaseModule {
         DevDrawerDatabase.NAME
     ).apply {
         addMigrations(MigrationFrom1To2(application))
+        addMigrations(MigrationFrom2To3)
     }.build()
 
 }

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailabilityLight
 import com.google.android.play.core.ktx.launchReview
 import com.google.android.play.core.ktx.requestReview
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -33,18 +35,26 @@ class ReviewManager @Inject constructor(
         set(value) = sharedPreferences.edit { putLong(PREF_KEY_LAST_LAUNCH_MILLIS, value) }
 
     suspend fun triggerReview(activity: Activity) {
-        if (!remoteConfigService.getBoolean(KEY_ENABLED)) return
-        if (shouldLaunchReview()) {
-            logger.info { "Requesting review" }
-            val reviewInfo = reviewManager.requestReview()
-            reviewManager.launchReview(activity, reviewInfo)
-            lastReviewLaunchMillis = System.currentTimeMillis()
-        } else {
-            logger.info { "Conditions not met, skipping review" }
+        try {
+            if (!remoteConfigService.getBoolean(KEY_ENABLED)) return
+            if (shouldLaunchReview()) {
+                logger.info { "Requesting review" }
+                val reviewInfo = reviewManager.requestReview()
+                reviewManager.launchReview(activity, reviewInfo)
+                lastReviewLaunchMillis = System.currentTimeMillis()
+            } else {
+                logger.info { "Conditions not met, skipping review" }
+            }
+        } catch (e: RuntimeException) {
+            logger.warn { "Error triggering review request: ${e.message}" }
         }
     }
 
     private suspend fun shouldLaunchReview(): Boolean {
+        val servicesAvailable = GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(application)
+        if (servicesAvailable != ConnectionResult.SUCCESS) {
+            return false
+        }
         val minWidgetsConfig = remoteConfigService.getInteger(KEY_MIN_WIDGETS)
         val currentWidgetCount = devDrawerDatabase.widgetDao().findAll().count()
         if (currentWidgetCount < minWidgetsConfig) {

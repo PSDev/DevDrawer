@@ -1,9 +1,12 @@
 package de.psdev.devdrawer.database
 
-import androidx.recyclerview.widget.DiffUtil
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import de.psdev.devdrawer.appwidget.PackageHashInfo
-import java.util.*
+import java.util.UUID
 
 @Entity(
     tableName = "filters",
@@ -30,13 +33,6 @@ data class PackageFilter(
     @ColumnInfo(name = "profile_id", index = true)
     val profileId: String
 ) {
-    companion object {
-        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<PackageFilter>() {
-            override fun areItemsTheSame(oldItem: PackageFilter, newItem: PackageFilter): Boolean = oldItem.id == newItem.id
-            override fun areContentsTheSame(oldItem: PackageFilter, newItem: PackageFilter): Boolean = oldItem.filter == newItem.filter
-        }
-    }
-
     @delegate:Ignore
     private val filterRegex: Regex by lazy { filter.replace("*", ".*").toRegex() }
 

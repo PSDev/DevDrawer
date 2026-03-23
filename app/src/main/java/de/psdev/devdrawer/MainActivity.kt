@@ -1,25 +1,27 @@
 package de.psdev.devdrawer
 
+import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
+import android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import de.psdev.devdrawer.database.DevDrawerDatabase
-import de.psdev.devdrawer.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 import mu.KLogging
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-
     companion object : KLogging()
 
-    private lateinit var binding: ActivityMainBinding
-
-    @Inject
-    lateinit var devDrawerDatabase: DevDrawerDatabase
+    // Holds intents delivered via onNewIntent so they can be handled inside the Compose tree.
+    private val newIntent = mutableStateOf<Intent?>(null)
 
     // ==========================================================================================================================
     // Android Lifecycle
@@ -27,24 +29,53 @@ class MainActivity : BaseActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        enableEdgeToEdge()
+        setContent {
+            val navigationState = rememberNavigationState(
+                startRoute = WidgetListRoute,
+                topLevelRoutes = topLevelRoutes.toSet()
+            )
+            val navigator = remember { Navigator(navigationState) }
 
-        val navController = findNavController(R.id.nav_host_fragment)
-        val appBarConfiguration = AppBarConfiguration.Builder(
-            R.id.widget_list_fragment,
-            R.id.profiles_list_fragment,
-            R.id.settings_fragment,
-            R.id.about_fragment
-        ).build()
-        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
-        binding.navbar.setupWithNavController(navController)
+            // Handle the launch intent only on a fresh start, not on config changes.
+            if (savedInstanceState == null) {
+                LaunchedEffect(Unit) {
+                    handleIntent(intent, navigator)
+                }
+            }
 
-        lifecycleScope.launchWhenResumed {
-            trackingService.checkOptIn(this@MainActivity)
+            // Handle intents delivered while the app is already running.
+            val pendingIntent = newIntent.value
+            LaunchedEffect(pendingIntent) {
+                pendingIntent?.let {
+                    handleIntent(it, navigator)
+                    newIntent.value = null
+                }
+            }
+
+            DevDrawerApp(
+                navigationState = navigationState,
+                navigator = navigator,
+                trackingService = trackingService
+            )
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                trackingService.checkOptIn()
+            }
         }
     }
 
-}
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        newIntent.value = intent
+    }
 
+    private fun handleIntent(intent: Intent, navigator: Navigator) {
+        val widgetId = intent.getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID)
+        if (widgetId != INVALID_APPWIDGET_ID) {
+            navigator.navigate(WidgetEditorRoute(widgetId))
+        }
+    }
+}

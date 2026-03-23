@@ -6,17 +6,17 @@ import android.content.IntentFilter
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
+import de.psdev.devdrawer.appwidget.CleanupWidgetsWorker
 import de.psdev.devdrawer.appwidget.UpdateWidgetsWorker
 import de.psdev.devdrawer.receivers.AppInstallationReceiver
-import de.psdev.devdrawer.widgets.CleanupWidgetsWorker
 import mu.KLogging
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
 
 @HiltAndroidApp
-class DevDrawerApplication: Application(), Configuration.Provider {
+class DevDrawerApplication : Application(), Configuration.Provider {
 
-    companion object: KLogging();
+    companion object : KLogging();
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -29,7 +29,13 @@ class DevDrawerApplication: Application(), Configuration.Provider {
             registerAppInstallationReceiver()
             setupWorkers()
         }.let {
-            logger.warn("{} version {} ({}) took {}ms to init", this::class.java.simpleName, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, it)
+            logger.warn(
+                "{} version {} ({}) took {}ms to init",
+                this::class.java.simpleName,
+                BuildConfig.VERSION_NAME,
+                BuildConfig.VERSION_CODE,
+                it
+            )
         }
     }
 
@@ -37,12 +43,10 @@ class DevDrawerApplication: Application(), Configuration.Provider {
     // Configuration.Provider
     // ==========================================================================================================================
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        logger.warn { "getWorkManagerConfiguration" }
-        return Configuration.Builder()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
-    }
 
     // ==========================================================================================================================
     // Private API

@@ -1,41 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply plugin: 'com.github.ben-manes.versions'
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
-        maven { url "https://plugins.gradle.org/m2" }
-    }
-    dependencies {
-        classpath Plugins.android_gradle
-        classpath Plugins.kotlin
-        classpath Plugins.navigation_safeargs
-        classpath Plugins.google_services_gradle
-        classpath Plugins.versions_gradle
-        classpath Plugins.firebaseCrashlyticsPlugin
-        classpath Plugins.firebasePerformancePlugin
-        classpath Plugins.daggerHiltPlugin
-        classpath Plugins.aboutLibrariesPlugin
-        classpath "com.github.triplet.gradle:play-publisher:3.4.0-agp4.2"
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.compose.compiler) apply false
+    id 'com.google.gms.google-services' version '4.4.4' apply false
+    id "com.google.firebase.crashlytics" version "3.0.6" apply false
+    id 'androidx.navigation.safeargs' version '2.9.7' apply false
+    id 'com.google.dagger.hilt.android' version '2.59.2' apply false
+    id 'com.google.devtools.ksp' version '2.3.6' apply false
+    id "org.sonarqube" version "7.2.3.7755"
 }
 
 apply from: rootProject.file('gradle/versioning.gradle')
 
 allprojects {
     group "de.psdev.devdrawer"
-    version enhancedVersion(2, 1, 0)
-
-    repositories {
-        google()
-        mavenCentral()
-        jcenter()
-        maven { url 'https://jitpack.io' }
-    }
+    version enhancedVersion(3, 0, 0)
 
     project.ext {
         // Project versions
@@ -45,15 +24,15 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }
 
 wrapper {
-    gradleVersion = '7.0.2'
+    gradleVersion = '9.4.1'
     distributionType = "all"
 }
 
-task printVersion() {
+tasks.register('printVersion') {
     println("Version: ${project.version}")
 }

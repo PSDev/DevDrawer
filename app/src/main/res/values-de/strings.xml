@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DevDrawer2</string>
+    <string name="settings">Einstellungen</string>
+    <string name="app_info">App info</string>
+    <string name="profiles">Profile</string>
+    <string name="widgets">Widgets</string>
+    <string name="save">Speichern</string>
+    <string name="no_profiles">Keine Profile</string>
+    <string name="new_profile">Neu</string>
+    <string name="name">Name</string>
+    <string name="edit_profile">Profil bearbeiten</string>
+    <string name="apply">Anwenden</string>
+    <string name="add">Hinzufügen</string>
+    <string name="reload">Neu laden</string>
+    <string name="edit_widget">Widget bearbeiten</string>
+    <string name="close">Schließen</string>
+    <string name="info">Information</string>
+    <string name="app_signature">App Signatur</string>
+    <string name="hint_profile_editing">Du kannst Profile bearbeiten, in dem du den Eintrag lange drückst</string>
+    <string name="delete">Löschen</string>
+    <string name="uninstall">Deinstallieren</string>
+    <string name="app_details">App Details</string>
+    <string name="add_app_signature">App Signatur</string>
+    <string name="add_package_name">Paketname</string>
+    <string name="app_icon">App Icon</string>
+</resources>

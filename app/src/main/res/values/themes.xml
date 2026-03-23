@@ -39,8 +39,12 @@
     </style>
 
     <style name="Theme.Settings.Preferences" parent="PreferenceThemeOverlay.v14.Material">
-        <item name="checkBoxPreferenceStyle">@style/Preference.CheckBoxPreference.Material.DayNight</item>
-        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.Material.DayNight</item>
+        <item name="checkBoxPreferenceStyle">
+            @style/Preference.CheckBoxPreference.Material.DayNight
+        </item>
+        <item name="switchPreferenceCompatStyle">
+            @style/Preference.SwitchPreferenceCompat.Material.DayNight
+        </item>
     </style>
 
     <style name="Preference.CheckBoxPreference.Material.DayNight" parent="Preference.CheckBoxPreference.Material">
@@ -69,4 +73,13 @@
     <style name="AppModalStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
         <item name="behavior_peekHeight">400dp</item>
     </style>
+
+    <style name="AppTheme.NoActionBar.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

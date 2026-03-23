@@ -1,10 +1,6 @@
 package de.psdev.devdrawer.database
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Transaction
-import androidx.room.Update
+import androidx.room.*
 
 abstract class BaseDao<T> {
 

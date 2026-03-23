@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">DevDrawer2</string>
 
-    <string name="pref_show_activity_choice">showActivityChoice</string>
+    <string name="pref_show_activity_choice" translatable="false">show_activity_choice</string>
     <bool name="pref_show_activity_choice_default">false</bool>
 
     <string name="pref_sort_order" translatable="false">sort_order</string>
@@ -23,6 +23,12 @@
         <item>@string/sort_order_name</item>
         <item>@string/sort_order_package_name</item>
     </array>
+
+    <string name="pref_theme" translatable="false">theme</string>
+    <string name="pref_theme_default" translatable="false">SYSTEM</string>
+
+    <string name="pref_dynamic_color" translatable="false">dynamic_color</string>
+    <bool name="pref_dynamic_color_default">false</bool>
 
     <string name="pref_feature_analytics_opted_in" translatable="false">feature_analytics_opted_in</string>
 
@@ -69,5 +75,45 @@
     <string name="error_profile_in_use">Cannot delete profile, still being used by widgets</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 
+    <!-- WidgetCard -->
+    <string name="widget_id_template">ID: %1$d</string>
+
+    <!-- WidgetProfileListScreen -->
+    <string name="widget_profile_list_create_new">Create new profile</string>
+
+    <!-- WidgetProfileCard -->
+    <string name="loading">Loading…</string>
+    <string name="last_modified">Last modified</string>
+
+    <!-- Settings -->
+    <string name="settings_category_general">General</string>
+    <string name="settings_category_ui">User Interface</string>
+    <string name="settings_category_analytics">Analytics</string>
+    <string name="settings_category_about">About</string>
+
+    <string name="pref_show_activity_choice_title">Show activity choice on launch</string>
+    <string name="pref_sort_order_title">Widget Sorting Options</string>
+    <string name="pref_theme_title">Theme</string>
+    <array name="theme_labels">
+        <item>System default</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </array>
+    <string name="pref_dynamic_color_title">Material You colors</string>
+    <string name="pref_dynamic_color_summary">Use colors generated from your wallpaper</string>
+    <string name="pref_feature_analytics_opted_in_title">Opt-in to analytics</string>
+    <string name="clear">Clear</string>
+    <string name="delete_profile">Delete profile?</string>
+    <string name="delete_filter">Delete filter?</string>
+    <string name="no_apps_available">No apps available or all already added as filter</string>
+    <string name="more">More</string>
+
+    <string name="toggle_system_apps">Toggle system apps</string>
+    <string name="include_system_apps">Include system apps</string>
+
+    <string name="discard_changes">Discard changes?</string>
+    <string name="discard_changes_confirmation">You have unsaved changes. Do you want to discard them?</string>
+    <string name="discard">Discard</string>
 </resources>

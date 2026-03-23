@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="de.psdev.devdrawer">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Needed to uninstall apps -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
@@ -9,20 +8,37 @@
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.ACCESS_ADSERVICES_AD_ID"
+        tools:node="remove" />
 
     <application
         android:name=".DevDrawerApplication"
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainActivity">
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
 
@@ -30,6 +46,7 @@
             android:name=".appwidget.ClickHandlingActivity"
             android:allowTaskReparenting="false"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:noHistory="true"
             android:taskAffinity=""
             android:theme="@android:style/Theme.NoDisplay">
@@ -46,13 +63,9 @@
             android:taskAffinity=""
             android:theme="@style/AppTheme.Dialog.NoActionBar" />
 
-        <activity android:name=".widgets.WidgetConfigActivity">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
-
-        <receiver android:name=".appwidget.DDWidgetProvider">
+        <receiver
+            android:name=".appwidget.DDWidgetProvider"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -63,6 +76,10 @@
 
         <receiver
             android:name=".receivers.UpdateReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receivers.PinWidgetSuccessReceiver"
             android:exported="false" />
 
         <service
@@ -76,7 +93,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="androidx.work.impl.WorkManagerInitializer"
+                android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>

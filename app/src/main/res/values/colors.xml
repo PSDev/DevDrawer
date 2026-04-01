@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#8bc34a</color>
-    <color name="colorPrimaryVariant">#5a9216</color>
-    <color name="colorOnPrimary">#FFF</color>
+    <color name="colorPrimary">#FFC107</color>
+    <color name="colorPrimaryVariant">#FFA000</color>
+    <color name="colorOnPrimary">#000000</color>
 
-    <color name="colorSecondary">#ff9800</color>
-    <color name="colorSecondaryVariant">#c66900</color>
-    <color name="colorOnSecondary">#FFF</color>
+    <color name="colorSecondary">#FF5722</color>
+    <color name="colorSecondaryVariant">#E64A19</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
 
     <color name="colorSurface">#FFFFFF</color>
     <color name="colorOnSurface">#000000</color>
@@ -18,7 +18,7 @@
     <!-- Widget colors -->
     <color name="widgetTextColor">#000</color>
     <color name="widgetTextColorVariant">#222</color>
-    <color name="widgetSelectedColor">#4D8BC34A</color>
+    <color name="widgetSelectedColor">#4DFFC107</color>
     <color name="widgetIconColor">#000</color>
 
     <array name="widget_colors">

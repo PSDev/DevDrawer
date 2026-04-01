@@ -1,57 +1,66 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: "androidx.navigation.safeargs.kotlin"
-apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'com.mikepenz.aboutlibraries.plugin'
-apply plugin: 'com.google.firebase.firebase-perf'
-apply plugin: 'com.github.triplet.play'
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.aboutLibraries)
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
+    id 'com.google.dagger.hilt.android'
+    id 'com.github.triplet.play' version '4.0.0'
+    id 'com.google.devtools.ksp'
+    id 'jacoco'
+}
 
 android {
-    compileSdkVersion Config.compile_sdk
-    buildToolsVersion Config.build_tools
+    namespace "de.psdev.devdrawer"
+    compileSdk = 36
 
     defaultConfig {
         applicationId "de.psdev.devdrawer"
-        minSdkVersion Config.min_sdk
-        targetSdkVersion Config.target_sdk
+        minSdkVersion 26
+        targetSdkVersion 36
         versionCode project.ext.appVersionCode
         versionName project.ext.appVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-
-        resConfig "en"
+        resourceConfigurations += ['en']
 
         // Version info
         buildConfigField 'String', 'GIT_SHA', "\"${project.ext.gitHash}\""
 
-        javaCompileOptions.annotationProcessorOptions.arguments['room.schemaLocation'] = rootProject.file('schemas').toString()
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
     buildFeatures {
-        viewBinding true
+        viewBinding true  // Required by ChooseActivityDialog (pending Compose migration)
+        compose true
+        buildConfig true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += [
-                "-Xinline-classes",
-                "-Xopt-in=kotlin.RequiresOptIn",
-                "-Xopt-in=kotlin.ExperimentalStdlibApi",
-                "-Xopt-in=kotlin.time.ExperimentalTime",
-                "-Xopt-in=kotlinx.coroutines.FlowPreview",
-                "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-        ]
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+        }
     }
     testOptions {
+        managedDevices {
+            localDevices {
+                pixel8api34 {
+                    device = "Pixel 8 Pro"
+                    apiLevel = 34
+                    systemImageSource = "google"
+                    require64Bit = true
+                }
+            }
+        }
         unitTests {
             includeAndroidResources = true
-            all { ignoreFailures = true }
         }
     }
     final def keystorePropertiesFile = rootProject.file("release.properties")
@@ -84,7 +93,7 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
             } else {
@@ -92,112 +101,149 @@ android {
             }
         }
     }
-    lintOptions {
-        lintConfig project.file('lint.xml')
-        disable "GoogleAppIndexingWarning"
-        disable "RemoveWorkManagerInitializer"
-        enable 'Interoperability'
-    }
     packagingOptions {
-        exclude '**/LICENSE'
-        exclude '**/LICENSE.txt'
-        exclude '**/NOTICE'
-        exclude '**/NOTICE.txt'
-        exclude '**/*.gwt.xml'
+        resources {
+            excludes += ['**/LICENSE', '**/LICENSE.txt', '**/NOTICE', '**/NOTICE.txt', '**/*.gwt.xml']
+        }
     }
+    lint {
+        disable 'GoogleAppIndexingWarning', 'RemoveWorkManagerInitializer'
+        enable 'Interoperability'
+        lintConfig file('lint.xml')
+    }
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+ksp {
+    arg("room.schemaLocation", rootProject.file('schemas').toString())
 }
 
 dependencies {
     //
     // Platforms
     //
-    implementation platform(Platforms.firebase)
-    implementation platform(Platforms.kotlin)
-
+    def firebaseBom = platform(libs.firebase.bom)
+    implementation(firebaseBom)
+    androidTestImplementation(firebaseBom)
     //
     // Test dependencies
     //
-    testImplementation Libs.junit
-    testImplementation Libs.robolectric
-    testImplementation Libs.mockk
+    testImplementation libs.junit
+    testImplementation libs.robolectric
+    testImplementation libs.mockk.android
+    testImplementation libs.mockk.agent
+    testImplementation libs.kotlinx.coroutines.test
 
     //
     // Runtime dependencies
     //
 
     // AboutLibraries
-    implementation Libs.about_libraries
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries.compose.m3)
 
     // AndroidX
-    implementation Libs.androidx_appcompat
-    implementation Libs.androidx_browser
-    implementation Libs.androidx_constraint_layout
-    implementation Libs.androidx_core
-    implementation Libs.androidx_fragment
-    implementation Libs.androidx_hilt_work
-    implementation Libs.androidx_lifecycle_viewmodel
-    implementation Libs.androidx_lifecycle_java8
-    implementation Libs.androidx_lifecycle_process
-    implementation Libs.androidx_navigation_fragment
-    implementation Libs.androidx_navigation_ui
-    implementation Libs.androidx_preference
-    implementation Libs.androidx_recyclerview
-    implementation Libs.androidx_recyclerview_selection
-    implementation Libs.androidx_room_runtime
-    implementation Libs.androidx_room_ktx
-    implementation Libs.androidx_work_runtime
-    implementation Libs.androidx_work_gcm
-    kapt Libs.androidx_room_compiler
-    kapt Libs.androidx_hilt_compiler
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.browser
+    implementation libs.androidx.core.ktx
 
-    // Android Material
-    implementation Libs.material_components
+    implementation libs.androidx.core.splashscreen
+
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
+    implementation libs.androidx.hilt.navigation.compose
+    implementation libs.androidx.hilt.work
+    ksp libs.androidx.hilt.compiler
+
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation libs.androidx.lifecycle.common.java8
+    // optional - Test helpers for Lifecycle runtime
+    testImplementation libs.androidx.lifecycle.runtime.testing
+    // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
+    implementation libs.androidx.lifecycle.process
+
+    // Navigation 3
+    implementation libs.androidx.navigation3.runtime
+    implementation libs.androidx.navigation3.ui
+    implementation libs.androidx.lifecycle.viewmodel.navigation3
+
+    implementation libs.androidx.preference.ktx
+    implementation libs.androidx.room.runtime
+    ksp libs.androidx.room.compiler
+    implementation libs.androidx.room.ktx
+
+    implementation libs.androidx.work.runtime.ktx
+    androidTestImplementation libs.androidx.work.testing
+
+    // Compose
+    def composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // Material Design 3
+    implementation libs.androidx.material3
+    // Android Studio Preview support
+    implementation libs.androidx.ui.tooling.preview
+    debugImplementation libs.androidx.ui.tooling
+    // UI Tests
+    androidTestImplementation libs.androidx.ui.test.junit4
+    debugImplementation libs.androidx.ui.test.manifest
+    // Optional - Add full set of material icons
+    implementation libs.androidx.material.icons.extended
+    // Optional - Integration with activities
+    implementation libs.androidx.activity.compose
+    // Optional - Integration with ViewModels
+    implementation libs.androidx.lifecycle.viewmodel.compose
 
     // Color Picker
-    implementation "com.github.dhaval2404:colorpicker:2.0"
-
-    //  Dagger
-    implementation Libs.daggerHiltAndroid
-    kapt Libs.daggerHiltAndroidCompiler
+    implementation libs.colorpicker
 
     // Firebase
-    implementation "com.google.firebase:firebase-analytics-ktx"
-    implementation "com.google.firebase:firebase-config-ktx"
-    implementation "com.google.firebase:firebase-crashlytics-ktx"
-    implementation "com.google.firebase:firebase-perf-ktx"
-
-    // FlowBinding
-    implementation Libs.flowBindingAndroid
-    implementation Libs.flowBindingCommon
-    implementation Libs.flowBindingMaterial
+    implementation libs.firebase.analytics
+    implementation libs.firebase.config
+    implementation libs.firebase.crashlytics
+    implementation libs.firebase.perf
 
     // Google Play
-    implementation Libs.googlePlayCore
-    implementation Libs.googlePlayCoreKtx
+    implementation libs.review
+    implementation libs.review.ktx
+    implementation libs.app.update
+    implementation libs.app.update.ktx
 
     // Kotlin
-    implementation Libs.kotlinStdlib
+    implementation libs.kotlin.stdlib
+    implementation libs.kotlinx.serialization.json
 
     // Kotlin Coroutines
-    implementation Libs.kotlinCoroutinesAndroid
+    implementation libs.kotlinx.coroutines.android
 
     // LeakCanary
-    debugImplementation Libs.leakCanary
-    implementation Libs.leakCanaryPlumberAndroid
+//    debugImplementation Libs.leakCanary
+//    implementation Libs.leakCanaryPlumberAndroid
 
     // Logging
-    implementation Libs.slf4jAndroidLogger
-    implementation Libs.kotlinLogging
+    implementation libs.slf4j.android.logger
+    implementation libs.kotlin.logging
 
     // OkHttp
-    implementation Libs.okhttp
+    implementation(libs.okhttp)
 
     // Okio
-    implementation Libs.okio
+    implementation(libs.okio)
 }
 
-kapt {
-    correctErrorTypes true
+jacoco {
+    toolVersion = "0.8.12"
 }
 
 play {

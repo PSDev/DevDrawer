@@ -1,9 +1,9 @@
 package de.psdev.devdrawer.config
 
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.get
-import com.google.firebase.remoteconfig.ktx.remoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.get
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import de.psdev.devdrawer.BuildConfig
 import de.psdev.devdrawer.R
 import de.psdev.devdrawer.utils.await

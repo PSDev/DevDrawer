@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class PackageFilterDao : BaseDao<PackageFilter>() {
 
     @Query("SELECT * FROM filters WHERE id = :id")
-    abstract fun findById(id: String): PackageFilter?
+    abstract suspend fun findById(id: String): PackageFilter?
 
     @Query("SELECT * FROM filters WHERE profile_id = :profileId")
     abstract suspend fun findAllByProfile(profileId: String): List<PackageFilter>
@@ -18,5 +18,8 @@ abstract class PackageFilterDao : BaseDao<PackageFilter>() {
 
     @Query("DELETE FROM filters WHERE id = :id")
     abstract suspend fun deleteById(id: String)
+
+    @Query("DELETE FROM filters WHERE profile_id = :profileId")
+    abstract suspend fun deleteAllByProfile(profileId: String)
 
 }

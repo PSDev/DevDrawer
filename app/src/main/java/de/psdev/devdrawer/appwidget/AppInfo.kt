@@ -1,11 +1,10 @@
 package de.psdev.devdrawer.appwidget
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import androidx.recyclerview.widget.DiffUtil
+import android.os.Build
 import mu.KotlinLogging
 import okio.HashingSink
 import okio.blackholeSink
@@ -17,26 +16,35 @@ data class AppInfo(
     val name: String,
     val packageName: String,
     val appIcon: Drawable,
-    val firstInstalledTime: Long,
+    val firstInstallTime: Long,
     val lastUpdateTime: Long,
-    val signatureSha256: String
-) {
-    companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<AppInfo>() {
-            override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean =
-                oldItem.packageName == newItem.packageName
-
-            override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean = oldItem == newItem
-        }
-    }
-}
+    val signatureHashSha256: String,
+    val versionName: String = "",
+    val versionCode: Long = 0
+)
 
 fun PackageHashInfo.toAppInfo(context: Context): AppInfo? = try {
     val packageManager = context.packageManager
-    val applicationInfo: ApplicationInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES).applicationInfo
+    val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+    val applicationInfo = packageInfo.applicationInfo!!
     val appName = applicationInfo.loadLabel(packageManager).toString()
     val appIcon = applicationInfo.loadIcon(packageManager)
-    AppInfo(appName, packageName, appIcon, firstInstallTime, lastUpdateTime, signatureHashSha256)
+    val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        packageInfo.longVersionCode
+    } else {
+        @Suppress("DEPRECATION")
+        packageInfo.versionCode.toLong()
+    }
+    AppInfo(
+        name = appName,
+        packageName = packageName,
+        appIcon = appIcon,
+        firstInstallTime = firstInstallTime,
+        lastUpdateTime = lastUpdateTime,
+        signatureHashSha256 = signatureHashSha256,
+        versionName = packageInfo.versionName ?: "",
+        versionCode = versionCode
+    )
 } catch (e: Exception) {
     logger.warn(e) { "Error: ${e.message}" }
     null
@@ -47,7 +55,12 @@ val PackageInfo.signatureHashSha256: String
     get() {
         val hashingSink = HashingSink.sha256(blackholeSink()).use {
             it.buffer().use { bufferedSink ->
-                bufferedSink.write(signatures.first().toByteArray())
+                val signatureBytes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    signingInfo?.apkContentsSigners?.firstOrNull()?.toByteArray()
+                } else {
+                    signatures?.firstOrNull()?.toByteArray()
+                } ?: return ""
+                bufferedSink.write(signatureBytes)
             }
             it
         }

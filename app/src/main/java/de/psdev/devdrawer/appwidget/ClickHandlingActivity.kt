@@ -10,6 +10,7 @@ import android.provider.Settings
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import de.psdev.devdrawer.R
+import de.psdev.devdrawer.settings.PreferenceKeys
 import de.psdev.devdrawer.utils.Constants
 import mu.KLogging
 import javax.inject.Inject
@@ -58,7 +59,7 @@ class ClickHandlingActivity : FragmentActivity() {
 
     private fun startApp(packageName: String) {
         if (sharedPreferences.getBoolean(
-                getString(R.string.pref_show_activity_choice),
+                PreferenceKeys.SHOW_ACTIVITY_CHOICE,
                 resources.getBoolean(R.bool.pref_show_activity_choice_default)
             )
         ) {

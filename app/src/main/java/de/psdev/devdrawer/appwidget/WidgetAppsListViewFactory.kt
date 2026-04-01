@@ -11,10 +11,15 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import androidx.annotation.StringRes
 import de.psdev.devdrawer.R
 import de.psdev.devdrawer.database.DevDrawerDatabase
+import de.psdev.devdrawer.settings.PreferenceKeys
 import de.psdev.devdrawer.utils.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 
@@ -36,6 +41,11 @@ class WidgetAppsListViewFactory(
 
     private val packageManager: PackageManager by lazy { context.packageManager }
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    @Volatile
+    private var cachedApps: List<AppInfo> = emptyList()
+
     private val apps: MutableList<AppInfo> = mutableListOf()
 
     // ==========================================================================================================================
@@ -44,17 +54,19 @@ class WidgetAppsListViewFactory(
 
     override fun onCreate() {
         logger.warn { "onCreate" }
+        scope.launch { cachedApps = loadApps() }
     }
 
     override fun onDataSetChanged() {
         logger.warn { "onDataSetChanged" }
-        runBlocking {
-            loadApps()
-        }
+        cachedApps = runBlocking(Dispatchers.IO) { loadApps() }
+        apps.clear()
+        apps.addAll(cachedApps)
     }
 
     override fun onDestroy() {
         logger.warn { "onDestroy" }
+        scope.cancel()
     }
 
     override fun getCount(): Int = apps.size
@@ -113,10 +125,9 @@ class WidgetAppsListViewFactory(
      * Method to get all apps from the app database and add to the dataset
      */
     @Suppress("DEPRECATION")
-    private suspend fun loadApps() {
-        val devDrawerDatabase = devDrawerDatabase
+    private suspend fun loadApps(): List<AppInfo> {
         val widget =
-            devDrawerDatabase.widgetDao().findById(appWidgetId) ?: throw IllegalStateException("Unknown widget")
+            devDrawerDatabase.widgetDao().findById(appWidgetId) ?: return emptyList()
 
         val packageFilters = devDrawerDatabase.packageFilterDao()
             .findAllByProfile(widget.profileId)
@@ -124,7 +135,7 @@ class WidgetAppsListViewFactory(
         val installedPackages =
             packageManager.getInstalledPackages(PackageManager.GET_SIGNING_CERTIFICATES or PackageManager.GET_SIGNATURES)
                 .map { it.toPackageHashInfo() }
-        val appList = installedPackages.asSequence()
+        return installedPackages.asSequence()
             .filter { packageInfo ->
                 packageFilters.any { filter -> filter.matches(packageInfo) }
             }
@@ -132,21 +143,15 @@ class WidgetAppsListViewFactory(
             .sortedWith(appComparator)
             .distinct()
             .toList()
-
-        apps.clear()
-        apps.addAll(appList)
     }
 
     private val appComparator: Comparator<AppInfo>
         get() {
             val defaultSortOrder = context.getString(R.string.pref_sort_order_default)
             return when (SortOrder.valueOf(
-                sharedPreferences.getNonNullString(
-                    R.string.pref_sort_order,
-                    defaultSortOrder
-                )
+                sharedPreferences.getString(PreferenceKeys.SORT_ORDER, defaultSortOrder) ?: defaultSortOrder
             )) {
-                SortOrder.FIRST_INSTALLED -> compareByDescending { it.firstInstalledTime }
+                SortOrder.FIRST_INSTALLED -> compareByDescending { it.firstInstallTime }
                 SortOrder.LAST_UPDATED -> compareByDescending { it.lastUpdateTime }
                 SortOrder.NAME -> compareBy { it.name }
                 SortOrder.PACKAGE_NAME -> compareBy { it.packageName }
@@ -171,10 +176,5 @@ class WidgetAppsListViewFactory(
         drawable.draw(canvas)
         return bmp
     }
-
-    private fun SharedPreferences.getNonNullString(
-        @StringRes stringRes: Int,
-        defaultValue: String
-    ): String = getString(context.getString(stringRes), defaultValue) ?: defaultValue
 
 }

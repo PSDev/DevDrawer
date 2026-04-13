@@ -2,12 +2,12 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.compose.compiler) apply false
-    id 'com.google.gms.google-services' version '4.4.4' apply false
-    id "com.google.firebase.crashlytics" version "3.0.6" apply false
-    id 'androidx.navigation.safeargs' version '2.9.7' apply false
-    id 'com.google.dagger.hilt.android' version '2.59.2' apply false
-    id 'com.google.devtools.ksp' version '2.3.6' apply false
-    id "org.sonarqube" version "7.2.3.7755"
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.navigation.safeargs) apply false
+    alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.sonarqube)
 }
 
 apply from: rootProject.file('gradle/versioning.gradle')

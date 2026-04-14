@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.13.0"
-androidGradlePlugin = "9.1.0"
+androidGradlePlugin = "9.1.1"
 appcompat = "1.7.1"
 browser = "1.10.0"
 colorpicker = "2.3"

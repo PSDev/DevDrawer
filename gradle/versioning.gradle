@@ -23,11 +23,7 @@ ext {
             logger.warn("Error getting git commit count since last tag: $e")
             gitVersion = 999
         }
-        final boolean hasModifiedDeletedOrOtherFiles = !"git ls-files -mdo --exclude-standard".execute([], project.rootDir).text.trim().empty
-        final boolean hasStagedFiles = !"git diff-index --no-ext-diff --name-only --cached HEAD".execute([], project.rootDir).text.trim().empty
-        final boolean dirtyWorkingCopy = hasModifiedDeletedOrOtherFiles || hasStagedFiles
-        final gitDescription = dirtyWorkingCopy ? "${gitHash}-dirty" : gitHash
-        "${versionMajor}.${versionMinor}.${versionPatch}-${gitVersion}-${gitDescription}"
+        "${versionMajor}.${versionMinor}.${versionPatch}-${gitVersion}-${gitHash}"
     }
     gitScmVersion = {
         final def command = "git rev-parse --verify --short=7 HEAD"

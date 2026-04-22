@@ -33,7 +33,7 @@ androidxComposeBom = "2026.03.01"
 androidx-room = "2.8.4"
 androidx-work = "2.11.2"
 slf4jAndroidLogger = "1.0.5"
-nav3 = "1.1.0"
+nav3 = "1.1.1"
 
 [libraries]
 # Core module (required for accessing library data)

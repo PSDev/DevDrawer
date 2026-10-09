@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
@@ -49,7 +47,7 @@ fun PackageFilterPreviewDialog(
 }
 
 @Composable
-private fun PackageFilterPreviewDialog(
+internal fun PackageFilterPreviewDialog(
     viewState: PackageFilterPreviewDialogViewModel.ViewState,
     closeDialog: () -> Unit = {}
 ) {
@@ -67,7 +65,7 @@ private fun PackageFilterPreviewDialog(
         },
         bottomContent = {
             TextButton(modifier = Modifier.align(Alignment.End), onClick = closeDialog) {
-                Text(text = stringResource(id = R.string.close).toUpperCase(Locale.current))
+                Text(text = stringResource(id = R.string.close))
             }
         }
     ) {

@@ -32,8 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.createBitmap
@@ -66,7 +64,7 @@ fun AddAppSignaturePackageFilterDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddAppSignaturePackageFilterDialog(
+internal fun AddAppSignaturePackageFilterDialog(
     viewState: ViewState,
     closeDialog: () -> Unit = {},
     appSelected: (AppInfo) -> Unit = {},
@@ -111,7 +109,7 @@ private fun AddAppSignaturePackageFilterDialog(
                 modifier = Modifier
                     .align(Alignment.End), onClick = closeDialog
             ) {
-                Text(text = stringResource(id = R.string.cancel).toUpperCase(Locale.current))
+                Text(text = stringResource(id = R.string.cancel))
             }
         }
     ) {

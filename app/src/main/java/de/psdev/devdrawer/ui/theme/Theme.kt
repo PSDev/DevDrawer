@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
+internal val DarkColorScheme = darkColorScheme(
     primary = Amber200,
     onPrimary = Color(0xFF422D00),
     primaryContainer = Color(0xFF5E4200),
@@ -26,10 +26,14 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = Color(0xFFE9E1D9),
     surfaceVariant = Color(0xFF4D4639),
     onSurfaceVariant = Color(0xFFD0C5B4),
-    outline = Color(0xFF999080)
+    outline = Color(0xFF999080),
+    // Surface containers from the warm neutral palette instead of the M3 baseline lilac
+    surfaceContainer = Color(0xFF231F1A), // tone 12: NavigationBar
+    surfaceContainerHigh = Color(0xFF2D2924), // tone 17: AlertDialog
+    surfaceContainerHighest = Color(0xFF38342E) // tone 22: Card
 )
 
-private val LightColorScheme = lightColorScheme(
+internal val LightColorScheme = lightColorScheme(
     primary = Color(0xFF7B5800),
     onPrimary = Color.White,
     primaryContainer = Amber200,
@@ -44,7 +48,11 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1E1B16),
     surfaceVariant = Color(0xFFEDE1CF),
     onSurfaceVariant = Color(0xFF4D4639),
-    outline = Color(0xFF7F7667)
+    outline = Color(0xFF7F7667),
+    // Surface containers from the warm neutral palette instead of the M3 baseline lilac
+    surfaceContainer = Color(0xFFF5ECE4), // tone 94: NavigationBar
+    surfaceContainerHigh = Color(0xFFEFE7DE), // tone 92: AlertDialog
+    surfaceContainerHighest = Color(0xFFE9E1D9) // tone 90: Card
 )
 
 @Composable

@@ -62,7 +62,7 @@
     <string name="uninstall">Uninstall</string>
     <string name="app_details">App details</string>
     <string name="add_app_signature">App signature</string>
-    <string name="add_package_name">package name</string>
+    <string name="add_package_name">Package name</string>
     <string name="app_icon">App icon</string>
     <string name="enter_package_name_filter">Enter package name filter</string>
     <string name="select_signature_from_app">Select signature from app</string>

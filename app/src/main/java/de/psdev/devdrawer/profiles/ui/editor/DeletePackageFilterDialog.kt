@@ -5,8 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toUpperCase
 import de.psdev.devdrawer.R
 
 @Composable
@@ -21,12 +19,12 @@ fun DeletePackageFilterDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(id = R.string.cancel).toUpperCase(Locale.current))
+                Text(text = stringResource(id = R.string.cancel))
             }
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(text = stringResource(id = R.string.yes).toUpperCase(Locale.current))
+                Text(text = stringResource(id = R.string.yes))
             }
         }
     )

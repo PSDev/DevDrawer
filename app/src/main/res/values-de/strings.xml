@@ -24,4 +24,57 @@
     <string name="add_app_signature">App Signatur</string>
     <string name="add_package_name">Paketname</string>
     <string name="app_icon">App Icon</string>
+    <string name="aboutLibraries_description_name">DevDrawer</string>
+    <string name="aboutLibraries_description_text">Eine Android-App für Entwickler, die ihre eigenen Apps automatisch in einem Widget sammelt, damit sie sich schnell starten lassen.</string>
+    <string name="aboutLibraries_description_special1_name">Play Store</string>
+    <string name="aboutLibraries_description_special2_name">Github</string>
+    <string name="packagefilter">Paketfilter</string>
+    <string name="enter_package_name_filter">Paketnamen-Filter eingeben</string>
+    <string name="select_signature_from_app">Signatur aus App auswählen</string>
+    <string name="apps_matching_filter">Apps, die zum Filter passen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="no_widgets_created">Keine Widgets erstellt</string>
+    <string name="add_widget">Widget hinzufügen</string>
+    <string name="pick_widget_color">Widget-Farbe wählen</string>
+    <string name="ok">OK</string>
+    <string name="error_profile_in_use">Profil kann nicht gelöscht werden, da es noch von Widgets verwendet wird</string>
+    <string name="no">Nein</string>
+    <string name="yes">Ja</string>
+    <string name="title_activity_compose">ComposeActivity</string>
+    <string name="widget_id_template">ID: %1$d</string>
+    <string name="widget_profile_list_create_new">Neues Profil erstellen</string>
+    <string name="loading">Wird geladen…</string>
+    <string name="last_modified">Zuletzt geändert</string>
+    <string name="settings_category_general">Allgemein</string>
+    <string name="settings_category_ui">Benutzeroberfläche</string>
+    <string name="settings_category_analytics">Analyse</string>
+    <string name="settings_category_about">Über</string>
+    <string name="pref_show_activity_choice_title">Activity-Auswahl beim Start anzeigen</string>
+    <string name="pref_sort_order_title">Widget-Sortierung</string>
+    <string name="pref_theme_title">Design</string>
+    <string name="pref_dynamic_color_title">Material-You-Farben</string>
+    <string name="pref_dynamic_color_summary">Farben aus deinem Hintergrundbild verwenden</string>
+    <string name="pref_feature_analytics_opted_in_title">Analyse zulassen</string>
+    <string name="clear">Leeren</string>
+    <string name="delete_profile">Profil löschen?</string>
+    <string name="delete_filter">Filter löschen?</string>
+    <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
+    <string name="more">Mehr</string>
+    <string name="toggle_system_apps">System-Apps ein-/ausblenden</string>
+    <string name="include_system_apps">System-Apps einbeziehen</string>
+    <string name="discard_changes">Änderungen verwerfen?</string>
+    <string name="discard_changes_confirmation">Du hast ungespeicherte Änderungen. Möchtest du sie verwerfen?</string>
+    <string name="discard">Verwerfen</string>
+
+    <array name="sort_order_labels">
+        <item>Zuletzt aktualisiert</item>
+        <item>Zuerst installiert</item>
+        <item>Name</item>
+        <item>Paketname</item>
+    </array>
+    <array name="theme_labels">
+        <item>Systemstandard</item>
+        <item>Hell</item>
+        <item>Dunkel</item>
+    </array>
 </resources>

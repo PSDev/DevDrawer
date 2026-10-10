@@ -61,3 +61,4 @@ Jenkinsfile
 /encrypt.txt
 
 google-play-api.json
+/api-*.json

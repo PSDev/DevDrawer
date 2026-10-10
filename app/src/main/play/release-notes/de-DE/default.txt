@@ -1,0 +1,7 @@
+Komplett neu gestaltet:
+• Ein neues Widget, das sich seiner Größe anpasst, mit neun Kopfzeilenfarben und dunklem Modus
+• Geführte Einrichtung beim Hinzufügen eines Widgets
+• Filter in verständlicher Sprache, mit Live-Vorschau der passenden Apps
+• Änderungen werden automatisch gespeichert, gelöschte Profile lassen sich wiederherstellen
+• Übersichtliche Auswahl, welcher Bildschirm einer App geöffnet wird
+• Deutsche Übersetzung

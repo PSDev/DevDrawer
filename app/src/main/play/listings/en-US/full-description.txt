@@ -1,0 +1,27 @@
+DevDrawer2 puts the apps you are developing on your home screen. One widget lists every build you have installed, so you can launch it, open its app info or uninstall it with a single tap.
+
+HOW IT WORKS
+• Add the widget and pick one of your apps. Every app signed with the same key appears, including ones you install later.
+• Or match package names with a pattern like com.mycompany.*
+• Combine filters in profiles and reuse them across widgets.
+
+MADE FOR EVERYDAY DEVELOPMENT
+• Debug, beta and release builds side by side
+• Uninstall and app info right in the widget
+• Sort by last updated, first installed, name or package name
+• Optionally choose which screen of an app to open
+
+YOUR WIDGET, YOUR WAY
+• Nine header colours, including your wallpaper colours
+• Light and dark mode
+• Adapts to its size: a strip of icons when small, full rows when large
+• As many widgets as you like, each with its own apps
+
+PRIVATE AND OPEN SOURCE
+• No ads, no account
+• Usage analytics only if you allow them (Firebase Analytics, no personal data). Crash reports are sent via Firebase Crashlytics.
+• Source code: https://github.com/PSDev/DevDrawer
+
+Available in English and German.
+
+Based on the original DevDrawer by Tony Owen, rewritten in Kotlin.

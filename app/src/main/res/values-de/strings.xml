@@ -181,4 +181,5 @@
     <string name="about_version">Version %1$s</string>
     <string name="back">Zurück</string>
     <string name="profiles_load_failed">Profile konnten nicht geladen werden</string>
+    <string name="add_widget_from_home_screen">Halte den Startbildschirm gedrückt, tippe auf „Widgets“ und ziehe DevDrawer darauf.</string>
 </resources>

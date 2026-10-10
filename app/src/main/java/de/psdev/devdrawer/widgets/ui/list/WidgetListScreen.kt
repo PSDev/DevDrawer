@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -86,12 +87,22 @@ fun WidgetListScreen(
                         text = stringResource(id = R.string.no_widgets_created),
                         color = MaterialTheme.colorScheme.onBackground
                     )
+                    if (!state.isRequestPinAppWidgetSupported) {
+                        // This launcher can't place widgets for the app, so say where to find them.
+                        Text(
+                            modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp),
+                            text = stringResource(R.string.add_widget_from_home_screen),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                     if (state.isRequestPinAppWidgetSupported) {
                         Spacer(modifier = Modifier.size(16.dp))
                         Button(onClick = onRequestPinWidgetClick) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_outline_add_box_24),
-                                contentDescription = stringResource(id = R.string.add_widget)
+                                contentDescription = null
                             )
                             Text(
                                 modifier = Modifier.padding(start = 8.dp),

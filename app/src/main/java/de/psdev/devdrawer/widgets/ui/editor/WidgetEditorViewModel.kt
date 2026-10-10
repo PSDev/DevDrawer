@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -62,27 +64,37 @@ class WidgetEditorViewModel @AssistedInject constructor(
         }
     }
 
+    private val currentWidget = combine(widgetRepository.widgetFlow(widgetId), editableWidgetState) { persisted, editable ->
+        editable ?: persisted
+    }
+
+    /** The first apps and the app count; only recomputed when the profile, sort order, filters or apps change. */
+    private val preview = combine(
+        currentWidget.map { it?.profileId to it?.sortOrder }.distinctUntilChanged(),
+        packageFilterRepository.allFiltersFlow(),
+        installedPackages
+    ) { (profileId, widgetSortOrder), filters, packages ->
+        val matched = packages.matching(filters.filter { it.profileId == profileId })
+        val sortOrder = widgetSortOrder ?: sortOrderSettings.defaultSortOrder()
+        appsService.appInfos(matched).sortedWith(sortOrder.comparator()).take(PREVIEW_APP_COUNT) to matched.size
+    }
+
     val state: StateFlow<WidgetEditorViewState> = combine(
         widgetRepository.widgetFlow(widgetId),
+        currentWidget,
         widgetProfileRepository.widgetProfilesFlow(),
-        packageFilterRepository.allFiltersFlow(),
-        editableWidgetState,
-        installedPackages
-    ) { persistedWidget, widgetProfiles, filters, editableWidget, packages ->
-        val filtersByProfile = filters.groupBy { it.profileId }
-        val currentWidget = editableWidget ?: persistedWidget
-        val defaultSortOrder = sortOrderSettings.defaultSortOrder()
-        val matched = currentWidget?.let { packages.matching(filtersByProfile[it.profileId].orEmpty()) }.orEmpty()
-        val sortOrder = currentWidget?.sortOrder ?: defaultSortOrder
+        combine(packageFilterRepository.allFiltersFlow(), installedPackages) { filters, packages ->
+            filters.groupBy { it.profileId }.mapValues { (_, profileFilters) -> packages.matching(profileFilters).size }
+        },
+        preview
+    ) { persistedWidget, widget, widgetProfiles, appCounts, (previewApps, previewAppCount) ->
         WidgetEditorViewState(
             persistedWidget = persistedWidget,
-            editableWidget = currentWidget,
-            profiles = widgetProfiles.map { profile ->
-                ProfileWithAppCount(profile, packages.matching(filtersByProfile[profile.id].orEmpty()).size)
-            },
-            previewApps = appsService.appInfos(matched).sortedWith(sortOrder.comparator()).take(PREVIEW_APP_COUNT),
-            previewAppCount = matched.size,
-            defaultSortOrder = defaultSortOrder
+            editableWidget = widget,
+            profiles = widgetProfiles.map { ProfileWithAppCount(it, appCounts[it.id] ?: 0) },
+            previewApps = previewApps,
+            previewAppCount = previewAppCount,
+            defaultSortOrder = sortOrderSettings.defaultSortOrder()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetEditorViewState.Empty)
 

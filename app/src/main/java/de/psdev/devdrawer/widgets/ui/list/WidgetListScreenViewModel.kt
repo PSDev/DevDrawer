@@ -18,7 +18,11 @@ import de.psdev.devdrawer.profiles.IPackageFilterRepository
 import de.psdev.devdrawer.profiles.IWidgetProfileRepository
 import de.psdev.devdrawer.receivers.PinWidgetSuccessReceiver
 import de.psdev.devdrawer.widgets.IWidgetRepository
+import de.psdev.devdrawer.appwidget.PackageHashInfo
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -32,12 +36,20 @@ class WidgetListScreenViewModel @Inject constructor(
     private val appsService: IAppsService
 ) : ViewModel() {
 
+    private val installedPackages = MutableStateFlow<List<PackageHashInfo>?>(null)
+
+    init {
+        viewModelScope.launch {
+            installedPackages.value = appsService.installedPackages(includeSystemApps = true)
+        }
+    }
+
     val state = combine(
         widgetRepository.widgetsFlow(),
         widgetProfileRepository.widgetProfilesFlow(),
-        packageFilterRepository.allFiltersFlow()
-    ) { widgets, profiles, filters ->
-        val packages = appsService.installedPackages(includeSystemApps = true)
+        packageFilterRepository.allFiltersFlow(),
+        installedPackages.filterNotNull()
+    ) { widgets, profiles, filters, packages ->
         val profilesById = profiles.associateBy { it.id }
         val filtersByProfile = filters.groupBy { it.profileId }
         val appWidgetManager: AppWidgetManager? = application.getSystemService()

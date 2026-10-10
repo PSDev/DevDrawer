@@ -33,11 +33,12 @@ data class PackageFilter(
     @ColumnInfo(name = "profile_id", index = true)
     val profileId: String
 ) {
+    /** Null for a pattern that isn't a valid regex (e.g. "com.(" while typing): it then matches nothing. */
     @delegate:Ignore
-    private val filterRegex: Regex by lazy { filter.replace("*", ".*").toRegex() }
+    private val filterRegex: Regex? by lazy { runCatching { filter.replace("*", ".*").toRegex() }.getOrNull() }
 
     fun matches(packageHashInfo: PackageHashInfo): Boolean = when (type) {
-        FilterType.PACKAGE_NAME -> filterRegex.matches(packageHashInfo.packageName)
+        FilterType.PACKAGE_NAME -> filterRegex?.matches(packageHashInfo.packageName) == true
         FilterType.SIGNATURE -> filter == packageHashInfo.signatureHashSha256
     }
 

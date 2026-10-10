@@ -70,6 +70,15 @@ fun DevDrawerWidgetContent(state: WidgetUiState) {
                 items(state.apps, itemId = { it.packageName.hashCode().toLong() }) { app ->
                     AppRow(context, app)
                 }
+                if (state.hiddenAppCount > 0) {
+                    item {
+                        Text(
+                            modifier = GlanceModifier.fillMaxWidth().padding(16.dp),
+                            text = context.resources.getQuantityString(R.plurals.widget_more_apps, state.hiddenAppCount, state.hiddenAppCount),
+                            style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 14.sp)
+                        )
+                    }
+                }
             }
         }
     }
@@ -82,10 +91,11 @@ private fun Header(state: WidgetUiState) {
     val dark = state.headerColor.dark
     val container = if (light != null && dark != null) ColorProvider(light.container, dark.container) else GlanceTheme.colors.primaryContainer
     val content = if (light != null && dark != null) ColorProvider(light.content, dark.content) else GlanceTheme.colors.onPrimaryContainer
-    val count = if (state.apps.isEmpty()) {
+    val total = state.apps.size + state.hiddenAppCount
+    val count = if (total == 0) {
         context.getString(R.string.widget_no_apps)
     } else {
-        context.resources.getQuantityString(R.plurals.widget_app_count, state.apps.size, state.apps.size)
+        context.resources.getQuantityString(R.plurals.widget_app_count, total, total)
     }
     Row(
         modifier = GlanceModifier.fillMaxWidth().background(container).padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),

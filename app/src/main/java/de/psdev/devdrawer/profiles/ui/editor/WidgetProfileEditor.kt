@@ -2,7 +2,6 @@ package de.psdev.devdrawer.profiles.ui.editor
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +39,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -48,12 +46,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import de.psdev.devdrawer.AppBarActionsProvider
 import de.psdev.devdrawer.ProvideMenu
 import de.psdev.devdrawer.R
-import de.psdev.devdrawer.appwidget.AppInfo
 import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.database.WidgetProfile
@@ -250,7 +246,7 @@ internal fun WidgetProfileEditor(
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
                 SectionTitle(stringResource(R.string.matching_apps, viewState.matchingApps.size))
                 val apps = if (showAllApps) viewState.matchingApps else viewState.matchingApps.take(COLLAPSED_APP_COUNT)
-                apps.forEach { app -> MatchingAppRow(app) }
+                apps.forEach { app -> AppInfoItem(appInfo = app) }
                 if (!showAllApps && viewState.matchingApps.size > COLLAPSED_APP_COUNT) {
                     TextButton(onClick = { showAllApps = true }) {
                         Text(stringResource(R.string.show_all, viewState.matchingApps.size))
@@ -323,25 +319,6 @@ private fun FilterRow(packageFilter: PackageFilter, appCount: Int, onClick: () -
         }
         IconButton(onClick = onRemove) {
             Icon(imageVector = Icons.Filled.Close, contentDescription = stringResource(R.string.remove_filter, label))
-        }
-    }
-}
-
-@Composable
-private fun MatchingAppRow(app: AppInfo) {
-    Row(
-        modifier = Modifier.padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val icon = remember(app.packageName) { app.appIcon.toBitmap().asImageBitmap() }
-        Image(bitmap = icon, contentDescription = null, modifier = Modifier.size(32.dp))
-        Column(modifier = Modifier.padding(start = 12.dp)) {
-            Text(text = app.name, style = MaterialTheme.typography.bodyMedium)
-            Text(
-                text = app.packageName,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

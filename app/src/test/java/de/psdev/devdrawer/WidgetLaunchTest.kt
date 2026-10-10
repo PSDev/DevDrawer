@@ -42,4 +42,22 @@ class WidgetLaunchTest {
         // Then
         assertNull(launch)
     }
+
+    @Test
+    fun `given setup opened from outside the app, when leaving it, then the activity closes`() {
+        // Given / When
+        val exit = setupExitFor(widgetId = 7, externalSetupWidgetId = 7)
+
+        // Then
+        assertEquals(SetupExit.FINISH_ACTIVITY, exit)
+    }
+
+    @Test
+    fun `given setup opened inside the app, when leaving it, then it goes back`() {
+        // Given / When
+        val exit = setupExitFor(widgetId = 7, externalSetupWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID)
+
+        // Then
+        assertEquals(SetupExit.GO_BACK, exit)
+    }
 }

@@ -105,6 +105,7 @@ class WidgetSetupViewModel @AssistedInject constructor(
     fun finish(onDone: (Widget) -> Unit) {
         val state = mutableState.value
         if (!state.canFinish) return
+        mutableState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             val profile = when (state.source) {
                 SetupSource.MY_APPS -> {
@@ -150,8 +151,6 @@ class WidgetSetupViewModel @AssistedInject constructor(
             }
             SetupSource.PROFILE -> selectedProfileId?.let { filtersByProfile[it] }
         }
-        // A pattern being typed can be an invalid regex for a moment ("com.("): count no matches until it is valid.
-        val count = runCatching { installedPackages.matching(filters.orEmpty()).size }.getOrDefault(0)
-        return copy(matchCount = count)
+        return copy(matchCount = installedPackages.matching(filters.orEmpty()).size)
     }
 }

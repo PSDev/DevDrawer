@@ -8,6 +8,6 @@ import androidx.glance.appwidget.action.ActionCallback
 /** The header's reload button: redraws this widget with the currently installed apps. */
 class RefreshAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        DevDrawerGlanceWidget().update(context, glanceId)
+        DevDrawerGlanceWidget.refresh(context, glanceId)
     }
 }

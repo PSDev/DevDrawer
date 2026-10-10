@@ -179,6 +179,10 @@ dependencies {
     debugImplementation libs.androidx.ui.test.manifest
     // Optional - Add full set of material icons
     implementation libs.androidx.material.icons.extended
+    // Home-screen widget
+    implementation libs.androidx.glance.appwidget
+    implementation libs.androidx.glance.material3
+    testImplementation libs.androidx.glance.appwidget.testing
     // Optional - Integration with activities
     implementation libs.androidx.activity.compose
     // Optional - Integration with ViewModels

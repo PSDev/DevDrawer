@@ -16,9 +16,6 @@
     <color name="colorOnError">#FFFFFF</color>
 
     <!-- Widget colors -->
-    <color name="widgetTextColor">#000</color>
-    <color name="widgetTextColorVariant">#222</color>
-    <color name="widgetSelectedColor">#4DFFC107</color>
     <color name="widgetIconColor">#000</color>
 
 </resources>

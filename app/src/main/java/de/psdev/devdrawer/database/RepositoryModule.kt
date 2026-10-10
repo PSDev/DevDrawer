@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import de.psdev.devdrawer.apps.AppsService
+import de.psdev.devdrawer.apps.IAppsService
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
 import de.psdev.devdrawer.profiles.IWidgetProfileRepository
 import de.psdev.devdrawer.profiles.PackageFilterRepository
@@ -20,6 +22,9 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindWidgetProfileRepository(impl: WidgetProfileRepository): IWidgetProfileRepository
+
+    @Binds
+    abstract fun bindAppsService(impl: AppsService): IAppsService
 
     @Binds
     abstract fun bindPackageFilterRepository(impl: PackageFilterRepository): IPackageFilterRepository

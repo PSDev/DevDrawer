@@ -20,6 +20,8 @@ class FakeWidgetRepository(initialWidgets: List<Widget> = emptyList()) : IWidget
         widgets.value = widgets.value.filter { it.id != widget.id }
     }
 
+    override suspend fun findById(widgetId: Int): Widget? = widgets.value.find { it.id == widgetId }
+
     override suspend fun findWidgetsForProfile(profileId: String): List<Widget> =
         widgets.value.filter { it.profileId == profileId }
 }

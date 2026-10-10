@@ -1,63 +1,30 @@
 package de.psdev.devdrawer.appwidget
 
-import android.app.PendingIntent
-import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.widget.RemoteViews
-import androidx.core.net.toUri
+import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import dagger.hilt.android.AndroidEntryPoint
-import de.psdev.devdrawer.MainActivity
-import de.psdev.devdrawer.R
+import de.psdev.devdrawer.appwidget.glance.DevDrawerGlanceWidget
 import de.psdev.devdrawer.database.DevDrawerDatabase
-import de.psdev.devdrawer.database.Widget
-import de.psdev.devdrawer.receivers.UpdateReceiver
-import de.psdev.devdrawer.utils.textColorForBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import mu.KLogging
-import java.text.DateFormat
-import java.util.Date
 import javax.inject.Inject
 
 /**
  * NOTE: Never rename this as it will break existing widgets.
  */
 @AndroidEntryPoint
-class DDWidgetProvider: AppWidgetProvider() {
+class DDWidgetProvider : GlanceAppWidgetReceiver() {
 
     @Inject
     lateinit var devDrawerDatabase: DevDrawerDatabase
 
-    companion object: KLogging()
+    companion object : KLogging()
 
-    // ==========================================================================================================================
-    // AppWidgetProvider
-    // ==========================================================================================================================
-
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-        val pendingResult = goAsync()
-        CoroutineScope(SupervisorJob()).launch(Dispatchers.IO) {
-            try {
-                for (appWidgetId in appWidgetIds) {
-                    val widget = devDrawerDatabase.widgetDao().findById(appWidgetId)
-                    if (widget != null) {
-                        logger.info { "Update Widget $appWidgetId" }
-                        updateWidget(context, widget, appWidgetManager)
-                    } else {
-                        logger.warn { "Widget $appWidgetId does not exist" }
-                    }
-                }
-            } finally {
-                pendingResult.finish()
-            }
-        }
-    }
+    override val glanceAppWidget: GlanceAppWidget = DevDrawerGlanceWidget()
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
@@ -71,75 +38,4 @@ class DDWidgetProvider: AppWidgetProvider() {
             }
         }
     }
-
-    @Suppress("DEPRECATION") // notifyAppWidgetViewDataChanged is deprecated along with the RemoteViewsService pattern
-    private fun updateWidget(context: Context, widget: Widget, appWidgetManager: AppWidgetManager) {
-        logger.trace { "updateWidget(widget=$widget)" }
-        try {
-            val view = createRemoteViews(context, widget)
-            appWidgetManager.updateAppWidget(widget.id, view)
-            appWidgetManager.notifyAppWidgetViewDataChanged(intArrayOf(widget.id), R.id.listView)
-        } catch (e: Exception) {
-            logger.warn(e) { "Error updating widget: ${widget.id}: ${e.message}" }
-        }
-    }
-
-    @Suppress("DEPRECATION") // setRemoteAdapter(Int, Intent) requires RemoteCollectionItems to replace — large refactor
-    private fun createRemoteViews(context: Context, widget: Widget): RemoteViews {
-        // Setup the widget, and data source / adapter
-        val widgetView = RemoteViews(context.packageName, R.layout.widget_layout)
-        val widgetColor = widget.color
-        val contrastColor = widgetColor.textColorForBackground()
-
-        // Set background color for widget
-        widgetView.setInt(R.id.container_actions, "setBackgroundColor", widgetColor)
-
-        widgetView.setTextViewText(R.id.txt_title, widget.name)
-        widgetView.setTextColor(R.id.txt_title, contrastColor)
-        widgetView.setTextViewText(R.id.txt_last_updated, DateFormat.getTimeInstance().format(Date()))
-        widgetView.setTextColor(R.id.txt_last_updated, contrastColor)
-
-        val reloadPendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            Intent(context, UpdateReceiver::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        widgetView.setOnClickPendingIntent(R.id.btn_reload, reloadPendingIntent)
-
-        val configActivityIntent = Intent(context, MainActivity::class.java).apply {
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.id)
-            putExtra("from_widget", true)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_NEW_TASK)
-        }
-        val configActivityPendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            configActivityIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        widgetView.setOnClickPendingIntent(R.id.btn_settings, configActivityPendingIntent)
-
-        // Apps list
-        val appListServiceIntent = Intent(context, WidgetService::class.java).apply {
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.id)
-            putExtra("viewId", R.id.listView)
-            data = toUri(Intent.URI_INTENT_SCHEME).toUri()
-        }
-        widgetView.setRemoteAdapter(R.id.listView, appListServiceIntent)
-
-        val clickIntent = Intent(context, ClickHandlingActivity::class.java).apply {
-            addFlags(FLAG_ACTIVITY_NEW_TASK)
-        }
-        val clickPI = PendingIntent.getActivity(
-            context,
-            0,
-            clickIntent,
-            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        widgetView.setPendingIntentTemplate(R.id.listView, clickPI)
-        return widgetView
-    }
-
 }

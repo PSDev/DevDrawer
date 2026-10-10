@@ -88,4 +88,19 @@
     <string name="error_message">Fehler: %1$s</string>
     <string name="profile_used_by_widgets">Das Profil %1$s wird verwendet von: \n%2$s</string>
     <string name="no_activities">Diese App hat keine Activities</string>
+
+    <!-- Home-screen widget -->
+    <string name="widget_description">Deine eigenen Apps, nur einen Tipp entfernt</string>
+    <string name="widget_no_apps">Keine Apps</string>
+    <string name="widget_subtitle">%1$s · aktualisiert %2$s</string>
+    <string name="widget_empty_title">Keine App passt zu diesem Widget</string>
+    <string name="widget_empty_text">Wähle, welche deiner Apps es anzeigen soll.</string>
+    <string name="widget_choose_apps">Apps auswählen</string>
+    <string name="widget_settings">Widget-Einstellungen</string>
+    <string name="uninstall_app">%1$s deinstallieren</string>
+    <string name="app_details_for">App-Details für %1$s</string>
+    <plurals name="widget_app_count">
+        <item quantity="one">%d App</item>
+        <item quantity="other">%d Apps</item>
+    </plurals>
 </resources>

@@ -21,7 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class AppsService @Inject constructor(
     private val application: Application
-) {
+) : IAppsService {
 
     private val packageManager by lazy { application.packageManager }
 
@@ -53,6 +53,19 @@ class AppsService @Inject constructor(
                     .toList()
             }
         }
+
+    override suspend fun installedPackages(includeSystemApps: Boolean): List<PackageHashInfo> =
+        if (includeSystemApps) {
+            withContext(Dispatchers.IO) {
+                packageManager.getInstalledPackages(getFlags()).map { it.toPackageHashInfo() }
+            }
+        } else {
+            getInstalledPackages(systemApps = false)
+        }
+
+    override suspend fun appInfos(packages: List<PackageHashInfo>): List<AppInfo> = withContext(Dispatchers.IO) {
+        packages.mapNotNull { it.toAppInfo(application) }
+    }
 
     @Suppress("DEPRECATION")
     private fun getFlags() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

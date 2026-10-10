@@ -128,4 +128,19 @@
     <string name="error_message">Error: %1$s</string>
     <string name="profile_used_by_widgets">The profile %1$s is used by: \n%2$s</string>
     <string name="no_activities">This app has no activities</string>
+
+    <!-- Home-screen widget -->
+    <string name="widget_description">Your own apps, one tap away</string>
+    <string name="widget_no_apps">No apps</string>
+    <string name="widget_subtitle">%1$s · updated %2$s</string>
+    <string name="widget_empty_title">No apps match this widget</string>
+    <string name="widget_empty_text">Choose which of your apps it should list.</string>
+    <string name="widget_choose_apps">Choose apps</string>
+    <string name="widget_settings">Widget settings</string>
+    <string name="uninstall_app">Uninstall %1$s</string>
+    <string name="app_details_for">App details for %1$s</string>
+    <plurals name="widget_app_count">
+        <item quantity="one">%d app</item>
+        <item quantity="other">%d apps</item>
+    </plurals>
 </resources>

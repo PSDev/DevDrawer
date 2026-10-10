@@ -18,7 +18,10 @@ import mu.KLogging
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-    companion object : KLogging()
+    companion object : KLogging() {
+        /** Set by the widget's empty state: open the widget's setup instead of its editor. */
+        const val EXTRA_OPEN_SETUP = "open_setup"
+    }
 
     // Holds intents delivered via onNewIntent so they can be handled inside the Compose tree.
     private val newIntent = mutableStateOf<Intent?>(null)

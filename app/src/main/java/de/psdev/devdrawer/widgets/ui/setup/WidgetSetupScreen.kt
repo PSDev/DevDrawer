@@ -112,7 +112,7 @@ fun WidgetSetup(
                 if (!showAllApps && state.apps.size > COLLAPSED_APP_COUNT) {
                     item {
                         TextButton(onClick = { showAllApps = true }) {
-                            Text(stringResource(R.string.setup_show_all_apps, state.apps.size))
+                            Text(stringResource(R.string.show_all, state.apps.size))
                         }
                     }
                 }

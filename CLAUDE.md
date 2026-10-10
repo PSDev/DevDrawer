@@ -36,7 +36,9 @@ app filtering by package name/signature/regex, and dark mode.
 ```
 
 Unit tests live in `app/src/test/` (JUnit 4, Robolectric, MockK, kotlinx-coroutines-test; repository fakes in
-`fakes/`). There is no `src/androidTest/` source set and no instrumentation-test dependencies.
+`fakes/`). Compose UI (`createComposeRule`), Glance (`runGlanceAppWidgetUnitTest`) and Room migration
+(`MigrationTestHelper`) tests also run there under Robolectric; the schema exports are added to debug assets for them.
+There is no `src/androidTest/` source set and no instrumentation-test dependencies.
 
 ## Architecture
 
@@ -50,19 +52,25 @@ implementing `NavKey`, defined in `Routes.kt`. `DevDrawerHost.kt` maps each rout
 `remember { Navigator(navigationState) }` in `MainActivity`, passed down as a parameter) wraps the back stack mutations.
 The root composable `DevDrawerApp` (`DevDrawerApp.kt`) owns the `Scaffold`, top bar, and bottom nav bar with three
 top-level routes: `WidgetListRoute`, `WidgetProfilesRoute`, and `SettingsRoute`. `AboutRoute` and the detail routes
-`WidgetEditorRoute(id)` / `WidgetProfileEditorRoute(id)` are also defined in `Routes.kt`.
+`WidgetEditorRoute(id)` / `WidgetSetupRoute(widgetId)` / `WidgetProfileEditorRoute(id)` are also defined in `Routes.kt`.
+`widgetLaunchFor()` (`WidgetLaunch.kt`) decides which route a widget intent opens; `MainActivity` sets the
+configure result (`RESULT_OK` when setup finishes) when the launcher placed or reconfigures a widget.
 
 ### Data Layer
 
-Room database (`DevDrawerDatabase`, version 3) with three entities and DAOs:
+Room database (`DevDrawerDatabase`, version 4) with three entities and DAOs:
 
 | Entity          | DAO                | Purpose                                                   |
 |-----------------|--------------------|-----------------------------------------------------------|
-| `Widget`        | `WidgetDao`        | Home screen widget instances                              |
+| `Widget`        | `WidgetDao`        | Home screen widgets: name, profile, header colour, sort   |
 | `WidgetProfile` | `WidgetProfileDao` | Named filter profiles                                     |
 | `PackageFilter` | `PackageFilterDao` | Per-profile filter rules (package name, regex, signature) |
 
-DB schema migrations live in `Migrations.kt`. Room schema JSON exports go to `/schemas/`.
+DB schema migrations live in `Migrations.kt`. Room schema JSON exports go to `/schemas/`. `Widget.color` is the legacy
+ARGB header colour, kept so the table needs no rebuild; `headerColor` (`WidgetHeaderColor`) replaces it.
+
+Which apps a profile shows is decided in one place: `matching()` and `SortOrder.comparator()` in `apps/AppMatching.kt`,
+used by the widget, the Widgets list, both editors and the setup screen. `IAppsService` reads installed packages.
 
 ### Dependency Injection
 
@@ -71,15 +79,20 @@ Hilt throughout. Key modules:
 - `ApplicationModule` — provides `SharedPreferences`
 - `DatabaseModule` — provides the Room DB and DAOs
 - `RepositoryModule` — binds the repository interfaces (`IWidgetRepository`, `IWidgetProfileRepository`,
-  `IPackageFilterRepository`) to their implementations
+  `IPackageFilterRepository`), `IAppsService` and `ISortOrderSettings` to their implementations
+- `WidgetModule` — provides `WidgetContentLoader`; `WidgetEntryPoint` gives the Glance widget access to it
 
 ### Widget System
 
-- `DDWidgetProvider` — `AppWidgetProvider` that renders `RemoteViews`; **never rename this class** as it breaks existing
-  placed widgets
-- `WidgetService` + `WidgetAppsListViewFactory` — `RemoteViewsService` that populates the scrollable app list inside the
-  widget
-- `ClickHandlingActivity` — trampoline activity for widget item taps
+The home-screen widget is built with **Jetpack Glance**.
+
+- `DDWidgetProvider` — `GlanceAppWidgetReceiver` for `DevDrawerGlanceWidget`; **never rename this class** as it breaks
+  existing placed widgets
+- `appwidget/glance/` — `DevDrawerGlanceWidget` loads the widget's content, `DevDrawerWidgetContent` draws it (header
+  palette from `ui/theme/WidgetHeaderPalette.kt`, empty state with "Choose apps"), `RefreshAction` reloads it
+- `WidgetContentLoader` — a widget's matching apps in its sort order (its own, else the Settings default); app icons are
+  scaled to the 40 dp they are drawn at, because every icon travels in the widget's RemoteViews
+- `ClickHandlingActivity` — trampoline activity for widget item taps (launch, uninstall, app details)
 - `UpdateWidgetsWorker` — `WorkManager` worker to refresh all widgets
 - `AppInstallationReceiver` — `BroadcastReceiver` for `PACKAGE_ADDED`/`PACKAGE_REMOVED` events that triggers widget
   refresh
@@ -88,7 +101,8 @@ Hilt throughout. Key modules:
 
 ```
 de.psdev.devdrawer/
-├── appwidget/          # Widget provider, service, click handler
+├── apps/              # Installed apps and profile matching
+├── appwidget/          # Glance widget, receiver, content loader, click handler
 ├── database/           # Room entities, DAOs, migrations
 ├── profiles/           # WidgetProfile feature (UI + repository)
 │   └── ui/
@@ -101,7 +115,8 @@ de.psdev.devdrawer/
 └── widgets/            # Widget config feature (UI + repository)
     └── ui/
         ├── editor/     # Widget editor screen & ViewModel
-        └── list/       # Widget list screen
+        ├── list/       # Widget list screen
+        └── setup/      # Setup when a widget is placed: which apps it shows
 ```
 
 
@@ -109,8 +124,8 @@ de.psdev.devdrawer/
 
 - Dependency versions are managed in the version catalog `gradle/libs.versions.toml` (no dependency-updates plugin;
   Renovate is configured via `renovate.json`)
-- `com.google.android.material:material` is required by the XML themes (`themes.xml`) and widget layouts, even though
-  all screens are Compose
+- `com.google.android.material:material` is required by the XML themes (`themes.xml`), even though all screens are
+  Compose
 
 - Signing config is read from `release.properties` (local) or CI env vars (`keystore_password`, `keystore_alias`,
   `keystore_alias_password`) when `CI=true`

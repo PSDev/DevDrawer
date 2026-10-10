@@ -10,7 +10,6 @@
     <string name="new_profile">Neu</string>
     <string name="name">Name</string>
     <string name="edit_profile">Profil bearbeiten</string>
-    <string name="apply">Anwenden</string>
     <string name="add">Hinzufügen</string>
     <string name="reload">Neu laden</string>
     <string name="edit_widget">Widget bearbeiten</string>
@@ -19,9 +18,6 @@
     <string name="app_signature">App Signatur</string>
     <string name="hint_profile_editing">Du kannst Profile bearbeiten, in dem du den Eintrag lange drückst</string>
     <string name="delete">Löschen</string>
-    <string name="uninstall">Deinstallieren</string>
-    <string name="app_details">App Details</string>
-    <string name="add_app_signature">App Signatur</string>
     <string name="add_package_name">Paketname</string>
     <string name="app_icon">App Icon</string>
     <string name="aboutLibraries_description_name">DevDrawer</string>
@@ -31,7 +27,6 @@
     <string name="packagefilter">Paketfilter</string>
     <string name="enter_package_name_filter">Paketnamen-Filter eingeben</string>
     <string name="select_signature_from_app">Signatur aus App auswählen</string>
-    <string name="apps_matching_filter">Apps, die zum Filter passen</string>
     <string name="cancel">Abbrechen</string>
     <string name="no_widgets_created">Keine Widgets erstellt</string>
     <string name="add_widget">Widget hinzufügen</string>
@@ -41,7 +36,6 @@
     <string name="title_activity_compose">ComposeActivity</string>
     <string name="widget_profile_list_create_new">Neues Profil erstellen</string>
     <string name="loading">Wird geladen…</string>
-    <string name="last_modified">Zuletzt geändert</string>
     <string name="settings_category_general">Allgemein</string>
     <string name="settings_category_ui">Darstellung</string>
     <string name="settings_category_analytics">Analyse</string>
@@ -109,7 +103,6 @@
     <string name="setup_source_pattern_summary">Zum Beispiel com.mycompany.*</string>
     <string name="setup_source_profile">Ein vorhandenes Profil</string>
     <string name="setup_source_profile_summary">Die Apps eines anderen Widgets verwenden</string>
-    <string name="setup_show_all_apps">Alle %1$d Apps anzeigen</string>
     <string name="setup_no_profiles">Noch keine Profile</string>
     <string name="setup_done">Fertig</string>
     <string name="profile_name_signed_like">Signiert wie %1$s</string>

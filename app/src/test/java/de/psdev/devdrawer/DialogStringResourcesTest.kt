@@ -1,5 +1,6 @@
 package de.psdev.devdrawer
 
+import de.psdev.devdrawer.analytics.AnalyticsOptInCard
 import android.graphics.Color
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -35,15 +36,15 @@ class DialogStringResourcesTest {
     private val widgetProfile = WidgetProfile(name = "Arbeit")
 
     @Test
-    fun `given a German locale, when showing the analytics opt-in dialog, then it reads German`() {
+    fun `given a German locale, when showing the analytics opt-in card, then it reads German`() {
         // Given / When
         composeTestRule.setContent {
-            DevDrawerTheme { AnalyticsOptInDialog(onOptIn = {}, onOptOut = {}) }
+            DevDrawerTheme { AnalyticsOptInCard(onOptIn = {}, onOptOut = {}) }
         }
 
         // Then
-        assertTexts("Nutzungsanalyse", "Zustimmen", "Ablehnen")
-        composeTestRule.onNodeWithText("Wir verwenden Firebase Analytics", substring = true).assertExists()
+        assertTexts("Nutzungsanalyse", "Erlauben", "Nein danke")
+        composeTestRule.onNodeWithText("Keine personenbezogenen Daten", substring = true).assertExists()
     }
 
     @Test

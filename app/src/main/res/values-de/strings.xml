@@ -69,9 +69,9 @@
 
     <string name="select_option">Option auswählen</string>
     <string name="analytics_opt_in_title">Nutzungsanalyse</string>
-    <string name="analytics_opt_in_message">Damit wir besser verstehen, wie du die App verwendest, würden wir deine Nutzung gerne analysieren.\n\nWir verwenden Firebase Analytics, um geöffnete Bildschirme und bestimmte Interaktionen zu erfassen.\n\nWir speichern keine personenbezogenen Daten.\n\nZusätzlich verwenden wir Firebase Crashlytics für App-Abstürze.\n\nDanke, dass du darüber nachdenkst!</string>
-    <string name="analytics_opt_in">Zustimmen</string>
-    <string name="analytics_opt_out">Ablehnen</string>
+    <string name="analytics_opt_in_text">Hilf, DevDrawer zu verbessern, indem du teilst, welche Bildschirme du öffnest, und Absturzberichte sendest (über Firebase). Keine personenbezogenen Daten. Du kannst das jederzeit in den Einstellungen ändern.</string>
+    <string name="analytics_opt_in">Erlauben</string>
+    <string name="analytics_opt_out">Nein danke</string>
     <string name="analytics_opt_in_thanks">Danke! Du kannst deine Entscheidung jederzeit im Einstellungen-Tab ändern.</string>
     <string name="error_message">Fehler: %1$s</string>
     <string name="profile_used_by_widgets">Das Profil %1$s wird verwendet von: \n%2$s</string>

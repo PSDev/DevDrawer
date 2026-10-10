@@ -149,4 +149,20 @@ class DevDrawerWidgetContentTest {
             // Then
             onNode(hasText("Choose apps")).assertExists()
         }
+
+    @Test
+    fun `given a two-row widget without apps, when rendered, then the empty state drops its explanation so the button fits`() =
+        runGlanceAppWidgetUnitTest {
+            // Given
+            setContext(ApplicationProvider.getApplicationContext())
+            setAppWidgetSize(DpSize(300.dp, 180.dp))
+
+            // When
+            provideComposable { DevDrawerWidgetContent(state(emptyList())) }
+
+            // Then
+            onNode(hasText("No apps match this widget")).assertExists()
+            onNode(hasText("Choose apps")).assertExists()
+            onNode(hasText("Choose which of your apps it should list.")).assertDoesNotExist()
+        }
 }

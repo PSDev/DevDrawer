@@ -56,7 +56,8 @@ fun DevDrawerWidgetContent(state: WidgetUiState) {
     val background = GlanceModifier
         .fillMaxSize()
         .appWidgetBackground()
-        .background(GlanceTheme.colors.widgetBackground)
+        // Glance's widgetBackground derives from secondaryContainer, which is deep orange in DevDrawer's scheme.
+        .background(GlanceTheme.colors.background)
     val rounded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         background.cornerRadius(android.R.dimen.system_app_widget_background_radius)
     } else {
@@ -76,7 +77,7 @@ fun DevDrawerWidgetContent(state: WidgetUiState) {
         }
         Header(state, showDetails = true)
         if (state.apps.isEmpty()) {
-            EmptyState(context, state.appWidgetId)
+            EmptyState(context, state.appWidgetId, compact = size.height < ROOMY_EMPTY_HEIGHT)
         } else {
             val compact = size.width < NARROW_WIDTH
             LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
@@ -99,6 +100,9 @@ fun DevDrawerWidgetContent(state: WidgetUiState) {
 
 /** Below this the widget shows its apps as a strip of icons. */
 private val SHORT_HEIGHT = 130.dp
+
+/** Below this the empty state leaves out its explanation so the button still fits. */
+private val ROOMY_EMPTY_HEIGHT = 240.dp
 
 /** Below this rows drop the package name and the actions. */
 private val NARROW_WIDTH = 250.dp
@@ -170,9 +174,9 @@ private fun Header(state: WidgetUiState, showDetails: Boolean) {
 }
 
 @Composable
-private fun EmptyState(context: Context, appWidgetId: Int) {
+private fun EmptyState(context: Context, appWidgetId: Int, compact: Boolean) {
     Column(
-        modifier = GlanceModifier.fillMaxSize().padding(24.dp),
+        modifier = GlanceModifier.fillMaxSize().padding(if (compact) 12.dp else 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -180,12 +184,14 @@ private fun EmptyState(context: Context, appWidgetId: Int) {
             text = context.getString(R.string.widget_empty_title),
             style = TextStyle(color = GlanceTheme.colors.onSurface, fontSize = 16.sp, fontWeight = FontWeight.Medium)
         )
-        Spacer(GlanceModifier.height(4.dp))
-        Text(
-            text = context.getString(R.string.widget_empty_text),
-            style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 14.sp)
-        )
-        Spacer(GlanceModifier.height(12.dp))
+        if (!compact) {
+            Spacer(GlanceModifier.height(4.dp))
+            Text(
+                text = context.getString(R.string.widget_empty_text),
+                style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 14.sp)
+            )
+        }
+        Spacer(GlanceModifier.height(if (compact) 8.dp else 12.dp))
         ChooseAppsButton(context, appWidgetId)
     }
 }

@@ -5,18 +5,21 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import de.psdev.devdrawer.about.AboutScreen
+import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.profiles.ui.editor.WidgetProfileEditor
 import de.psdev.devdrawer.profiles.ui.list.WidgetProfilesScreen
 import de.psdev.devdrawer.settings.SettingsScreen
 import de.psdev.devdrawer.widgets.ui.editor.WidgetEditorScreen
 import de.psdev.devdrawer.widgets.ui.list.WidgetListScreen
+import de.psdev.devdrawer.widgets.ui.setup.WidgetSetupScreen
 
 @Composable
 fun DevDrawerHost(
     navigationState: NavigationState,
     navigator: Navigator,
     menuCallback: AppBarActionsProvider,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() }
 ) {
     val entryProvider = entryProvider {
         entry<WidgetListRoute> {
@@ -51,6 +54,12 @@ fun DevDrawerHost(
                 onEditWidgetProfile = { profile ->
                     navigator.navigate(WidgetProfileEditorRoute(profile.id))
                 }
+            )
+        }
+        entry<WidgetSetupRoute> { key ->
+            WidgetSetupScreen(
+                widgetId = key.widgetId,
+                onDone = onWidgetSetupDone
             )
         }
         entry<WidgetProfileEditorRoute> { key ->

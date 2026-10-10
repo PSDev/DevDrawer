@@ -6,9 +6,13 @@ import de.psdev.devdrawer.appwidget.AppInfo
 import de.psdev.devdrawer.appwidget.PackageHashInfo
 
 /** Installed packages with display names; needs Robolectric for the icon drawables. */
-class FakeAppsService(private val apps: Map<PackageHashInfo, String>) : IAppsService {
+class FakeAppsService(
+    private val apps: Map<PackageHashInfo, String>,
+    private val systemPackages: Set<String> = emptySet()
+) : IAppsService {
 
-    override suspend fun installedPackages(includeSystemApps: Boolean): List<PackageHashInfo> = apps.keys.toList()
+    override suspend fun installedPackages(includeSystemApps: Boolean): List<PackageHashInfo> =
+        apps.keys.filter { includeSystemApps || it.packageName !in systemPackages }
 
     override suspend fun appInfos(packages: List<PackageHashInfo>): List<AppInfo> = packages.map { info ->
         AppInfo(

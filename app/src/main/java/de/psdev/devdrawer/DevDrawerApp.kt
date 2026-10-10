@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import de.psdev.devdrawer.analytics.TrackingService
+import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.settings.SettingsViewModel
 import de.psdev.devdrawer.settings.ThemeSetting
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
@@ -59,7 +60,8 @@ fun DevDrawerApp(
     viewModel: SettingsViewModel = hiltViewModel(),
     navigationState: NavigationState,
     navigator: Navigator,
-    trackingService: TrackingService
+    trackingService: TrackingService,
+    onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() }
 ) {
     val settings by viewModel.persistedSettings.collectAsState()
     val darkTheme = when (settings.themeSetting) {
@@ -151,7 +153,8 @@ fun DevDrawerApp(
                         navigationState = navigationState,
                         navigator = navigator,
                         menuCallback = setMenu,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onWidgetSetupDone = onWidgetSetupDone
                     )
                 },
                 bottomBar = {

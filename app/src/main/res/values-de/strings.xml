@@ -103,4 +103,27 @@
         <item quantity="one">%d App</item>
         <item quantity="other">%d Apps</item>
     </plurals>
+
+    <!-- Widget setup -->
+    <string name="setup_title">Widget einrichten</string>
+    <string name="setup_question">Welche Apps soll dieses Widget anzeigen?</string>
+    <string name="setup_hint">Du kannst das später in den Einstellungen des Widgets ändern.</string>
+    <string name="setup_source_my_apps">Meine Apps, nach Signaturschlüssel</string>
+    <string name="setup_source_my_apps_summary">Wähle eine deiner Apps. Jede App, die mit demselben Schlüssel signiert ist, erscheint.</string>
+    <string name="setup_source_pattern">Paketnamen-Muster</string>
+    <string name="setup_source_pattern_summary">Zum Beispiel com.mycompany.*</string>
+    <string name="setup_source_profile">Ein vorhandenes Profil</string>
+    <string name="setup_source_profile_summary">Die Apps eines anderen Widgets verwenden</string>
+    <string name="setup_show_all_apps">Alle %1$d Apps anzeigen</string>
+    <string name="setup_no_profiles">Noch keine Profile</string>
+    <string name="setup_done">Fertig</string>
+    <string name="profile_name_signed_like">Signiert wie %1$s</string>
+    <plurals name="setup_also_matches">
+        <item quantity="one">Passt auch zu %d weiteren App</item>
+        <item quantity="other">Passt auch zu %d weiteren Apps</item>
+    </plurals>
+    <plurals name="setup_match_count">
+        <item quantity="one">%d App wird angezeigt</item>
+        <item quantity="other">%d Apps werden angezeigt</item>
+    </plurals>
 </resources>

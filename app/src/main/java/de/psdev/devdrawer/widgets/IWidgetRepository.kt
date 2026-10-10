@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface IWidgetRepository {
     fun widgetFlow(widgetId: Int): Flow<Widget?>
     suspend fun update(widget: Widget)
+    /** Inserts the widget, or updates it when one with its id is already saved. */
+    suspend fun save(widget: Widget)
     suspend fun delete(widget: Widget)
     suspend fun findById(widgetId: Int): Widget?
     suspend fun findWidgetsForProfile(profileId: String): List<Widget>

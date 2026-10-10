@@ -10,6 +10,7 @@ val NavKey.title
         is WidgetListRoute -> R.string.widgets
         is WidgetProfilesRoute -> R.string.profiles
         is WidgetEditorRoute -> R.string.edit_widget
+        is WidgetSetupRoute -> R.string.setup_title
         is WidgetProfileEditorRoute -> R.string.edit_profile
         is AboutRoute -> R.string.app_info
         else -> R.string.app_name

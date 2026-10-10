@@ -20,6 +20,11 @@ class WidgetRepository @Inject constructor(
         UpdateReceiver.send(application)
     }
 
+    override suspend fun save(widget: Widget) {
+        devDrawerDatabase.widgetDao().insertOrUpdate(widget)
+        UpdateReceiver.send(application)
+    }
+
     override suspend fun delete(widget: Widget) {
         devDrawerDatabase.widgetDao().delete(widget)
         UpdateReceiver.send(application)

@@ -143,4 +143,27 @@
         <item quantity="one">%d app</item>
         <item quantity="other">%d apps</item>
     </plurals>
+
+    <!-- Widget setup -->
+    <string name="setup_title">Set up widget</string>
+    <string name="setup_question">Which apps should this widget show?</string>
+    <string name="setup_hint">You can change this later in the widget\'s settings.</string>
+    <string name="setup_source_my_apps">My apps, by signing key</string>
+    <string name="setup_source_my_apps_summary">Pick one of your apps. Every app signed with the same key appears.</string>
+    <string name="setup_source_pattern">Package name pattern</string>
+    <string name="setup_source_pattern_summary">For example com.mycompany.*</string>
+    <string name="setup_source_profile">An existing profile</string>
+    <string name="setup_source_profile_summary">Reuse the apps of another widget</string>
+    <string name="setup_show_all_apps">Show all %1$d apps</string>
+    <string name="setup_no_profiles">No profiles yet</string>
+    <string name="setup_done">Done</string>
+    <string name="profile_name_signed_like">Signed like %1$s</string>
+    <plurals name="setup_also_matches">
+        <item quantity="one">Also matches %d other app</item>
+        <item quantity="other">Also matches %d other apps</item>
+    </plurals>
+    <plurals name="setup_match_count">
+        <item quantity="one">%d app will appear</item>
+        <item quantity="other">%d apps will appear</item>
+    </plurals>
 </resources>

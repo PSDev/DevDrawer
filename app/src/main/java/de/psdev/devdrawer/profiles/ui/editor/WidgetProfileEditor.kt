@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +65,7 @@ private const val COLLAPSED_APP_COUNT = 5
 fun WidgetProfileEditor(
     profileId: String,
     isNew: Boolean = false,
+    onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: WidgetProfileEditorViewModel = hiltViewModel(
         creationCallback = { factory: WidgetProfileEditorViewModel.Factory ->
@@ -79,7 +81,7 @@ fun WidgetProfileEditor(
 
     // Changes save as they are made; a name still being typed is saved when the editor closes.
     DisposableEffect(viewModel) {
-        onDispose { viewModel.onEditorClosed() }
+        onDispose { viewModel.onEditorHidden() }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -89,6 +91,7 @@ fun WidgetProfileEditor(
             onNameChange = viewModel::onNameChanged,
             onAddFilterClick = { currentDialog = WidgetProfileEditorDialogs.AddFilter },
             onPackageFilterClick = { currentDialog = WidgetProfileEditorDialogs.PackageFilterInfo(it) },
+            onMissing = onBack,
             onRemoveFilterClick = { filter ->
                 viewModel.deleteFilter(filter)
                 scope.launch {
@@ -176,8 +179,13 @@ internal fun WidgetProfileEditor(
     onNameChange: (String) -> Unit = {},
     onAddFilterClick: () -> Unit = {},
     onPackageFilterClick: (PackageFilter) -> Unit = {},
-    onRemoveFilterClick: (PackageFilter) -> Unit = {}
+    onRemoveFilterClick: (PackageFilter) -> Unit = {},
+    onMissing: () -> Unit = {}
 ) {
+    if (viewState.isMissing) {
+        LaunchedEffect(Unit) { onMissing() }
+        return
+    }
     val widgetProfile = viewState.widgetProfile
     if (widgetProfile == null) {
         // Loading

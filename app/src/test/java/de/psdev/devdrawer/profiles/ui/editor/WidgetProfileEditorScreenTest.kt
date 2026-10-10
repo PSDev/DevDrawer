@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextReplacement
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,5 +53,21 @@ class WidgetProfileEditorScreenTest {
 
         // Then
         composeTestRule.onNodeWithText("Work apps").assertExists()
+    }
+
+    @Test
+    fun `given the profile no longer exists, when the editor shows, then it leaves instead of loading forever`() {
+        // Given
+        var left = false
+
+        // When
+        composeTestRule.setContent {
+            DevDrawerTheme {
+                WidgetProfileEditor(viewState = WidgetProfileEditorViewState(isMissing = true), onMissing = { left = true })
+            }
+        }
+
+        // Then
+        composeTestRule.runOnIdle { assertTrue(left) }
     }
 }

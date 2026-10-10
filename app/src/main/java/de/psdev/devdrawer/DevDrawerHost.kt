@@ -72,7 +72,8 @@ fun DevDrawerHost(
         entry<WidgetProfileEditorRoute> { key ->
             WidgetProfileEditor(
                 profileId = key.id,
-                isNew = key.isNew
+                isNew = key.isNew,
+                onBack = { navigator.goBack() }
             )
         }
     }

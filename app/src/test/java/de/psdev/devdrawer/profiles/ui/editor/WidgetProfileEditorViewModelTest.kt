@@ -1,5 +1,9 @@
 package de.psdev.devdrawer.profiles.ui.editor
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.room.Room
 import de.psdev.devdrawer.MainDispatcherRule
 import de.psdev.devdrawer.appwidget.PackageHashInfo
@@ -10,15 +14,18 @@ import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.fakes.FakeAppsService
 import de.psdev.devdrawer.profiles.PackageFilterRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -62,8 +69,20 @@ class WidgetProfileEditorViewModelTest {
         database.close()
     }
 
-    private fun createViewModel(isNew: Boolean = false) = WidgetProfileEditorViewModel(
-        profileId = "p1",
+    /** A view model owned by a store, like a navigation entry's: clearing the store is the editor being closed. */
+    private fun ownedViewModel(isNew: Boolean, profileId: String = "p1"): Pair<WidgetProfileEditorViewModel, ViewModelStore> {
+        val store = ViewModelStore()
+        val factory = viewModelFactory { initializer { createViewModel(isNew, profileId) } }
+        return ViewModelProvider.create(store, factory)[WidgetProfileEditorViewModel::class] to store
+    }
+
+    /** Waits on real time for writes that run outside the test dispatcher (after the view model was cleared). */
+    private suspend fun awaitDatabase(condition: suspend () -> Boolean) = withContext(Dispatchers.Default) {
+        withTimeout(5_000) { while (!condition()) delay(20) }
+    }
+
+    private fun createViewModel(isNew: Boolean = false, profileId: String = "p1") = WidgetProfileEditorViewModel(
+        profileId = profileId,
         isNew = isNew,
         database = database,
         packageFilterRepository = PackageFilterRepository(RuntimeEnvironment.getApplication(), database),
@@ -142,7 +161,7 @@ class WidgetProfileEditorViewModelTest {
         viewModel.onNameChanged("Work apps")
 
         // When
-        viewModel.onEditorClosed()
+        viewModel.onEditorHidden()
 
         // Then
         viewModel.state.first { it.widgetProfile?.name == "Work apps" }
@@ -196,31 +215,50 @@ class WidgetProfileEditorViewModelTest {
     }
 
     @Test
-    fun `given a new profile left untouched, when the editor closes, then the profile is discarded`() = runTest {
+    fun `given a new profile left untouched, when the editor is only hidden by a tab switch, then the profile is kept`() = runTest {
         // Given
         database.packageFilterDao().delete(signatureFilter)
-        val viewModel = createViewModel(isNew = true)
+        val (viewModel, _) = ownedViewModel(isNew = true)
         backgroundScope.launch { viewModel.state.collect {} }
         viewModel.state.first { it.widgetProfile != null && it.packageFilters.isEmpty() }
 
         // When
-        viewModel.onEditorClosed()
+        viewModel.onEditorHidden()
+        withContext(Dispatchers.Default) { delay(300) }
 
         // Then
-        viewModel.state.first { it.widgetProfile == null }
-        assertNull(database.widgetProfileDao().findById("p1"))
+        assertEquals("Mine", database.widgetProfileDao().findById("p1")?.name)
+    }
+
+    @Test
+    fun `given a new profile left untouched, when the editor closes, then the profile is discarded`() = runTest {
+        // Given
+        database.packageFilterDao().delete(signatureFilter)
+        val (viewModel, store) = ownedViewModel(isNew = true)
+        val collector = backgroundScope.launch { viewModel.state.collect {} }
+        viewModel.state.first { it.widgetProfile != null && it.packageFilters.isEmpty() }
+        collector.cancel()
+
+        // When
+        viewModel.onEditorHidden()
+        store.clear()
+
+        // Then
+        awaitDatabase { database.widgetProfileDao().findById("p1") == null }
     }
 
     @Test
     fun `given a new profile with a filter, when the editor closes, then the profile is kept`() = runTest {
         // Given
-        val viewModel = createViewModel(isNew = true)
-        backgroundScope.launch { viewModel.state.collect {} }
+        val (viewModel, store) = ownedViewModel(isNew = true)
+        val collector = backgroundScope.launch { viewModel.state.collect {} }
         viewModel.state.first { it.packageFilters.isNotEmpty() }
+        collector.cancel()
 
         // When
-        viewModel.onEditorClosed()
-        advanceUntilIdle()
+        viewModel.onEditorHidden()
+        store.clear()
+        withContext(Dispatchers.Default) { delay(300) }
 
         // Then
         assertEquals("Mine", database.widgetProfileDao().findById("p1")?.name)
@@ -230,32 +268,46 @@ class WidgetProfileEditorViewModelTest {
     fun `given a new profile that was only renamed, when the editor closes, then the profile is kept`() = runTest {
         // Given
         database.packageFilterDao().delete(signatureFilter)
-        val viewModel = createViewModel(isNew = true)
-        backgroundScope.launch { viewModel.state.collect {} }
+        val (viewModel, store) = ownedViewModel(isNew = true)
+        val collector = backgroundScope.launch { viewModel.state.collect {} }
         viewModel.state.first { it.widgetProfile != null && it.packageFilters.isEmpty() }
         viewModel.onNameChanged("Clients")
+        collector.cancel()
 
         // When
-        viewModel.onEditorClosed()
+        viewModel.onEditorHidden()
+        store.clear()
 
         // Then
-        viewModel.state.first { it.widgetProfile?.name == "Clients" }
+        awaitDatabase { database.widgetProfileDao().findById("p1")?.name == "Clients" }
     }
 
     @Test
     fun `given an existing empty profile, when the editor closes, then it is kept`() = runTest {
         // Given
         database.packageFilterDao().delete(signatureFilter)
-        val viewModel = createViewModel(isNew = false)
-        backgroundScope.launch { viewModel.state.collect {} }
+        val (viewModel, store) = ownedViewModel(isNew = false)
+        val collector = backgroundScope.launch { viewModel.state.collect {} }
         viewModel.state.first { it.widgetProfile != null && it.packageFilters.isEmpty() }
+        collector.cancel()
 
         // When
-        viewModel.onEditorClosed()
-        advanceUntilIdle()
+        viewModel.onEditorHidden()
+        store.clear()
+        withContext(Dispatchers.Default) { delay(300) }
 
         // Then
         assertEquals("Mine", database.widgetProfileDao().findById("p1")?.name)
+    }
+
+    @Test
+    fun `given a profile that no longer exists, when the editor loads, then it reports it as missing`() = runTest {
+        // Given
+        val viewModel = createViewModel(profileId = "gone")
+        backgroundScope.launch { viewModel.state.collect {} }
+
+        // When / Then
+        viewModel.state.first { it.isMissing }
     }
 
     @Test

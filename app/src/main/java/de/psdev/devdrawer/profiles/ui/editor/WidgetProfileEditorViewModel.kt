@@ -16,6 +16,8 @@ import de.psdev.devdrawer.database.DevDrawerDatabase
 import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
@@ -80,7 +82,8 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
             packageFilters = filters,
             matchingApps = matchingApps,
             filterAppCounts = filterAppCounts,
-            usedByWidgets = usedByWidgets
+            usedByWidgets = usedByWidgets,
+            isMissing = widgetProfile == null
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetProfileEditorViewState.Empty)
 
@@ -111,19 +114,26 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         }
     }
 
-    /**
-     * Saves a name still waiting for typing to pause, and discards a new profile that was left untouched
-     * (no filters, no name typed) so backing out of "Create new profile" leaves nothing behind.
-     */
-    fun onEditorClosed() {
+    /** Saves a name still waiting for typing to pause; called whenever the editor leaves the screen. */
+    fun onEditorHidden() {
         val name = widgetNameState.value
         if (pendingNameSave?.isActive == true && name != null) {
             pendingNameSave?.cancel()
             saveName(name)
         }
-        if (isNew && name.isNullOrBlank()) {
-            write {
-                val profile = database.widgetProfileDao().findById(profileId) ?: return@write
+    }
+
+    /**
+     * The editor was closed for good (its back stack entry is gone): discard a new profile that was left untouched
+     * (no filters, no name typed), so backing out of "Create new profile" leaves nothing behind. Not done when the
+     * editor is merely hidden, e.g. by switching tabs, since it comes back.
+     */
+    override fun onCleared() {
+        if (!isNew || !widgetNameState.value.isNullOrBlank()) return
+        // viewModelScope is already cancelled here; the write must still happen, after any pending ones.
+        CoroutineScope(Dispatchers.IO).launch {
+            writeMutex.withLock {
+                val profile = database.widgetProfileDao().findById(profileId) ?: return@withLock
                 if (database.packageFilterDao().findAllByProfile(profileId).isEmpty()) {
                     database.widgetProfileDao().delete(profile)
                 }

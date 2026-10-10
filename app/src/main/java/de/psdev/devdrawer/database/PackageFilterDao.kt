@@ -16,6 +16,9 @@ abstract class PackageFilterDao : BaseDao<PackageFilter>() {
     @Query("SELECT * FROM filters WHERE profile_id = :profileId")
     abstract fun findAllByProfileFlow(profileId: String): Flow<List<PackageFilter>>
 
+    @Query("SELECT * FROM filters")
+    abstract fun findAllFlow(): Flow<List<PackageFilter>>
+
     @Query("DELETE FROM filters WHERE id = :id")
     abstract suspend fun deleteById(id: String)
 

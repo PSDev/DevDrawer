@@ -6,6 +6,7 @@ import de.psdev.devdrawer.database.DevDrawerDatabase
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.receivers.UpdateReceiver
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,4 +38,8 @@ class PackageFilterRepository @Inject constructor(
         UpdateReceiver.send(application)
     }
 
+    override suspend fun findAllByProfile(profileId: String): List<PackageFilter> =
+        devDrawerDatabase.packageFilterDao().findAllByProfile(profileId)
+
+    override fun allFiltersFlow(): Flow<List<PackageFilter>> = devDrawerDatabase.packageFilterDao().findAllFlow()
 }

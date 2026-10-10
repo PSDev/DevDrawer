@@ -81,10 +81,6 @@
             android:name=".receivers.PinWidgetSuccessReceiver"
             android:exported="false" />
 
-        <service
-            android:name=".appwidget.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
-
         <!-- Disable auto-init of WorkManager -->
         <provider
             android:name="androidx.startup.InitializationProvider"

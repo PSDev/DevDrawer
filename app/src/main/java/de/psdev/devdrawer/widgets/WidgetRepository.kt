@@ -25,6 +25,8 @@ class WidgetRepository @Inject constructor(
         UpdateReceiver.send(application)
     }
 
+    override suspend fun findById(widgetId: Int): Widget? = devDrawerDatabase.widgetDao().findById(widgetId)
+
     override suspend fun findWidgetsForProfile(profileId: String): List<Widget> =
         devDrawerDatabase.widgetDao().findAllByProfileId(profileId)
 

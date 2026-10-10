@@ -97,4 +97,14 @@ class PackagePatternSheetTest {
         // Then
         composeTestRule.onNodeWithText("com.example.*").assertExists()
     }
+
+    @Test
+    fun `given a pattern that matches no app yet, when shown, then it cannot be added`() {
+        // Given / When: typing has only just started
+        show(PatternPreview(pattern = "c", isValid = true, matchCount = 0, apps = emptyList()))
+
+        // Then
+        composeTestRule.onNodeWithText("0 apps match").assertExists()
+        composeTestRule.onNodeWithText("Add").assertIsNotEnabled()
+    }
 }

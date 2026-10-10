@@ -16,13 +16,15 @@ import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.ui.UiState
 import de.psdev.devdrawer.widgets.IWidgetRepository
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.UUID
-import javax.inject.Inject
 
 /** A profile as the Profiles list shows it. */
 @Immutable
@@ -60,7 +62,7 @@ class WidgetProfilesViewModel @Inject constructor(
         }
     }
 
-    val viewState = combine(
+    val viewState: StateFlow<UiState<List<ProfileSummary>>> = combine(
         widgetProfileRepository.widgetProfilesFlow(),
         packageFilterRepository.allFiltersFlow(),
         widgetRepository.widgetsFlow(),
@@ -68,7 +70,7 @@ class WidgetProfilesViewModel @Inject constructor(
     ) { profiles, filters, widgets, packages ->
         val filtersByProfile = filters.groupBy { it.profileId }
         val widgetsByProfile = widgets.groupBy { it.profileId }
-        UiState.Success(
+        val summaries: UiState<List<ProfileSummary>> = UiState.Success(
             profiles.map { profile ->
                 val profileFilters = filtersByProfile[profile.id].orEmpty()
                 ProfileSummary(
@@ -79,7 +81,9 @@ class WidgetProfilesViewModel @Inject constructor(
                 )
             }
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState.Loading)
+        summaries
+    }.catch { emit(UiState.Error(it)) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState.Loading)
 
     /** Deletes [widgetProfile] unless widgets use it; the result says which happened. */
     fun deleteProfile(widgetProfile: WidgetProfile, onResult: (DeleteResult) -> Unit) {

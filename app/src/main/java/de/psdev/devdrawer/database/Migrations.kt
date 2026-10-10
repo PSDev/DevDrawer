@@ -48,11 +48,23 @@ object MigrationFrom2To3 : Migration(2, 3) {
     }
 }
 
-/** Adds the curated header colour and the per-widget sort order. Dark legacy colours keep a dark header. */
+/** Adds the curated header colour and the per-widget sort order. Legacy colours map to the closest header colour. */
 object MigrationFrom3To4 : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE `widgets` ADD COLUMN `header_color` TEXT NOT NULL DEFAULT 'AMBER'")
         db.execSQL("ALTER TABLE `widgets` ADD COLUMN `sort_order` TEXT")
-        db.execSQL("UPDATE `widgets` SET `header_color` = 'DARK' WHERE `color` IN (${Color.BLACK}, ${Color.DKGRAY})")
+        legacyHeaderColors.forEach { (headerColor, legacyColors) ->
+            db.execSQL("UPDATE `widgets` SET `header_color` = '$headerColor' WHERE `color` IN (${legacyColors.joinToString()})")
+        }
     }
+
+    private val legacyHeaderColors = mapOf(
+        "DARK" to listOf(Color.BLACK, Color.DKGRAY),
+        "NEUTRAL" to listOf(Color.GRAY, Color.LTGRAY, Color.WHITE),
+        "RED" to listOf(Color.RED),
+        "GREEN" to listOf(Color.GREEN),
+        "BLUE" to listOf(Color.BLUE),
+        "TEAL" to listOf(Color.CYAN),
+        "PURPLE" to listOf(Color.MAGENTA)
+    )
 }

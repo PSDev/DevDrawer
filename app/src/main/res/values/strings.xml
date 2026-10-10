@@ -164,6 +164,11 @@
     <string name="header_color_amber">Amber</string>
     <string name="header_color_neutral">Neutral</string>
     <string name="header_color_dark">Dark</string>
+    <string name="header_color_red">Red</string>
+    <string name="header_color_green">Green</string>
+    <string name="header_color_blue">Blue</string>
+    <string name="header_color_teal">Teal</string>
+    <string name="header_color_purple">Purple</string>
     <string name="header_color_dynamic">Wallpaper colours</string>
     <string name="editor_apps">Apps</string>
     <string name="sort_by">Sort by</string>

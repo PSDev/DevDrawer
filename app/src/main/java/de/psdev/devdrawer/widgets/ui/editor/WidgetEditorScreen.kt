@@ -10,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -261,44 +262,45 @@ private fun HeaderColorPicker(selected: WidgetHeaderColor, onSelected: (WidgetHe
         WidgetHeaderColor.AMBER to stringResource(R.string.header_color_amber),
         WidgetHeaderColor.NEUTRAL to stringResource(R.string.header_color_neutral),
         WidgetHeaderColor.DARK to stringResource(R.string.header_color_dark),
+        WidgetHeaderColor.RED to stringResource(R.string.header_color_red),
+        WidgetHeaderColor.GREEN to stringResource(R.string.header_color_green),
+        WidgetHeaderColor.BLUE to stringResource(R.string.header_color_blue),
+        WidgetHeaderColor.TEAL to stringResource(R.string.header_color_teal),
+        WidgetHeaderColor.PURPLE to stringResource(R.string.header_color_purple),
         WidgetHeaderColor.DYNAMIC to stringResource(R.string.header_color_dynamic)
     )
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .selectableGroup(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = stringResource(R.string.header_color),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
-        options.forEach { option ->
-            val colors = widgetHeaderColors(option)
-            val isSelected = option == selected
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .selectable(selected = isSelected, onClick = { onSelected(option) }, role = Role.RadioButton)
-                    .semantics { contentDescription = labels.getValue(option) },
-                contentAlignment = Alignment.Center
-            ) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionTitle(stringResource(R.string.header_color))
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .selectableGroup(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            options.forEach { option ->
+                val colors = widgetHeaderColors(option)
+                val isSelected = option == selected
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .background(colors.container, MaterialTheme.shapes.small)
-                        .border(
-                            width = if (isSelected) 3.dp else 1.dp,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            shape = MaterialTheme.shapes.small
-                        ),
+                        .size(48.dp)
+                        .selectable(selected = isSelected, onClick = { onSelected(option) }, role = Role.RadioButton)
+                        .semantics { contentDescription = labels.getValue(option) },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (option == WidgetHeaderColor.DYNAMIC) {
-                        Icon(imageVector = Icons.Default.Palette, contentDescription = null, tint = colors.content)
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(colors.container, MaterialTheme.shapes.small)
+                            .border(
+                                width = if (isSelected) 3.dp else 1.dp,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                                shape = MaterialTheme.shapes.small
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (option == WidgetHeaderColor.DYNAMIC) {
+                            Icon(imageVector = Icons.Default.Palette, contentDescription = null, tint = colors.content)
+                        }
                     }
                 }
             }

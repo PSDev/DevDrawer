@@ -124,6 +124,11 @@
     <string name="header_color_amber">Bernstein</string>
     <string name="header_color_neutral">Neutral</string>
     <string name="header_color_dark">Dunkel</string>
+    <string name="header_color_red">Rot</string>
+    <string name="header_color_green">Grün</string>
+    <string name="header_color_blue">Blau</string>
+    <string name="header_color_teal">Petrol</string>
+    <string name="header_color_purple">Lila</string>
     <string name="header_color_dynamic">Farben des Hintergrundbilds</string>
     <string name="editor_apps">Apps</string>
     <string name="sort_by">Sortieren nach</string>

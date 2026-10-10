@@ -23,13 +23,22 @@ class MigrationFrom3To4Test {
     )
 
     @Test
-    fun `given widgets with legacy colours, when migrating to 4, then dark colours become the dark header and others amber`() {
+    fun `given widgets with legacy colours, when migrating to 4, then each legacy colour maps to its closest header colour`() {
         // Given
         helper.createDatabase(TEST_DB, 3).use { db ->
             db.execSQL("INSERT INTO `widget_profiles` (`id`, `name`, `updatedAt`) VALUES ('p1', 'Default', 0)")
-            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (1, 'Black', ${Color.BLACK}, 'p1')")
-            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (2, 'Dark grey', ${Color.DKGRAY}, 'p1')")
-            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (3, 'Yellow', ${Color.YELLOW}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (1, 'BLACK', ${Color.BLACK}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (2, 'DKGRAY', ${Color.DKGRAY}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (3, 'GRAY', ${Color.GRAY}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (4, 'LTGRAY', ${Color.LTGRAY}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (5, 'WHITE', ${Color.WHITE}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (6, 'RED', ${Color.RED}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (7, 'GREEN', ${Color.GREEN}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (8, 'BLUE', ${Color.BLUE}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (9, 'YELLOW', ${Color.YELLOW}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (10, 'CYAN', ${Color.CYAN}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (11, 'MAGENTA', ${Color.MAGENTA}, 'p1')")
+            db.execSQL("INSERT INTO `widgets` (`id`, `name`, `color`, `profile_id`) VALUES (12, 'Custom', ${0xFF123456.toInt()}, 'p1')")
         }
 
         // When
@@ -43,7 +52,7 @@ class MigrationFrom3To4Test {
                 assertNull(cursor.getString(2))
             }
         }
-        assertEquals(mapOf(1 to "DARK", 2 to "DARK", 3 to "AMBER"), headerColors)
+        assertEquals(mapOf(1 to "DARK", 2 to "DARK", 3 to "NEUTRAL", 4 to "NEUTRAL", 5 to "NEUTRAL", 6 to "RED", 7 to "GREEN", 8 to "BLUE", 9 to "AMBER", 10 to "TEAL", 11 to "PURPLE", 12 to "AMBER"), headerColors)
     }
 
     private companion object {

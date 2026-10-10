@@ -5,5 +5,5 @@ package de.psdev.devdrawer.database
  * with readable text; [DYNAMIC] follows the wallpaper (Material You) on Android 12+.
  */
 enum class WidgetHeaderColor {
-    AMBER, NEUTRAL, DARK, DYNAMIC
+    AMBER, NEUTRAL, DARK, RED, GREEN, BLUE, TEAL, PURPLE, DYNAMIC
 }

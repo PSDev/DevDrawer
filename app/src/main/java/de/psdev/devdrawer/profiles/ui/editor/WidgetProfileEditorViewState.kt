@@ -10,7 +10,6 @@ data class WidgetProfileEditorViewState(
     val widgetProfile: WidgetProfile? = null,
     val widgetName: String? = null,
     val packageFilters: List<PackageFilter> = emptyList(),
-    val isDirty: Boolean = false,
     /** Installed apps the edited filters match, by name. */
     val matchingApps: List<AppInfo> = emptyList(),
     /** How many installed apps each filter matches on its own, by filter id. */

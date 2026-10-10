@@ -9,16 +9,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import de.psdev.devdrawer.apps.IAppsService
 import de.psdev.devdrawer.apps.comparator
 import de.psdev.devdrawer.apps.matching
+import de.psdev.devdrawer.appwidget.AppInfo
 import de.psdev.devdrawer.appwidget.PackageHashInfo
 import de.psdev.devdrawer.appwidget.SortOrder
 import de.psdev.devdrawer.database.DevDrawerDatabase
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = WidgetProfileEditorViewModel.Factory::class)
 class WidgetProfileEditorViewModel @AssistedInject constructor(
@@ -33,8 +38,9 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         fun create(profileId: String): WidgetProfileEditorViewModel
     }
 
+    /** The name as typed; saved once typing pauses or the editor closes. */
     private val widgetNameState: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val packageFiltersState: MutableStateFlow<List<PackageFilter>?> = MutableStateFlow(null)
+    private var pendingNameSave: Job? = null
 
     private val dbFiltersFlow = database.packageFilterDao().findAllByProfileFlow(profileId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -47,32 +53,21 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         }
     }
 
-    /** Matching apps and per-filter counts; only recomputed when the edited filters or the installed apps change. */
-    private val matches = combine(dbFiltersFlow, packageFiltersState, installedPackages) { dbFilters, inMemoryFilters, packages ->
-        val filters = inMemoryFilters ?: dbFilters
+    /** The filters with their matching apps and per-filter counts, computed together so they never disagree. */
+    private val matches = combine(dbFiltersFlow, installedPackages) { filters, packages ->
         val apps = appsService.appInfos(packages.matching(filters)).sortedWith(SortOrder.NAME.comparator())
-        apps to filters.associate { it.id to packages.matching(listOf(it)).size }
+        FilterMatches(filters, apps, filters.associate { it.id to packages.matching(listOf(it)).size })
     }
 
     val state = combine(
         database.widgetProfileDao().widgetProfileWithIdObservable(profileId),
-        dbFiltersFlow,
         widgetNameState,
-        packageFiltersState,
         matches
-    ) { widgetProfile, dbPackageFilters, name, inMemoryFilters, (matchingApps, filterAppCounts) ->
-        val currentFilters = inMemoryFilters ?: dbPackageFilters
-        val currentName = name ?: widgetProfile?.name.orEmpty()
-
-        val nameChanged = name != null && name != widgetProfile?.name
-        // Use a set-based comparison to avoid issues with order or duplicate objects with same content
-        val filtersChanged = inMemoryFilters != null && inMemoryFilters.toSet() != dbPackageFilters.toSet()
-
+    ) { widgetProfile, name, (filters, matchingApps, filterAppCounts) ->
         WidgetProfileEditorViewState(
             widgetProfile = widgetProfile,
-            widgetName = currentName,
-            packageFilters = currentFilters,
-            isDirty = nameChanged || filtersChanged,
+            widgetName = name ?: widgetProfile?.name.orEmpty(),
+            packageFilters = filters,
             matchingApps = matchingApps,
             filterAppCounts = filterAppCounts
         )
@@ -80,38 +75,55 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
 
     fun onNameChanged(name: String) {
         widgetNameState.value = name
+        pendingNameSave?.cancel()
+        pendingNameSave = viewModelScope.launch {
+            delay(NAME_SAVE_DELAY_MS)
+            saveName(name)
+        }
     }
 
-    fun saveChanges(viewState: WidgetProfileEditorViewState) {
-        viewModelScope.launch {
-            val widgetProfile = viewState.widgetProfile ?: return@launch
-            val newName = viewState.widgetName ?: return@launch
-            packageFilterRepository.saveProfile(widgetProfile.copy(name = newName), viewState.packageFilters)
-            // Reset local state after save
-            clearLocalChanges()
+    /** Saves a name that is still waiting for typing to pause; called when the editor closes. */
+    fun flushPendingChanges() {
+        val name = widgetNameState.value
+        if (pendingNameSave?.isActive == true && name != null) {
+            pendingNameSave?.cancel()
+            saveName(name)
         }
     }
 
     fun addPackageFilter(packageFilter: PackageFilter) {
-        viewModelScope.launch {
-            val dbFilters = dbFiltersFlow.value
-            val currentFilters = packageFiltersState.value ?: dbFilters
-            val newFilters = currentFilters + packageFilter
-            packageFiltersState.value = if (newFilters.toSet() == dbFilters.toSet()) null else newFilters
-        }
+        write { packageFilterRepository.save(packageFilter) }
     }
 
     fun deleteFilter(packageFilter: PackageFilter) {
-        viewModelScope.launch {
-            val dbFilters = dbFiltersFlow.value
-            val currentFilters = packageFiltersState.value ?: dbFilters
-            val newFilters = currentFilters.filter { it.id != packageFilter.id }
-            packageFiltersState.value = if (newFilters.toSet() == dbFilters.toSet()) null else newFilters
+        write { packageFilterRepository.delete(packageFilter) }
+    }
+
+    /** Undoes [deleteFilter]. */
+    fun restoreFilter(packageFilter: PackageFilter) = addPackageFilter(packageFilter)
+
+    /** A blank name keeps the saved one. */
+    private fun saveName(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        write {
+            val profile = database.widgetProfileDao().findById(profileId) ?: return@write
+            if (profile.name != trimmed) database.widgetProfileDao().updateWithTimestamp(profile.copy(name = trimmed))
         }
     }
 
-    fun clearLocalChanges() {
-        widgetNameState.value = null
-        packageFiltersState.value = null
+    /** Edits are written straight away and finish even if the editor closes meanwhile. */
+    private fun write(block: suspend () -> Unit) {
+        viewModelScope.launch { withContext(NonCancellable) { block() } }
+    }
+
+    private data class FilterMatches(
+        val filters: List<PackageFilter>,
+        val apps: List<AppInfo>,
+        val appCounts: Map<String, Int>
+    )
+
+    private companion object {
+        const val NAME_SAVE_DELAY_MS = 500L
     }
 }

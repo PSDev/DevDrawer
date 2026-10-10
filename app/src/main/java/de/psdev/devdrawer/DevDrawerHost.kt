@@ -18,7 +18,6 @@ import de.psdev.devdrawer.widgets.ui.setup.WidgetSetupScreen
 fun DevDrawerHost(
     navigationState: NavigationState,
     navigator: Navigator,
-    menuCallback: AppBarActionsProvider,
     modifier: Modifier = Modifier,
     onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() },
     onWidgetSetupBack: (Int) -> Unit = { navigator.goBack() }
@@ -69,9 +68,7 @@ fun DevDrawerHost(
         }
         entry<WidgetProfileEditorRoute> { key ->
             WidgetProfileEditor(
-                profileId = key.id,
-                menuCallback = menuCallback,
-                onBack = { navigator.goBack() }
+                profileId = key.id
             )
         }
     }

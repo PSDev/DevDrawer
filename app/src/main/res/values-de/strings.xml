@@ -5,7 +5,6 @@
     <string name="app_info">App info</string>
     <string name="profiles">Profile</string>
     <string name="widgets">Widgets</string>
-    <string name="save">Speichern</string>
     <string name="no_profiles">Keine Profile</string>
     <string name="new_profile">Neu</string>
     <string name="name">Name</string>
@@ -16,7 +15,6 @@
     <string name="close">Schließen</string>
     <string name="info">Information</string>
     <string name="app_signature">App Signatur</string>
-    <string name="hint_profile_editing">Du kannst Profile bearbeiten, in dem du den Eintrag lange drückst</string>
     <string name="delete">Löschen</string>
     <string name="add_package_name">Paketname</string>
     <string name="app_icon">App Icon</string>
@@ -51,9 +49,6 @@
     <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
     <string name="more">Mehr</string>
     <string name="include_system_apps">System-Apps einbeziehen</string>
-    <string name="discard_changes">Änderungen verwerfen?</string>
-    <string name="discard_changes_confirmation">Du hast ungespeicherte Änderungen. Möchtest du sie verwerfen?</string>
-    <string name="discard">Verwerfen</string>
 
     <array name="sort_order_labels">
         <item>Zuletzt aktualisiert</item>
@@ -145,6 +140,7 @@
     <string name="duplicate">Duplizieren</string>
     <string name="profile_deleted">Profil „%1$s“ gelöscht</string>
     <string name="undo">Rückgängig</string>
+    <string name="filter_removed">Filter entfernt</string>
     <plurals name="profile_filter_count">
         <item quantity="one">%d Filter</item>
         <item quantity="other">%d Filter</item>

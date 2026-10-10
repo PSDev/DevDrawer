@@ -118,7 +118,7 @@ class WidgetProfilesViewModel @Inject constructor(
     fun createNewProfile(onCreated: (WidgetProfile) -> Unit) {
         viewModelScope.launch {
             val size = widgetProfileRepository.findAll().size
-            val widgetProfile = WidgetProfile(name = "Profile ${size + 1}")
+            val widgetProfile = WidgetProfile(name = application.getString(R.string.new_profile_name, size + 1))
             widgetProfileRepository.create(widgetProfile)
             trackingService.trackAction(Events.PROFILE_CREATED)
             onCreated(widgetProfile)

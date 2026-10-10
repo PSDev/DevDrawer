@@ -46,7 +46,7 @@
     <string name="profiles">Profiles</string>
     <string name="widgets">Widgets</string>
     <string name="no_profiles">No profiles</string>
-    <string name="new_profile">New</string>
+    <string name="new_profile_name">Profile %1$d</string>
     <string name="name">Name</string>
     <string name="edit_profile">Edit profile</string>
     <string name="add">Add</string>

@@ -49,7 +49,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun WidgetProfilesScreen(
     viewModel: WidgetProfilesViewModel = hiltViewModel(),
-    onEditProfile: (WidgetProfile) -> Unit
+    onEditProfile: (WidgetProfile) -> Unit,
+    onProfileCreated: (WidgetProfile) -> Unit = onEditProfile
 ) {
     var deleteDialogShown by remember { mutableStateOf<DeleteDialogState>(DeleteDialogState.Hidden) }
     val viewState by viewModel.viewState.collectAsState()
@@ -78,9 +79,7 @@ fun WidgetProfilesScreen(
                 }
             },
             onCreateWidgetProfileClick = {
-                viewModel.createNewProfile { widgetProfile ->
-                    onEditProfile(widgetProfile)
-                }
+                viewModel.createNewProfile(onProfileCreated)
             }
         )
         SnackbarHost(

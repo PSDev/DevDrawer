@@ -63,10 +63,11 @@ private const val COLLAPSED_APP_COUNT = 5
 @Composable
 fun WidgetProfileEditor(
     profileId: String,
+    isNew: Boolean = false,
     modifier: Modifier = Modifier,
     viewModel: WidgetProfileEditorViewModel = hiltViewModel(
         creationCallback = { factory: WidgetProfileEditorViewModel.Factory ->
-            factory.create(profileId)
+            factory.create(profileId, isNew)
         }
     )
 ) {
@@ -78,7 +79,7 @@ fun WidgetProfileEditor(
 
     // Changes save as they are made; a name still being typed is saved when the editor closes.
     DisposableEffect(viewModel) {
-        onDispose { viewModel.flushPendingChanges() }
+        onDispose { viewModel.onEditorClosed() }
     }
 
     Box(modifier = modifier.fillMaxSize()) {

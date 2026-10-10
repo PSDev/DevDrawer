@@ -37,6 +37,9 @@ fun DevDrawerHost(
             WidgetProfilesScreen(
                 onEditProfile = { profile ->
                     navigator.navigate(WidgetProfileEditorRoute(profile.id))
+                },
+                onProfileCreated = { profile ->
+                    navigator.navigate(WidgetProfileEditorRoute(profile.id, isNew = true))
                 }
             )
         }
@@ -68,7 +71,8 @@ fun DevDrawerHost(
         }
         entry<WidgetProfileEditorRoute> { key ->
             WidgetProfileEditor(
-                profileId = key.id
+                profileId = key.id,
+                isNew = key.isNew
             )
         }
     }

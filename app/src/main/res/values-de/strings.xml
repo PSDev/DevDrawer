@@ -43,7 +43,8 @@
     <string name="pref_theme_title">Design</string>
     <string name="pref_dynamic_color_title">Material-You-Farben</string>
     <string name="pref_dynamic_color_summary">Farben aus deinem Hintergrundbild verwenden</string>
-    <string name="pref_feature_analytics_opted_in_title">Analyse zulassen</string>
+    <string name="pref_feature_analytics_opted_in_title">Nutzungsanalyse teilen</string>
+    <string name="pref_feature_analytics_opted_in_summary">Welche Bildschirme du öffnest und Absturzberichte, über Firebase. Keine personenbezogenen Daten.</string>
     <string name="clear">Leeren</string>
     <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
     <string name="more">Mehr</string>

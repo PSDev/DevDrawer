@@ -45,4 +45,29 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("Last updated").assertExists()
         composeTestRule.onNodeWithText("Appearance").assertExists()
     }
+
+    @Test
+    fun `given analytics are offered, when shown, then the switch explains what is shared`() {
+        // Given / When
+        composeTestRule.setContent {
+            DevDrawerTheme {
+                SettingsScreen(
+                    viewState = SettingsViewModel.ViewState.Loaded(
+                        analyticsVisible = true,
+                        settings = SettingsViewModel.Settings(
+                            activityChooserEnabled = false,
+                            defaultSortOrder = SortOrder.LAST_UPDATED,
+                            themeSetting = ThemeSetting.SYSTEM,
+                            dynamicColorEnabled = false,
+                            analyticsOptIn = true
+                        )
+                    )
+                )
+            }
+        }
+
+        // Then
+        composeTestRule.onNodeWithText("Share usage analytics").assertExists()
+        composeTestRule.onNodeWithText("Which screens you open and crash reports, via Firebase. No personal data.").assertExists()
+    }
 }

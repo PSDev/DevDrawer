@@ -118,6 +118,7 @@ fun SettingsScreen(
                         PreferenceCategory(title = stringResource(id = R.string.settings_category_analytics))
                         SwitchPreference(
                             text = stringResource(id = R.string.pref_feature_analytics_opted_in_title),
+                            summary = stringResource(id = R.string.pref_feature_analytics_opted_in_summary),
                             enabled = settings.analyticsOptIn
                         ) {
                             onAnalyticsOptInChanged(it)

@@ -59,6 +59,18 @@ class AppMatchingTest {
     }
 
     @Test
+    fun `given an invalid package pattern, when matching, then it matches nothing instead of failing`() {
+        // Given
+        val filters = listOf(PackageFilter(type = FilterType.PACKAGE_NAME, filter = "com.(", profileId = "p"))
+
+        // When
+        val result = packages.matching(filters)
+
+        // Then
+        assertEquals(emptyList<PackageHashInfo>(), result)
+    }
+
+    @Test
     fun `given each sort order, when sorting apps, then they are ordered accordingly`() {
         // Given
         val apps = listOf(

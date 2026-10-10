@@ -13,7 +13,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import de.psdev.devdrawer.database.Widget
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -75,7 +74,8 @@ class MainActivity : BaseActivity() {
                 navigationState = navigationState,
                 navigator = navigator,
                 trackingService = trackingService,
-                onWidgetSetupDone = { widget -> onWidgetSetupDone(widget, navigator) }
+                onWidgetSetupDone = { widget -> leaveWidgetSetup(widget.id, navigator, done = true) },
+                onWidgetSetupBack = { widgetId -> leaveWidgetSetup(widgetId, navigator, done = false) }
             )
         }
         lifecycleScope.launch {
@@ -113,12 +113,15 @@ class MainActivity : BaseActivity() {
         navigator.navigate(launch.route)
     }
 
-    private fun onWidgetSetupDone(widget: Widget, navigator: Navigator) {
-        if (widget.id == externalSetupWidgetId) {
-            if (isConfiguration) setConfigurationResult(RESULT_OK)
-            finish()
-        } else {
-            navigator.goBack()
+    /** Done keeps a widget the launcher is placing; back leaves the result cancelled, which removes it. */
+    private fun leaveWidgetSetup(widgetId: Int, navigator: Navigator, done: Boolean) {
+        when (setupExitFor(widgetId, externalSetupWidgetId)) {
+            SetupExit.FINISH_ACTIVITY -> {
+                if (done && isConfiguration) setConfigurationResult(RESULT_OK)
+                externalSetupWidgetId = INVALID_APPWIDGET_ID
+                finish()
+            }
+            SetupExit.GO_BACK -> navigator.goBack()
         }
     }
 

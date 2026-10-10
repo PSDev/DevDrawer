@@ -1,5 +1,6 @@
 package de.psdev.devdrawer
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
@@ -19,7 +20,8 @@ fun DevDrawerHost(
     navigator: Navigator,
     menuCallback: AppBarActionsProvider,
     modifier: Modifier = Modifier,
-    onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() }
+    onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() },
+    onWidgetSetupBack: (Int) -> Unit = { navigator.goBack() }
 ) {
     val entryProvider = entryProvider {
         entry<WidgetListRoute> {
@@ -60,6 +62,8 @@ fun DevDrawerHost(
             )
         }
         entry<WidgetSetupRoute> { key ->
+            // Registered after the app bar's back handling, so it wins: setup from outside the app closes the app.
+            BackHandler { onWidgetSetupBack(key.widgetId) }
             WidgetSetupScreen(
                 widgetId = key.widgetId,
                 onDone = onWidgetSetupDone

@@ -17,12 +17,13 @@ import org.robolectric.annotation.Config
 @Config(sdk = [33])
 class DevDrawerWidgetContentTest {
 
-    private fun state(apps: List<WidgetAppItem>) = WidgetUiState(
+    private fun state(apps: List<WidgetAppItem>, hiddenAppCount: Int = 0) = WidgetUiState(
         appWidgetId = 5,
         title = "Work apps",
         headerColor = WidgetHeaderColor.AMBER,
         updatedAt = "15:12",
-        apps = apps
+        apps = apps,
+        hiddenAppCount = hiddenAppCount
     )
 
     @Test
@@ -63,5 +64,21 @@ class DevDrawerWidgetContentTest {
             onNode(hasContentDescription("Uninstall DevDrawer2")).assertExists()
             onNode(hasContentDescription("App details for DevDrawer2")).assertExists()
             onNode(hasText("No apps match this widget")).assertDoesNotExist()
+        }
+
+    @Test
+    fun `given more apps than the widget lists, when rendered, then a footer counts the rest`() =
+        runGlanceAppWidgetUnitTest {
+            // Given
+            setContext(ApplicationProvider.getApplicationContext())
+            setAppWidgetSize(DpSize(300.dp, 300.dp))
+            val apps = listOf(WidgetAppItem(name = "DevDrawer2", packageName = "de.psdev.devdrawer", icon = null))
+
+            // When
+            provideComposable { DevDrawerWidgetContent(state(apps, hiddenAppCount = 5)) }
+
+            // Then
+            onNode(hasText("6 apps · updated 15:12")).assertExists()
+            onNode(hasText("+5 more apps")).assertExists()
         }
 }

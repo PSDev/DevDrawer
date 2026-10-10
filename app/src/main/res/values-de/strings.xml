@@ -159,4 +159,8 @@
     <string name="add_filter_pattern_text">Passt auf Paketnamen, mit * als Platzhalter. Gut für ein Firmenpräfix wie com.mycompany.*</string>
     <string name="matching_apps">Passende Apps (%1$d)</string>
     <string name="show_all">Alle %1$d anzeigen</string>
+    <plurals name="widget_more_apps">
+        <item quantity="one">+%d weitere App</item>
+        <item quantity="other">+%d weitere Apps</item>
+    </plurals>
 </resources>

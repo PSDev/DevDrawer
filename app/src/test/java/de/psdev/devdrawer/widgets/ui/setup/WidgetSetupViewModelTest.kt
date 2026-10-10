@@ -125,6 +125,26 @@ class WidgetSetupViewModelTest {
     }
 
     @Test
+    fun `given a picked app, when Done is tapped twice quickly, then only one profile is created`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        advanceUntilIdle()
+        viewModel.onAppSelected(devDrawer.packageName)
+        advanceUntilIdle()
+
+        // When
+        var doneCount = 0
+        viewModel.finish { doneCount++ }
+        viewModel.finish { doneCount++ }
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(2, profileRepository.findAll().size)
+        assertEquals(1, doneCount)
+    }
+
+    @Test
     fun `given a package pattern, when finishing, then a pattern profile is created`() = runTest {
         // Given
         val viewModel = createViewModel()

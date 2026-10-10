@@ -26,10 +26,12 @@ data class WidgetSetupState(
     val profiles: List<ProfileWithAppCount> = emptyList(),
     val selectedProfileId: String? = null,
     /** How many installed apps the widget will list with the current choice. */
-    val matchCount: Int = 0
+    val matchCount: Int = 0,
+    /** Done was tapped and the profile and widget are being saved. */
+    val isSaving: Boolean = false
 ) {
     val canFinish: Boolean
-        get() = when (source) {
+        get() = !isSaving && when (source) {
             SetupSource.MY_APPS -> selectedPackageName != null
             SetupSource.PATTERN -> pattern.isNotBlank()
             SetupSource.PROFILE -> selectedProfileId != null

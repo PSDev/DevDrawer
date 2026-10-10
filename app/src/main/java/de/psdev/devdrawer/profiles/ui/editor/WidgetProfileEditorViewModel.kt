@@ -47,13 +47,20 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         }
     }
 
+    /** Matching apps and per-filter counts; only recomputed when the edited filters or the installed apps change. */
+    private val matches = combine(dbFiltersFlow, packageFiltersState, installedPackages) { dbFilters, inMemoryFilters, packages ->
+        val filters = inMemoryFilters ?: dbFilters
+        val apps = appsService.appInfos(packages.matching(filters)).sortedWith(SortOrder.NAME.comparator())
+        apps to filters.associate { it.id to packages.matching(listOf(it)).size }
+    }
+
     val state = combine(
         database.widgetProfileDao().widgetProfileWithIdObservable(profileId),
         dbFiltersFlow,
         widgetNameState,
         packageFiltersState,
-        installedPackages
-    ) { widgetProfile, dbPackageFilters, name, inMemoryFilters, packages ->
+        matches
+    ) { widgetProfile, dbPackageFilters, name, inMemoryFilters, (matchingApps, filterAppCounts) ->
         val currentFilters = inMemoryFilters ?: dbPackageFilters
         val currentName = name ?: widgetProfile?.name.orEmpty()
 
@@ -66,8 +73,8 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
             widgetName = currentName,
             packageFilters = currentFilters,
             isDirty = nameChanged || filtersChanged,
-            matchingApps = appsService.appInfos(packages.matching(currentFilters)).sortedWith(SortOrder.NAME.comparator()),
-            filterAppCounts = currentFilters.associate { it.id to packages.matching(listOf(it)).size }
+            matchingApps = matchingApps,
+            filterAppCounts = filterAppCounts
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetProfileEditorViewState.Empty)
 

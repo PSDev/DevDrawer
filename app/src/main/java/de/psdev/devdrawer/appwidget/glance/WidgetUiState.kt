@@ -9,7 +9,9 @@ data class WidgetUiState(
     val title: String,
     val headerColor: WidgetHeaderColor,
     val updatedAt: String,
-    val apps: List<WidgetAppItem>
+    val apps: List<WidgetAppItem>,
+    /** Matching apps beyond the ones listed, which the widget only counts (see DevDrawerGlanceWidget.MAX_LISTED_APPS). */
+    val hiddenAppCount: Int = 0
 )
 
 data class WidgetAppItem(

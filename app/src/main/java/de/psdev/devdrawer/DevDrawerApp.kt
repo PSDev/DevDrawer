@@ -61,7 +61,8 @@ fun DevDrawerApp(
     navigationState: NavigationState,
     navigator: Navigator,
     trackingService: TrackingService,
-    onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() }
+    onWidgetSetupDone: (Widget) -> Unit = { navigator.goBack() },
+    onWidgetSetupBack: (Int) -> Unit = { navigator.goBack() }
 ) {
     val settings by viewModel.persistedSettings.collectAsState()
     val darkTheme = when (settings.themeSetting) {
@@ -154,7 +155,8 @@ fun DevDrawerApp(
                         navigator = navigator,
                         menuCallback = setMenu,
                         modifier = Modifier.padding(innerPadding),
-                        onWidgetSetupDone = onWidgetSetupDone
+                        onWidgetSetupDone = onWidgetSetupDone,
+                        onWidgetSetupBack = onWidgetSetupBack
                     )
                 },
                 bottomBar = {

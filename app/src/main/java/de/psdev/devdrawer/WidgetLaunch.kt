@@ -15,3 +15,12 @@ fun widgetLaunchFor(action: String?, widgetId: Int, openSetup: Boolean): WidgetL
     openSetup -> WidgetLaunch(WidgetSetupRoute(widgetId), isConfiguration = false)
     else -> WidgetLaunch(WidgetEditorRoute(widgetId), isConfiguration = false)
 }
+
+enum class SetupExit { FINISH_ACTIVITY, GO_BACK }
+
+/**
+ * How leaving setup (done or back) continues: setup opened from outside the app (launcher or widget) closes the
+ * activity and returns to the home screen; setup opened inside the app goes back.
+ */
+fun setupExitFor(widgetId: Int, externalSetupWidgetId: Int): SetupExit =
+    if (widgetId == externalSetupWidgetId) SetupExit.FINISH_ACTIVITY else SetupExit.GO_BACK

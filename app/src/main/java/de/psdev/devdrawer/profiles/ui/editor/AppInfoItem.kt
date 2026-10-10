@@ -27,12 +27,13 @@ import de.psdev.devdrawer.ui.theme.DevDrawerTheme
 @Composable
 fun AppInfoItem(
     appInfo: AppInfo,
-    onAppClicked: (AppInfo) -> Unit = {}
+    /** Null shows the app without making the row clickable. */
+    onAppClicked: ((AppInfo) -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onAppClicked(appInfo) }
+            .then(if (onAppClicked != null) Modifier.clickable { onAppClicked(appInfo) } else Modifier)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

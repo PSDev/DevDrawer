@@ -1,13 +1,16 @@
 package de.psdev.devdrawer.receivers
 
-import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import de.psdev.devdrawer.appwidget.DDWidgetProvider
+import de.psdev.devdrawer.appwidget.glance.DevDrawerGlanceWidget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import mu.KLogging
 
+/** Reloads every placed widget, e.g. after an app was installed or a widget or profile changed. */
 class UpdateReceiver: BroadcastReceiver() {
     companion object: KLogging() {
 
@@ -20,14 +23,13 @@ class UpdateReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         logger.warn { "onReceive[context=$context, intent=$intent]" }
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        context.sendBroadcast(Intent(context, DDWidgetProvider::class.java).apply {
-            `package` = context.packageName
-            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            putExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_IDS,
-                appWidgetManager.getAppWidgetIds(ComponentName(context, DDWidgetProvider::class.java))
-            )
-        })
+        val pendingResult = goAsync()
+        CoroutineScope(SupervisorJob()).launch(Dispatchers.Default) {
+            try {
+                DevDrawerGlanceWidget.refreshAll(context.applicationContext)
+            } finally {
+                pendingResult.finish()
+            }
+        }
     }
 }

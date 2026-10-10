@@ -199,4 +199,8 @@
     <string name="add_filter_pattern_text">Match package names, with * as a wildcard. Good for a company prefix like com.mycompany.*</string>
     <string name="matching_apps">Matching apps (%1$d)</string>
     <string name="show_all">Show all %1$d</string>
+    <plurals name="widget_more_apps">
+        <item quantity="one">+%d more app</item>
+        <item quantity="other">+%d more apps</item>
+    </plurals>
 </resources>

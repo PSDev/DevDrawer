@@ -10,7 +10,7 @@ app filtering by package name/signature/regex, and dark mode.
 
 - **Package**: `de.psdev.devdrawer`
 - **Min SDK**: 26 | **Target/Compile SDK**: 37
-- **Language**: Kotlin | **JVM target**: 17
+- **Language**: Kotlin | **JVM target**: 21 (JDK 21 toolchain; CI uses Temurin 21)
 - **Debug build suffix**: `.debug` (so debug and release can coexist on device)
 
 ## Common Commands

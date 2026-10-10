@@ -37,16 +37,20 @@ android {
         buildConfig true
     }
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_21
     }
     kotlin {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
+            jvmTarget = JvmTarget.JVM_21
         }
     }
     testOptions {
         unitTests {
             includeAndroidResources = true
+            all {
+                // Robolectric reaches into FileDescriptor internals, which Java 17+ only allows when opened explicitly.
+                jvmArgs '--add-opens=java.base/java.io=ALL-UNNAMED', '--add-exports=java.base/jdk.internal.access=ALL-UNNAMED'
+            }
         }
     }
     sourceSets {
@@ -106,7 +110,7 @@ android {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

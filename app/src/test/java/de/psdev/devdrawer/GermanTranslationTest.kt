@@ -9,8 +9,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-// SDK 36 requires Java 21; use SDK 33 which is compatible with the project's Java 17 toolchain.
-@Config(sdk = [33], qualifiers = "de")
+@Config(qualifiers = "de")
 class GermanTranslationTest {
 
     private val context: Context = RuntimeEnvironment.getApplication()

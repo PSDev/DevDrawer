@@ -2,6 +2,7 @@ package de.psdev.devdrawer.profiles.ui.editor
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTextReplacement
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
 import org.junit.Rule
@@ -42,5 +43,17 @@ class WidgetProfileEditorScreenTest {
         show(emptyList())
 
         composeTestRule.onNodeWithText("Not used by any widget").assertExists()
+    }
+
+    @Test
+    fun `given a name update that lags behind, when typing, then the field still shows exactly what was typed`() {
+        // Given: the view state never reflects the typed name, like a slow combined flow
+        show(emptyList())
+
+        // When
+        composeTestRule.onNodeWithText("Signed like DevDrawer2").performTextReplacement("Work apps")
+
+        // Then
+        composeTestRule.onNodeWithText("Work apps").assertExists()
     }
 }

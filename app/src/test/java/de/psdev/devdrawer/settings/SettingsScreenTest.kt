@@ -68,6 +68,6 @@ class SettingsScreenTest {
 
         // Then
         composeTestRule.onNodeWithText("Share usage analytics").assertExists()
-        composeTestRule.onNodeWithText("Which screens you open and crash reports, via Firebase. No personal data.").assertExists()
+        composeTestRule.onNodeWithText("Which screens you open, via Firebase Analytics. No personal data. Crash reports are sent either way.").assertExists()
     }
 }

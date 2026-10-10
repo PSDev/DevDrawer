@@ -1,0 +1,7 @@
+A complete redesign:
+• A new widget that adapts to its size, with nine header colours and dark mode
+• Guided setup when you add a widget
+• Filters in plain language, with a live preview of the apps they match
+• Edits save automatically, and deleted profiles can be restored
+• Pick which screen of an app to open from a clear list
+• German translation

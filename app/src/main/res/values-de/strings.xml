@@ -44,7 +44,7 @@
     <string name="pref_dynamic_color_title">Material-You-Farben</string>
     <string name="pref_dynamic_color_summary">Farben aus deinem Hintergrundbild verwenden</string>
     <string name="pref_feature_analytics_opted_in_title">Nutzungsanalyse teilen</string>
-    <string name="pref_feature_analytics_opted_in_summary">Welche Bildschirme du öffnest und Absturzberichte, über Firebase. Keine personenbezogenen Daten.</string>
+    <string name="pref_feature_analytics_opted_in_summary">Welche Bildschirme du öffnest, über Firebase Analytics. Keine personenbezogenen Daten. Absturzberichte werden immer gesendet.</string>
     <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
     <string name="more">Mehr</string>
     <string name="include_system_apps">System-Apps einbeziehen</string>
@@ -63,7 +63,7 @@
 
     <string name="select_option">Option auswählen</string>
     <string name="analytics_opt_in_title">Nutzungsanalyse</string>
-    <string name="analytics_opt_in_text">Hilf, DevDrawer zu verbessern, indem du teilst, welche Bildschirme du öffnest, und Absturzberichte sendest (über Firebase). Keine personenbezogenen Daten. Du kannst das jederzeit in den Einstellungen ändern.</string>
+    <string name="analytics_opt_in_text">Hilf, DevDrawer zu verbessern, indem du teilst, welche Bildschirme du öffnest (über Firebase Analytics). Keine personenbezogenen Daten. Du kannst das jederzeit in den Einstellungen ändern.</string>
     <string name="analytics_opt_in">Erlauben</string>
     <string name="analytics_opt_out">Nein danke</string>
     <string name="analytics_opt_in_thanks">Danke! Du kannst deine Entscheidung jederzeit im Einstellungen-Tab ändern.</string>

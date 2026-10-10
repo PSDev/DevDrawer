@@ -93,7 +93,7 @@
     <string name="pref_dynamic_color_title">Material You colors</string>
     <string name="pref_dynamic_color_summary">Use colors generated from your wallpaper</string>
     <string name="pref_feature_analytics_opted_in_title">Share usage analytics</string>
-    <string name="pref_feature_analytics_opted_in_summary">Which screens you open and crash reports, via Firebase. No personal data.</string>
+    <string name="pref_feature_analytics_opted_in_summary">Which screens you open, via Firebase Analytics. No personal data. Crash reports are sent either way.</string>
     <string name="no_apps_available">No apps available or all already added as filter</string>
     <string name="more">More</string>
 
@@ -103,7 +103,7 @@
     <!-- Dialogs -->
     <string name="select_option">Select option</string>
     <string name="analytics_opt_in_title">Usage analytics</string>
-    <string name="analytics_opt_in_text">Help improve DevDrawer by sharing which screens you open and crash reports, via Firebase. No personal data. You can change this anytime in Settings.</string>
+    <string name="analytics_opt_in_text">Help improve DevDrawer by sharing which screens you open, via Firebase Analytics. No personal data. You can change this anytime in Settings.</string>
     <string name="analytics_opt_in">Allow</string>
     <string name="analytics_opt_out">No thanks</string>
     <string name="analytics_opt_in_thanks">Thank you! You can change your decision anytime on the settings tab.</string>

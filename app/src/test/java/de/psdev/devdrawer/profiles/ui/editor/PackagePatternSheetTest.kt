@@ -85,4 +85,30 @@ class PackagePatternSheetTest {
         // Then
         assertEquals("com.", typed.last())
     }
+
+    @Test
+    fun `given a preview that lags behind, when typing, then the field still shows exactly what was typed`() {
+        // Given: the preview never catches up, like a slow recomputation
+        show(PatternPreview())
+
+        // When
+        composeTestRule.onNodeWithText("Package filter").performTextInput("com.example.*")
+
+        // Then
+        composeTestRule.onNodeWithText("com.example.*").assertExists()
+    }
+
+    @Test
+    fun `given a valid pattern that matches no app yet, when shown, then it can still be added`() {
+        // Given: e.g. a company prefix before any of its apps is installed
+        var added: String? = null
+        show(PatternPreview(pattern = "com.mycompany.*", isValid = true, matchCount = 0, apps = emptyList()), onAdd = { added = it })
+
+        // When
+        composeTestRule.onNodeWithText("0 apps match").assertExists()
+        composeTestRule.onNodeWithText("Add").assertIsEnabled().performClick()
+
+        // Then
+        assertEquals("com.mycompany.*", added)
+    }
 }

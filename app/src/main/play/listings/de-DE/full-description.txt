@@ -1,0 +1,27 @@
+DevDrawer2 bringt die Apps, die du entwickelst, auf deinen Startbildschirm. Ein Widget listet jeden installierten Build, damit du ihn mit einem Tipp starten, seine App-Info öffnen oder ihn deinstallieren kannst.
+
+SO FUNKTIONIERT ES
+• Füge das Widget hinzu und wähle eine deiner Apps. Jede App, die mit demselben Schlüssel signiert ist, erscheint, auch solche, die du später installierst.
+• Oder filtere Paketnamen mit einem Muster wie com.mycompany.*
+• Fasse Filter in Profilen zusammen und nutze sie in mehreren Widgets.
+
+GEMACHT FÜR DEN ENTWICKLERALLTAG
+• Debug-, Beta- und Release-Builds nebeneinander
+• Deinstallieren und App-Info direkt im Widget
+• Sortierung nach zuletzt aktualisiert, zuerst installiert, Name oder Paketname
+• Auf Wunsch wählen, welcher Bildschirm einer App geöffnet wird
+
+DEIN WIDGET, WIE DU ES WILLST
+• Neun Kopfzeilenfarben, auch die Farben deines Hintergrundbilds
+• Heller und dunkler Modus
+• Passt sich seiner Größe an: eine Symbolleiste, wenn es klein ist, ganze Zeilen, wenn es groß ist
+• Beliebig viele Widgets, jedes mit eigenen Apps
+
+PRIVAT UND OPEN SOURCE
+• Keine Werbung, kein Konto
+• Nutzungsanalyse nur, wenn du sie erlaubst (Firebase Analytics, keine personenbezogenen Daten). Absturzberichte werden über Firebase Crashlytics gesendet.
+• Quellcode: https://github.com/PSDev/DevDrawer
+
+Verfügbar auf Deutsch und Englisch.
+
+Basiert auf dem ursprünglichen DevDrawer von Tony Owen, neu geschrieben in Kotlin.

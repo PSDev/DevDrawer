@@ -223,4 +223,5 @@
     <string name="about_github" translatable="false">GitHub</string>
     <string name="back">Back</string>
     <string name="profiles_load_failed">Couldn\'t load profiles</string>
+    <string name="add_widget_from_home_screen">Long-press your home screen, tap Widgets and drag DevDrawer onto it.</string>
 </resources>

@@ -2,33 +2,31 @@ package de.psdev.devdrawer.profiles.ui.editor
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Preview
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,22 +36,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import de.psdev.devdrawer.AppBarActionsProvider
 import de.psdev.devdrawer.ProvideMenu
 import de.psdev.devdrawer.R
+import de.psdev.devdrawer.appwidget.AppInfo
 import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
-import java.util.UUID
+
+private const val COLLAPSED_APP_COUNT = 5
 
 @Composable
 fun WidgetProfileEditor(
@@ -69,7 +75,6 @@ fun WidgetProfileEditor(
 ) {
     val viewState by viewModel.state.collectAsState(initial = WidgetProfileEditorViewState.Empty)
     var currentDialog by remember { mutableStateOf<WidgetProfileEditorDialogs>(WidgetProfileEditorDialogs.None) }
-
     val hasChanges = viewState.isDirty
 
     BackHandler {
@@ -91,28 +96,19 @@ fun WidgetProfileEditor(
     WidgetProfileEditor(
         viewState = viewState,
         modifier = modifier.fillMaxSize(),
-        onNameChange = {
-            viewModel.onNameChanged(it)
-        },
-        onAddPackageFilterClick = {
-            currentDialog = WidgetProfileEditorDialogs.AddPackageNamePackageFilter(viewState.packageFilters)
-        },
-        onAddAppSignatureClick = {
-            currentDialog = WidgetProfileEditorDialogs.AddAppSignaturePackageFilter(viewState.packageFilters)
-        },
-        onPackageFilterPreviewClick = {
-            currentDialog = WidgetProfileEditorDialogs.PackageFilterPreview(it)
-        },
-        onPackageFilterInfoClick = {
-            currentDialog = WidgetProfileEditorDialogs.PackageFilterInfo(it)
-        },
-        onDeletePackageFilterClick = {
-            currentDialog = WidgetProfileEditorDialogs.DeletePackageFilter(it)
-        }
+        onNameChange = viewModel::onNameChanged,
+        onAddFilterClick = { currentDialog = WidgetProfileEditorDialogs.AddFilter },
+        onPackageFilterClick = { currentDialog = WidgetProfileEditorDialogs.PackageFilterInfo(it) },
+        onRemoveFilterClick = viewModel::deleteFilter
     )
 
     when (val dialog = currentDialog) {
         WidgetProfileEditorDialogs.None -> Unit
+        WidgetProfileEditorDialogs.AddFilter -> AddFilterSheet(
+            onDismiss = { currentDialog = WidgetProfileEditorDialogs.None },
+            onSignatureClick = { currentDialog = WidgetProfileEditorDialogs.AddAppSignaturePackageFilter(viewState.packageFilters) },
+            onPatternClick = { currentDialog = WidgetProfileEditorDialogs.AddPackageNamePackageFilter(viewState.packageFilters) }
+        )
         is WidgetProfileEditorDialogs.AddAppSignaturePackageFilter -> AddAppSignaturePackageFilterDialog(
             currentFilters = dialog.currentPackageFilters,
             closeDialog = {
@@ -130,7 +126,6 @@ fun WidgetProfileEditor(
                 currentDialog = WidgetProfileEditorDialogs.None
             }
         )
-
         is WidgetProfileEditorDialogs.AddPackageNamePackageFilter -> AddPackageNamePackageFilterDialog(
             currentFilters = dialog.currentPackageFilters,
             closeDialog = {
@@ -147,30 +142,12 @@ fun WidgetProfileEditor(
                 currentDialog = WidgetProfileEditorDialogs.None
             }
         )
-
-        is WidgetProfileEditorDialogs.PackageFilterPreview -> PackageFilterPreviewDialog(
-            packageFilter = dialog.packageFilter
-        ) {
-            currentDialog = WidgetProfileEditorDialogs.None
-        }
-
         is WidgetProfileEditorDialogs.PackageFilterInfo -> PackageFilterInfoDialog(
             packageFilter = dialog.packageFilter,
             onDismiss = {
                 currentDialog = WidgetProfileEditorDialogs.None
             }
         )
-
-        is WidgetProfileEditorDialogs.DeletePackageFilter -> DeletePackageFilterDialog(
-            onDismiss = {
-                currentDialog = WidgetProfileEditorDialogs.None
-            },
-            onConfirm = {
-                viewModel.deleteFilter(dialog.packageFilter)
-                currentDialog = WidgetProfileEditorDialogs.None
-            }
-        )
-
         WidgetProfileEditorDialogs.DiscardChanges -> AlertDialog(
             onDismissRequest = { currentDialog = WidgetProfileEditorDialogs.None },
             title = { Text(text = stringResource(R.string.discard_changes)) },
@@ -195,11 +172,7 @@ fun WidgetProfileEditor(
 
 private sealed class WidgetProfileEditorDialogs {
     data object None : WidgetProfileEditorDialogs()
-
-    data class PackageFilterPreview(
-        val packageFilter: PackageFilter
-    ) : WidgetProfileEditorDialogs()
-
+    data object AddFilter : WidgetProfileEditorDialogs()
     data class AddPackageNamePackageFilter(
         val currentPackageFilters: List<PackageFilter>
     ) : WidgetProfileEditorDialogs()
@@ -212,24 +185,17 @@ private sealed class WidgetProfileEditorDialogs {
         val packageFilter: PackageFilter
     ) : WidgetProfileEditorDialogs()
 
-    data class DeletePackageFilter(
-        val packageFilter: PackageFilter
-    ) : WidgetProfileEditorDialogs()
-
     data object DiscardChanges : WidgetProfileEditorDialogs()
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun WidgetProfileEditor(
     viewState: WidgetProfileEditorViewState,
     modifier: Modifier = Modifier,
     onNameChange: (String) -> Unit = {},
-    onAddPackageFilterClick: (WidgetProfile) -> Unit = {},
-    onAddAppSignatureClick: (WidgetProfile) -> Unit = {},
-    onPackageFilterPreviewClick: (PackageFilter) -> Unit = {},
-    onPackageFilterInfoClick: (PackageFilter) -> Unit = {},
-    onDeletePackageFilterClick: (PackageFilter) -> Unit = {}
+    onAddFilterClick: () -> Unit = {},
+    onPackageFilterClick: (PackageFilter) -> Unit = {},
+    onRemoveFilterClick: (PackageFilter) -> Unit = {}
 ) {
     val widgetProfile = viewState.widgetProfile
     if (widgetProfile == null) {
@@ -237,100 +203,57 @@ internal fun WidgetProfileEditor(
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(modifier = Modifier.size(64.dp))
         }
-    } else {
-        Box(modifier = modifier.fillMaxSize()) {
-            Column {
-                Surface(modifier = Modifier.wrapContentHeight(), shadowElevation = 2.dp) {
-                    Column(
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .padding(8.dp)
-                    ) {
-                        WidgetProfileName(
-                            widgetName = viewState.widgetName ?: widgetProfile.name,
-                            onNameChange = onNameChange
-                        )
-                        Row(
-                            modifier = Modifier.padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                modifier = Modifier.weight(1f),
-                                onClick = { onAddPackageFilterClick(widgetProfile) }
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                                    painter = painterResource(id = R.drawable.ic_regex),
-                                    contentDescription = stringResource(id = R.string.add_package_name)
-                                )
-                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                                Text(text = stringResource(id = R.string.add_package_name))
-                            }
-                            Button(
-                                modifier = Modifier.weight(1f),
-                                onClick = { onAddAppSignatureClick(widgetProfile) }
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                                    painter = painterResource(id = R.drawable.ic_certificate),
-                                    contentDescription = stringResource(id = R.string.add_app_signature)
-                                )
-                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                                Text(text = stringResource(id = R.string.add_app_signature))
-                            }
-                        }
-                    }
-                }
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(viewState.packageFilters) { packageFilter ->
-                        Card {
-                            Row(
-                                modifier = Modifier.padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val iconRes = when (packageFilter.type) {
-                                    FilterType.PACKAGE_NAME -> R.drawable.ic_regex
-                                    FilterType.SIGNATURE -> R.drawable.ic_certificate
-                                }
-                                Icon(
-                                    modifier = Modifier.padding(8.dp),
-                                    painter = painterResource(id = iconRes),
-                                    contentDescription = null
-                                )
-                                val text = when (packageFilter.type) {
-                                    FilterType.PACKAGE_NAME -> packageFilter.filter
-                                    FilterType.SIGNATURE -> packageFilter.description
-                                }
-                                Text(modifier = Modifier.weight(1f), text = text)
-                                AnimatedVisibility(visible = packageFilter.type == FilterType.SIGNATURE) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .clickable { onPackageFilterInfoClick(packageFilter) }
-                                            .padding(8.dp),
-                                        imageVector = Icons.Filled.Info,
-                                        contentDescription = null
-                                    )
-                                }
-                                Icon(
-                                    modifier = Modifier
-                                        .clickable { onPackageFilterPreviewClick(packageFilter) }
-                                        .padding(8.dp),
-                                    imageVector = Icons.Filled.Preview,
-                                    contentDescription = null
-                                )
-                                Icon(
-                                    modifier = Modifier
-                                        .clickable { onDeletePackageFilterClick(packageFilter) }
-                                        .padding(8.dp),
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = null
-                                )
-                            }
-                        }
+        return
+    }
+    var showAllApps by rememberSaveable { mutableStateOf(false) }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            value = viewState.widgetName ?: widgetProfile.name,
+            onValueChange = onNameChange,
+            label = { Text(text = stringResource(id = R.string.name)) }
+        )
+
+        Column {
+            SectionTitle(stringResource(R.string.filters_heading))
+            if (viewState.packageFilters.isEmpty()) {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = stringResource(R.string.no_filters_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            viewState.packageFilters.forEachIndexed { index, packageFilter ->
+                if (index > 0) HorizontalDivider()
+                FilterRow(
+                    packageFilter = packageFilter,
+                    appCount = viewState.filterAppCounts[packageFilter.id] ?: 0,
+                    onClick = { onPackageFilterClick(packageFilter) },
+                    onRemove = { onRemoveFilterClick(packageFilter) }
+                )
+            }
+            FilledTonalButton(modifier = Modifier.padding(top = 8.dp), onClick = onAddFilterClick) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(modifier = Modifier.padding(start = 8.dp), text = stringResource(R.string.add_filter))
+            }
+        }
+
+        Surface(color = MaterialTheme.colorScheme.surfaceContainer, shape = MaterialTheme.shapes.medium) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+                SectionTitle(stringResource(R.string.matching_apps, viewState.matchingApps.size))
+                val apps = if (showAllApps) viewState.matchingApps else viewState.matchingApps.take(COLLAPSED_APP_COUNT)
+                apps.forEach { app -> MatchingAppRow(app) }
+                if (!showAllApps && viewState.matchingApps.size > COLLAPSED_APP_COUNT) {
+                    TextButton(onClick = { showAllApps = true }) {
+                        Text(stringResource(R.string.show_all, viewState.matchingApps.size))
                     }
                 }
             }
@@ -338,34 +261,141 @@ internal fun WidgetProfileEditor(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun WidgetProfileName(
-    widgetName: String,
-    onNameChange: (String) -> Unit = {}
-) {
+private fun SectionTitle(text: String) {
+    Text(
+        modifier = Modifier.padding(bottom = 4.dp),
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary
+    )
+}
+
+/** A filter in plain words: "Signed like DevDrawer2" or "Package matches com.example.*". */
+@Composable
+internal fun PackageFilter.label(): String = when (type) {
+    FilterType.SIGNATURE -> stringResource(R.string.profile_name_signed_like, description.ifBlank { filter.take(SHORT_HASH_LENGTH) })
+    FilterType.PACKAGE_NAME -> stringResource(R.string.filter_package_matches, filter)
+}
+
+private const val SHORT_HASH_LENGTH = 8
+
+@Composable
+private fun FilterRow(packageFilter: PackageFilter, appCount: Int, onClick: () -> Unit, onRemove: () -> Unit) {
+    val label = packageFilter.label()
     Row(
-        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        OutlinedTextField(
-            modifier = Modifier.weight(1f),
-            singleLine = true,
-            value = widgetName,
-            onValueChange = onNameChange,
-            label = { Text(text = stringResource(id = R.string.name)) }
+        Icon(
+            painter = painterResource(
+                id = when (packageFilter.type) {
+                    FilterType.PACKAGE_NAME -> R.drawable.ic_regex
+                    FilterType.SIGNATURE -> R.drawable.ic_certificate
+                }
+            ),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(text = label, style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(
+                text = stringResource(
+                    R.string.profile_counts,
+                    stringResource(
+                        when (packageFilter.type) {
+                            FilterType.PACKAGE_NAME -> R.string.setup_source_pattern
+                            FilterType.SIGNATURE -> R.string.filter_type_signature
+                        }
+                    ),
+                    pluralStringResource(R.plurals.widget_app_count, appCount, appCount)
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        IconButton(onClick = onRemove) {
+            Icon(imageVector = Icons.Filled.Close, contentDescription = stringResource(R.string.remove_filter, label))
+        }
     }
 }
 
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun Preview_WidgetProfileEditor_Loading() {
-    DevDrawerTheme {
-        WidgetProfileEditor(
-            viewState = WidgetProfileEditorViewState.Empty
-        )
+private fun MatchingAppRow(app: AppInfo) {
+    Row(
+        modifier = Modifier.padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val icon = remember(app.packageName) { app.appIcon.toBitmap().asImageBitmap() }
+        Image(bitmap = icon, contentDescription = null, modifier = Modifier.size(32.dp))
+        Column(modifier = Modifier.padding(start = 12.dp)) {
+            Text(text = app.name, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = app.packageName,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+/** Both filter types side by side, each explained in one sentence, so the choice is by intent. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AddFilterSheet(onDismiss: () -> Unit, onSignatureClick: () -> Unit, onPatternClick: () -> Unit) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(text = stringResource(R.string.add_filter), style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(R.string.add_filter_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            FilterTypeOption(
+                iconRes = R.drawable.ic_certificate,
+                title = stringResource(R.string.add_filter_signature_title),
+                text = stringResource(R.string.add_filter_signature_text),
+                onClick = onSignatureClick
+            )
+            FilterTypeOption(
+                iconRes = R.drawable.ic_regex,
+                title = stringResource(R.string.setup_source_pattern),
+                text = stringResource(R.string.add_filter_pattern_text),
+                onClick = onPatternClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun FilterTypeOption(iconRes: Int, title: String, text: String, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.surface,
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier.size(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(painter = painterResource(iconRes), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                Text(text = text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }
 
@@ -373,37 +403,17 @@ fun Preview_WidgetProfileEditor_Loading() {
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun Preview_WidgetProfileEditor_Loaded() {
-    val widgetProfile = WidgetProfile(
-        id = UUID.randomUUID().toString(),
-        name = "Test widget profile"
-    )
+    val widgetProfile = WidgetProfile(id = "p1", name = "Test widget profile")
     DevDrawerTheme {
         WidgetProfileEditor(
             viewState = WidgetProfileEditorViewState(
                 widgetProfile = widgetProfile,
                 widgetName = widgetProfile.name,
                 packageFilters = listOf(
-                    PackageFilter(profileId = widgetProfile.id, filter = "01022402020", type = FilterType.SIGNATURE),
-                    PackageFilter(profileId = widgetProfile.id, filter = "com.example2.*")
-                )
-            )
-        )
-    }
-}
-
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun Preview_WidgetProfileEditor_NameChanged() {
-    DevDrawerTheme {
-        WidgetProfileEditor(
-            viewState = WidgetProfileEditorViewState(
-                widgetProfile = WidgetProfile(
-                    id = UUID.randomUUID().toString(),
-                    name = "Test widget profile"
+                    PackageFilter(id = "a", profileId = "p1", filter = "01022402020", type = FilterType.SIGNATURE, description = "DevDrawer2"),
+                    PackageFilter(id = "b", profileId = "p1", filter = "com.example2.*")
                 ),
-                widgetName = "Test widget profile 2",
-                isDirty = true
+                filterAppCounts = mapOf("a" to 2, "b" to 5)
             )
         )
     }

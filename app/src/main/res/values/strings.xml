@@ -73,7 +73,6 @@
     <string name="ok">OK</string>
     <string name="error_profile_in_use">Cannot delete profile, still being used by widgets</string>
     <string name="no">No</string>
-    <string name="yes">Yes</string>
     <string name="title_activity_compose">ComposeActivity</string>
 
     <!-- WidgetCard -->
@@ -103,7 +102,6 @@
     <string name="pref_dynamic_color_summary">Use colors generated from your wallpaper</string>
     <string name="pref_feature_analytics_opted_in_title">Opt-in to analytics</string>
     <string name="clear">Clear</string>
-    <string name="delete_filter">Delete filter?</string>
     <string name="no_apps_available">No apps available or all already added as filter</string>
     <string name="more">More</string>
 
@@ -193,4 +191,18 @@
         <item quantity="one">%d filter</item>
         <item quantity="other">%d filters</item>
     </plurals>
+
+    <!-- Profile editor -->
+    <string name="filters_heading">Show apps that are…</string>
+    <string name="no_filters_hint">No filters yet. Add one to choose which apps appear.</string>
+    <string name="filter_package_matches">Package matches %1$s</string>
+    <string name="filter_type_signature">Same signing key</string>
+    <string name="remove_filter">Remove filter %1$s</string>
+    <string name="add_filter">Add filter</string>
+    <string name="add_filter_hint">An app shows up in the widget if it matches any filter.</string>
+    <string name="add_filter_signature_title">Signed like one of your apps</string>
+    <string name="add_filter_signature_text">Pick an installed app. Every app signed with the same key matches, including ones you install later.</string>
+    <string name="add_filter_pattern_text">Match package names, with * as a wildcard. Good for a company prefix like com.mycompany.*</string>
+    <string name="matching_apps">Matching apps (%1$d)</string>
+    <string name="show_all">Show all %1$d</string>
 </resources>

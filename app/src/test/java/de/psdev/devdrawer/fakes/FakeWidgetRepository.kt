@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.map
 class FakeWidgetRepository(initialWidgets: List<Widget> = emptyList()) : IWidgetRepository {
     private val widgets = MutableStateFlow(initialWidgets)
 
+    override fun widgetsFlow(): Flow<List<Widget>> = widgets
+
     override fun widgetFlow(widgetId: Int): Flow<Widget?> =
         widgets.map { list -> list.find { it.id == widgetId } }
 

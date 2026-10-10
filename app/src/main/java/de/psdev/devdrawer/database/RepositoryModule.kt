@@ -10,6 +10,8 @@ import de.psdev.devdrawer.profiles.IPackageFilterRepository
 import de.psdev.devdrawer.profiles.IWidgetProfileRepository
 import de.psdev.devdrawer.profiles.PackageFilterRepository
 import de.psdev.devdrawer.profiles.WidgetProfileRepository
+import de.psdev.devdrawer.settings.ISortOrderSettings
+import de.psdev.devdrawer.settings.SharedPreferencesSortOrderSettings
 import de.psdev.devdrawer.widgets.IWidgetRepository
 import de.psdev.devdrawer.widgets.WidgetRepository
 
@@ -22,6 +24,9 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindWidgetProfileRepository(impl: WidgetProfileRepository): IWidgetProfileRepository
+
+    @Binds
+    abstract fun bindSortOrderSettings(impl: SharedPreferencesSortOrderSettings): ISortOrderSettings
 
     @Binds
     abstract fun bindAppsService(impl: AppsService): IAppsService

@@ -4,6 +4,7 @@ import de.psdev.devdrawer.database.Widget
 import kotlinx.coroutines.flow.Flow
 
 interface IWidgetRepository {
+    fun widgetsFlow(): Flow<List<Widget>>
     fun widgetFlow(widgetId: Int): Flow<Widget?>
     suspend fun update(widget: Widget)
     /** Inserts the widget, or updates it when one with its id is already saved. */

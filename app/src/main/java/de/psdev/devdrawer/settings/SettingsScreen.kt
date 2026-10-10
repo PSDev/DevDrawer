@@ -84,9 +84,7 @@ fun SettingsScreen(
                 val sortOrderLabels = stringArrayResource(id = R.array.sort_order_labels)
                 ListPreference(
                     label = stringResource(id = R.string.pref_sort_order_title),
-                    values = SortOrder.entries.mapIndexed { index, sortOrder ->
-                        sortOrder to sortOrderLabels[index]
-                    }.toMap(),
+                    values = SortOrder.entries.associateWith { it.label(sortOrderLabels) },
                     currentValue = settings.defaultSortOrder
                 ) {
                     onSortOrderChanged(it)

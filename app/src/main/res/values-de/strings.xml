@@ -35,13 +35,11 @@
     <string name="cancel">Abbrechen</string>
     <string name="no_widgets_created">Keine Widgets erstellt</string>
     <string name="add_widget">Widget hinzufügen</string>
-    <string name="pick_widget_color">Widget-Farbe wählen</string>
     <string name="ok">OK</string>
     <string name="error_profile_in_use">Profil kann nicht gelöscht werden, da es noch von Widgets verwendet wird</string>
     <string name="no">Nein</string>
     <string name="yes">Ja</string>
     <string name="title_activity_compose">ComposeActivity</string>
-    <string name="widget_id_template">ID: %1$d</string>
     <string name="widget_profile_list_create_new">Neues Profil erstellen</string>
     <string name="loading">Wird geladen…</string>
     <string name="last_modified">Zuletzt geändert</string>
@@ -126,4 +124,20 @@
         <item quantity="one">%d App wird angezeigt</item>
         <item quantity="other">%d Apps werden angezeigt</item>
     </plurals>
+
+    <!-- Widgets list and widget editor -->
+    <string name="widget_card_summary">Profil „%1$s“ · %2$s</string>
+    <string name="widget_card_no_apps">Keine App passt · Apps auswählen</string>
+    <string name="pin_new_widget">Widget zum Startbildschirm hinzufügen</string>
+    <string name="delete_widget">Widget löschen</string>
+    <string name="widget_preview">Widget-Vorschau</string>
+    <string name="header_color">Kopfzeilenfarbe</string>
+    <string name="header_color_amber">Bernstein</string>
+    <string name="header_color_neutral">Neutral</string>
+    <string name="header_color_dark">Dunkel</string>
+    <string name="header_color_dynamic">Farben des Hintergrundbilds</string>
+    <string name="editor_apps">Apps</string>
+    <string name="sort_by">Sortieren nach</string>
+    <string name="sort_default">Standard (%1$s)</string>
+    <string name="edit_profile_named">Profil %1$s bearbeiten</string>
 </resources>

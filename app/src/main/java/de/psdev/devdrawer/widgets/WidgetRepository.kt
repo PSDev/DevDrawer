@@ -6,12 +6,15 @@ import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.receivers.UpdateReceiver
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
 @Singleton
 class WidgetRepository @Inject constructor(
     private val application: Application,
     private val devDrawerDatabase: DevDrawerDatabase
 ) : IWidgetRepository {
+
+    override fun widgetsFlow(): Flow<List<Widget>> = devDrawerDatabase.widgetDao().findAllFlow()
 
     override fun widgetFlow(widgetId: Int) = devDrawerDatabase.widgetDao().widgetWithIdObservable(widgetId)
 

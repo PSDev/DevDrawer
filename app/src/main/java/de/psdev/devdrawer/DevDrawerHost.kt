@@ -26,6 +26,9 @@ fun DevDrawerHost(
             WidgetListScreen(
                 onWidgetClick = { widget ->
                     navigator.navigate(WidgetEditorRoute(widget.id))
+                },
+                onChooseAppsClick = { widget ->
+                    navigator.navigate(WidgetSetupRoute(widget.id))
                 }
             )
         }

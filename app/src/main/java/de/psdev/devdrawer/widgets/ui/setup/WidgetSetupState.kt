@@ -2,7 +2,7 @@ package de.psdev.devdrawer.widgets.ui.setup
 
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.Immutable
-import de.psdev.devdrawer.database.WidgetProfile
+import de.psdev.devdrawer.profiles.ProfileWithAppCount
 
 enum class SetupSource { MY_APPS, PATTERN, PROFILE }
 
@@ -17,16 +17,13 @@ data class SetupApp(
 )
 
 @Immutable
-data class SetupProfile(val profile: WidgetProfile, val appCount: Int)
-
-@Immutable
 data class WidgetSetupState(
     val isLoading: Boolean = true,
     val source: SetupSource = SetupSource.MY_APPS,
     val apps: List<SetupApp> = emptyList(),
     val selectedPackageName: String? = null,
     val pattern: String = "",
-    val profiles: List<SetupProfile> = emptyList(),
+    val profiles: List<ProfileWithAppCount> = emptyList(),
     val selectedProfileId: String? = null,
     /** How many installed apps the widget will list with the current choice. */
     val matchCount: Int = 0

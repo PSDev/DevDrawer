@@ -11,29 +11,47 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.psdev.devdrawer.apps.IAppsService
+import de.psdev.devdrawer.apps.matching
 import de.psdev.devdrawer.appwidget.DDWidgetProvider
-import de.psdev.devdrawer.database.DevDrawerDatabase
+import de.psdev.devdrawer.profiles.IPackageFilterRepository
+import de.psdev.devdrawer.profiles.IWidgetProfileRepository
 import de.psdev.devdrawer.receivers.PinWidgetSuccessReceiver
+import de.psdev.devdrawer.widgets.IWidgetRepository
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class WidgetListScreenViewModel @Inject constructor(
     private val application: Application,
-    database: DevDrawerDatabase
+    widgetRepository: IWidgetRepository,
+    widgetProfileRepository: IWidgetProfileRepository,
+    packageFilterRepository: IPackageFilterRepository,
+    private val appsService: IAppsService
 ) : ViewModel() {
 
-    val state = database.widgetDao().findAllFlow()
-        .map { widgets ->
-            val appWidgetManager: AppWidgetManager? = application.getSystemService()
-            WidgetListScreenState.Loaded(
-                widgets = widgets,
-                isRequestPinAppWidgetSupported = appWidgetManager?.isRequestPinAppWidgetSupported == true
-            )
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetListScreenState.Loading)
+    val state = combine(
+        widgetRepository.widgetsFlow(),
+        widgetProfileRepository.widgetProfilesFlow(),
+        packageFilterRepository.allFiltersFlow()
+    ) { widgets, profiles, filters ->
+        val packages = appsService.installedPackages(includeSystemApps = true)
+        val profilesById = profiles.associateBy { it.id }
+        val filtersByProfile = filters.groupBy { it.profileId }
+        val appWidgetManager: AppWidgetManager? = application.getSystemService()
+        WidgetListScreenState.Loaded(
+            widgets = widgets.map { widget ->
+                WidgetSummary(
+                    widget = widget,
+                    profileName = profilesById[widget.profileId]?.name.orEmpty(),
+                    appCount = packages.matching(filtersByProfile[widget.profileId].orEmpty()).size
+                )
+            },
+            isRequestPinAppWidgetSupported = appWidgetManager?.isRequestPinAppWidgetSupported == true
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetListScreenState.Loading)
 
     @SuppressLint("InlinedApi")
     fun requestAppWidgetPinning(context: Context) {

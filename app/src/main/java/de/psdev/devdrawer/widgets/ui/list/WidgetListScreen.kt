@@ -39,13 +39,15 @@ import java.util.UUID
 @Composable
 fun WidgetListScreen(
     widgetListScreenViewModel: WidgetListScreenViewModel = hiltViewModel(),
-    onWidgetClick: (Widget) -> Unit
+    onWidgetClick: (Widget) -> Unit,
+    onChooseAppsClick: (Widget) -> Unit
 ) {
     val context = LocalContext.current
     val state by widgetListScreenViewModel.state.collectAsStateWithLifecycle()
     WidgetListScreen(
         state = state,
         onWidgetClick = onWidgetClick,
+        onChooseAppsClick = onChooseAppsClick,
         onRequestPinWidgetClick = {
             widgetListScreenViewModel.requestAppWidgetPinning(context)
         }
@@ -56,6 +58,7 @@ fun WidgetListScreen(
 fun WidgetListScreen(
     state: WidgetListScreenState,
     onWidgetClick: (Widget) -> Unit = {},
+    onChooseAppsClick: (Widget) -> Unit = {},
     onRequestPinWidgetClick: () -> Unit = {}
 ) {
     when (state) {
@@ -102,6 +105,7 @@ fun WidgetListScreen(
                     WidgetList(
                         widgets = widgets,
                         onWidgetClick = onWidgetClick,
+                        onChooseAppsClick = onChooseAppsClick,
                         contentPadding = PaddingValues(bottom = 80.dp)
                     )
                     if (state.isRequestPinAppWidgetSupported) {
@@ -111,7 +115,7 @@ fun WidgetListScreen(
                                 .align(Alignment.BottomEnd)
                                 .padding(end = 16.dp, bottom = 16.dp)
                         ) {
-                            Icon(imageVector = Icons.Outlined.Add, contentDescription = "Pin new widget")
+                            Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(R.string.pin_new_widget))
                         }
                     }
                 }
@@ -123,7 +127,7 @@ fun WidgetListScreen(
 sealed class WidgetListScreenState {
     data object Loading : WidgetListScreenState()
     data class Loaded(
-        val widgets: List<Widget>,
+        val widgets: List<WidgetSummary>,
         val isRequestPinAppWidgetSupported: Boolean = false
     ) : WidgetListScreenState()
 }
@@ -169,7 +173,7 @@ fun Preview_WidgetListScreen_Empty_SupportsPinning() {
 @Composable
 fun Preview_WidgetListScreen_NotEmpty() {
     DevDrawerTheme {
-        WidgetListScreen(WidgetListScreenState.Loaded(emptyList()))
+        WidgetListScreen(WidgetListScreenState.Loaded(testWidgets()))
     }
 }
 
@@ -178,21 +182,19 @@ fun Preview_WidgetListScreen_NotEmpty() {
 @Composable
 fun Preview_WidgetListScreen_NotEmpty_SupportsPinning() {
     DevDrawerTheme {
-        WidgetListScreen(WidgetListScreenState.Loaded(emptyList(), true))
+        WidgetListScreen(WidgetListScreenState.Loaded(testWidgets(), true))
     }
 }
 
-fun testWidgets(): List<Widget> = listOf(
-    Widget(
-        id = 1,
-        name = "Test Widget",
-        color = Color.BLACK,
-        profileId = UUID.randomUUID().toString()
+fun testWidgets(): List<WidgetSummary> = listOf(
+    WidgetSummary(
+        widget = Widget(id = 1, name = "Work apps", color = Color.BLACK, profileId = UUID.randomUUID().toString()),
+        profileName = "Signed like DevDrawer2",
+        appCount = 7
     ),
-    Widget(
-        id = 2,
-        name = "Test Widget 2",
-        color = Color.BLACK,
-        profileId = UUID.randomUUID().toString()
+    WidgetSummary(
+        widget = Widget(id = 2, name = "Widget 2", color = Color.BLACK, profileId = UUID.randomUUID().toString()),
+        profileName = "Default",
+        appCount = 0
     )
 )

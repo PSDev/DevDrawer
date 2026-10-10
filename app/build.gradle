@@ -33,7 +33,6 @@ android {
         }
     }
     buildFeatures {
-        viewBinding true  // Required by ChooseActivityDialog (pending Compose migration)
         compose true
         buildConfig true
     }

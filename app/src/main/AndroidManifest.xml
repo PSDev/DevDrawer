@@ -60,7 +60,7 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:taskAffinity=""
-            android:theme="@style/AppTheme.Dialog.NoActionBar" />
+            android:theme="@style/AppTheme.Translucent" />
 
         <receiver
             android:name=".appwidget.DDWidgetProvider"

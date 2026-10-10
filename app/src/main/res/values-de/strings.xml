@@ -178,4 +178,6 @@
     <string name="app_not_installed">Diese App ist nicht mehr installiert</string>
     <string name="system_app_uninstall">System-Apps können nicht deinstalliert werden</string>
     <string name="action_unavailable">Dein Gerät unterstützt das nicht</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="back">Zurück</string>
 </resources>

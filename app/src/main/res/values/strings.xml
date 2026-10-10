@@ -218,4 +218,8 @@
     <string name="app_not_installed">This app is no longer installed</string>
     <string name="system_app_uninstall">System apps can\'t be uninstalled</string>
     <string name="action_unavailable">Your device can\'t do this</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_play_store" translatable="false">Play Store</string>
+    <string name="about_github" translatable="false">GitHub</string>
+    <string name="back">Back</string>
 </resources>

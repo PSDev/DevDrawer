@@ -69,6 +69,8 @@ fun DevDrawerApp(
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val optInThanksMessage = stringResource(id = R.string.analytics_opt_in_thanks)
+    val okLabel = stringResource(id = R.string.ok)
     val scope = rememberCoroutineScope()
 
     DevDrawerTheme(
@@ -114,8 +116,8 @@ fun DevDrawerApp(
                         trackingService.optIn()
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = "Thank you! You can change your decision anytime on the settings tab.",
-                                actionLabel = "OK",
+                                message = optInThanksMessage,
+                                actionLabel = okLabel,
                                 duration = SnackbarDuration.Long
                             )
                         }
@@ -195,23 +197,17 @@ fun AnalyticsOptInDialog(
     AlertDialog(
         onDismissRequest = { /* Not cancelable */ },
         title = {
-            Text(text = "Usage analytics", fontWeight = FontWeight.Bold)
+            Text(text = stringResource(id = R.string.analytics_opt_in_title), fontWeight = FontWeight.Bold)
         },
         text = {
-            Text(
-                text = "In order for us to be able to better understand your use of the app we would like to analyse your usage.\n\n" +
-                        "We use Firebase Analytics to track opened screens and certain interactions.\n\n" +
-                        "We don't store personally identifiable data.\n\n" +
-                        "Additionally we use Firebase Crashlytics for app crashes.\n\n" +
-                        "Thank you for considering!"
-            )
+            Text(text = stringResource(id = R.string.analytics_opt_in_message))
         },
         confirmButton = {
             TextButton(
                 enabled = buttonsEnabled,
                 onClick = onOptIn
             ) {
-                Text("Opt-in")
+                Text(stringResource(id = R.string.analytics_opt_in))
             }
         },
         dismissButton = {
@@ -219,7 +215,7 @@ fun AnalyticsOptInDialog(
                 enabled = buttonsEnabled,
                 onClick = onOptOut
             ) {
-                Text("Opt-out")
+                Text(stringResource(id = R.string.analytics_opt_out))
             }
         }
     )

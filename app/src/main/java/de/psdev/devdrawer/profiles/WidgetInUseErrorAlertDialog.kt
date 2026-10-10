@@ -15,10 +15,16 @@ fun WidgetInUseErrorAlertDialog(
     AlertDialog(
         onDismissRequest = { },
         title = {
-            Text(text = "Error")
+            Text(text = stringResource(id = R.string.error))
         },
         text = {
-            Text(text = "The profile ${state.widgetProfile.name} is used by: \n" + state.widgets.joinToString("\n") { it.name })
+            Text(
+                text = stringResource(
+                    id = R.string.profile_used_by_widgets,
+                    state.widgetProfile.name,
+                    state.widgets.joinToString("\n") { it.name }
+                )
+            )
         },
         confirmButton = {
             TextButton(onClick = {

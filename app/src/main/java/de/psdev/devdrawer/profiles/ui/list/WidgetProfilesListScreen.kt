@@ -68,29 +68,13 @@ fun WidgetProfilesScreen(
     )
     when (val state = deleteDialogShown) {
         DeleteDialogState.Hidden -> Unit
-        is DeleteDialogState.Showing -> AlertDialog(
-            onDismissRequest = { deleteDialogShown = DeleteDialogState.Hidden },
-            title = {
-                Text(text = "Confirm")
+        is DeleteDialogState.Showing -> DeleteProfileDialog(
+            widgetProfile = state.widgetProfile,
+            onConfirm = {
+                viewModel.deleteProfile(state.widgetProfile)
+                deleteDialogShown = DeleteDialogState.Hidden
             },
-            text = {
-                Text(text = "Do you really want to delete the profile '${state.widgetProfile.name}'?")
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteProfile(state.widgetProfile)
-                    deleteDialogShown = DeleteDialogState.Hidden
-                }) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    deleteDialogShown = DeleteDialogState.Hidden
-                }) {
-                    Text("Cancel")
-                }
-            }
+            onDismiss = { deleteDialogShown = DeleteDialogState.Hidden }
         )
 
         is DeleteDialogState.InUseError -> {
@@ -99,6 +83,33 @@ fun WidgetProfilesScreen(
             })
         }
     }
+}
+
+@Composable
+internal fun DeleteProfileDialog(
+    widgetProfile: WidgetProfile,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(id = R.string.confirm))
+        },
+        text = {
+            Text(text = stringResource(id = R.string.delete_profile_confirmation, widgetProfile.name))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(id = R.string.delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable

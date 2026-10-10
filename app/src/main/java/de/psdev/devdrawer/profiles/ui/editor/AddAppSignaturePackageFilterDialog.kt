@@ -140,7 +140,7 @@ internal fun AddAppSignaturePackageFilterDialog(
                 }
             }
 
-            is ViewState.Error -> Text(text = "Error: ${viewState.message}")
+            is ViewState.Error -> Text(text = stringResource(id = R.string.error_message, viewState.message))
         }
     }
 }

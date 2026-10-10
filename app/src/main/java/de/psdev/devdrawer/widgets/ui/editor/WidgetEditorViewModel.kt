@@ -8,9 +8,18 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.psdev.devdrawer.analytics.Events
 import de.psdev.devdrawer.analytics.TrackingService
+import de.psdev.devdrawer.apps.IAppsService
+import de.psdev.devdrawer.apps.comparator
+import de.psdev.devdrawer.apps.matching
+import de.psdev.devdrawer.appwidget.PackageHashInfo
+import de.psdev.devdrawer.appwidget.SortOrder
 import de.psdev.devdrawer.database.Widget
+import de.psdev.devdrawer.database.WidgetHeaderColor
 import de.psdev.devdrawer.database.WidgetProfile
+import de.psdev.devdrawer.profiles.IPackageFilterRepository
 import de.psdev.devdrawer.profiles.IWidgetProfileRepository
+import de.psdev.devdrawer.profiles.ProfileWithAppCount
+import de.psdev.devdrawer.settings.ISortOrderSettings
 import de.psdev.devdrawer.widgets.IWidgetRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,7 +35,10 @@ import kotlinx.coroutines.launch
 class WidgetEditorViewModel @AssistedInject constructor(
     @Assisted private val widgetId: Int,
     private val widgetRepository: IWidgetRepository,
-    private val widgetProfileRepository: IWidgetProfileRepository,
+    widgetProfileRepository: IWidgetProfileRepository,
+    packageFilterRepository: IPackageFilterRepository,
+    private val appsService: IAppsService,
+    private val sortOrderSettings: ISortOrderSettings,
     private val trackingService: TrackingService
 ) : ViewModel() {
 
@@ -36,6 +48,7 @@ class WidgetEditorViewModel @AssistedInject constructor(
     }
 
     private val editableWidgetState: MutableStateFlow<Widget?> = MutableStateFlow(null)
+    private val installedPackages: MutableStateFlow<List<PackageHashInfo>> = MutableStateFlow(emptyList())
 
     init {
         // Initialise the editable copy from the persisted widget on first load.
@@ -44,17 +57,32 @@ class WidgetEditorViewModel @AssistedInject constructor(
             val initial = widgetRepository.widgetFlow(widgetId).filterNotNull().first()
             editableWidgetState.value = initial
         }
+        viewModelScope.launch {
+            installedPackages.value = appsService.installedPackages(includeSystemApps = true)
+        }
     }
 
     val state: StateFlow<WidgetEditorViewState> = combine(
         widgetRepository.widgetFlow(widgetId),
         widgetProfileRepository.widgetProfilesFlow(),
-        editableWidgetState
-    ) { persistedWidget, widgetProfiles, editableWidget ->
+        packageFilterRepository.allFiltersFlow(),
+        editableWidgetState,
+        installedPackages
+    ) { persistedWidget, widgetProfiles, filters, editableWidget, packages ->
+        val filtersByProfile = filters.groupBy { it.profileId }
+        val currentWidget = editableWidget ?: persistedWidget
+        val defaultSortOrder = sortOrderSettings.defaultSortOrder()
+        val matched = currentWidget?.let { packages.matching(filtersByProfile[it.profileId].orEmpty()) }.orEmpty()
+        val sortOrder = currentWidget?.sortOrder ?: defaultSortOrder
         WidgetEditorViewState(
             persistedWidget = persistedWidget,
-            widgetProfiles = widgetProfiles,
-            editableWidget = editableWidget ?: persistedWidget
+            editableWidget = currentWidget,
+            profiles = widgetProfiles.map { profile ->
+                ProfileWithAppCount(profile, packages.matching(filtersByProfile[profile.id].orEmpty()).size)
+            },
+            previewApps = appsService.appInfos(matched).sortedWith(sortOrder.comparator()).take(PREVIEW_APP_COUNT),
+            previewAppCount = matched.size,
+            defaultSortOrder = defaultSortOrder
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetEditorViewState.Empty)
 
@@ -62,8 +90,13 @@ class WidgetEditorViewModel @AssistedInject constructor(
         editableWidgetState.update { it?.copy(name = newName) }
     }
 
-    fun onWidgetColorChanged(color: Int) {
-        editableWidgetState.update { it?.copy(color = color) }
+    fun onHeaderColorSelected(headerColor: WidgetHeaderColor) {
+        editableWidgetState.update { it?.copy(headerColor = headerColor) }
+    }
+
+    /** Null resets the widget to the sort order from Settings. */
+    fun onSortOrderSelected(sortOrder: SortOrder?) {
+        editableWidgetState.update { it?.copy(sortOrder = sortOrder) }
     }
 
     fun onWidgetProfileSelected(widgetProfile: WidgetProfile) {
@@ -83,5 +116,9 @@ class WidgetEditorViewModel @AssistedInject constructor(
             widgetRepository.delete(widget)
             trackingService.trackAction(Events.WIDGET_DELETED)
         }
+    }
+
+    private companion object {
+        const val PREVIEW_APP_COUNT = 3
     }
 }

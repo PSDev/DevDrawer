@@ -70,7 +70,6 @@
     <string name="cancel">Cancel</string>
     <string name="no_widgets_created">No widgets created</string>
     <string name="add_widget">Add widget</string>
-    <string name="pick_widget_color">Pick widget color</string>
     <string name="ok">OK</string>
     <string name="error_profile_in_use">Cannot delete profile, still being used by widgets</string>
     <string name="no">No</string>
@@ -78,7 +77,6 @@
     <string name="title_activity_compose">ComposeActivity</string>
 
     <!-- WidgetCard -->
-    <string name="widget_id_template">ID: %1$d</string>
 
     <!-- WidgetProfileListScreen -->
     <string name="widget_profile_list_create_new">Create new profile</string>
@@ -166,4 +164,20 @@
         <item quantity="one">%d app will appear</item>
         <item quantity="other">%d apps will appear</item>
     </plurals>
+
+    <!-- Widgets list and widget editor -->
+    <string name="widget_card_summary">Profile “%1$s” · %2$s</string>
+    <string name="widget_card_no_apps">No apps match · Choose apps</string>
+    <string name="pin_new_widget">Add widget to home screen</string>
+    <string name="delete_widget">Delete widget</string>
+    <string name="widget_preview">Widget preview</string>
+    <string name="header_color">Header colour</string>
+    <string name="header_color_amber">Amber</string>
+    <string name="header_color_neutral">Neutral</string>
+    <string name="header_color_dark">Dark</string>
+    <string name="header_color_dynamic">Wallpaper colours</string>
+    <string name="editor_apps">Apps</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_default">Default (%1$s)</string>
+    <string name="edit_profile_named">Edit profile %1$s</string>
 </resources>

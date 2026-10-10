@@ -18,7 +18,6 @@ import de.psdev.devdrawer.profiles.ui.editor.PackageFilterPreviewDialogViewModel
 import de.psdev.devdrawer.profiles.ui.list.DeleteProfileDialog
 import de.psdev.devdrawer.settings.ListPreference
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
-import de.psdev.devdrawer.widgets.ui.editor.ColorSelectionDialog
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -77,17 +76,6 @@ class DialogStringResourcesTest {
         // Then
         assertTexts("Profil kann nicht gelöscht werden, da es noch von Widgets verwendet wird", "Schließen")
         composeTestRule.onNodeWithText("Das Profil Arbeit wird verwendet von:", substring = true).assertExists()
-    }
-
-    @Test
-    fun `given a German locale, when showing the color selection dialog, then it reads German`() {
-        // Given / When
-        composeTestRule.setContent {
-            DevDrawerTheme { ColorSelectionDialog(initialColor = Color.BLACK) }
-        }
-
-        // Then
-        assertTexts("Widget-Farbe wählen")
     }
 
     @Test

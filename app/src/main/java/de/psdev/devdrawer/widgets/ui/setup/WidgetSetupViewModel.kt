@@ -20,6 +20,7 @@ import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
 import de.psdev.devdrawer.profiles.IWidgetProfileRepository
+import de.psdev.devdrawer.profiles.ProfileWithAppCount
 import de.psdev.devdrawer.widgets.IWidgetRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,7 +79,7 @@ class WidgetSetupViewModel @AssistedInject constructor(
             state.copy(
                 isLoading = false,
                 apps = apps,
-                profiles = profiles.map { SetupProfile(it, installedPackages.matching(filtersByProfile[it.id].orEmpty()).size) },
+                profiles = profiles.map { ProfileWithAppCount(it, installedPackages.matching(filtersByProfile[it.id].orEmpty()).size) },
                 selectedProfileId = currentProfileId?.takeIf { id -> profiles.any { it.id == id } }
             ).withMatchCount()
         }

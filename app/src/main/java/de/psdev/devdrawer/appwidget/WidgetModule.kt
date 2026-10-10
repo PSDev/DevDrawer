@@ -1,7 +1,5 @@
 package de.psdev.devdrawer.appwidget
 
-import android.app.Application
-import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.EntryPoint
@@ -9,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.psdev.devdrawer.apps.IAppsService
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
-import de.psdev.devdrawer.settings.defaultSortOrder
+import de.psdev.devdrawer.settings.ISortOrderSettings
 import de.psdev.devdrawer.widgets.IWidgetRepository
 
 @Module
@@ -18,16 +16,15 @@ class WidgetModule {
 
     @Provides
     fun widgetContentLoader(
-        application: Application,
         widgetRepository: IWidgetRepository,
         packageFilterRepository: IPackageFilterRepository,
         appsService: IAppsService,
-        sharedPreferences: SharedPreferences
+        sortOrderSettings: ISortOrderSettings
     ): WidgetContentLoader = WidgetContentLoader(
         widgetRepository = widgetRepository,
         packageFilterRepository = packageFilterRepository,
         appsService = appsService,
-        defaultSortOrder = { sharedPreferences.defaultSortOrder(application) }
+        defaultSortOrder = { sortOrderSettings.defaultSortOrder() }
     )
 }
 

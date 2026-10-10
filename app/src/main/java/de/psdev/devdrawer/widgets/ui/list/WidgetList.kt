@@ -16,9 +16,10 @@ import de.psdev.devdrawer.widgets.WidgetCard
 
 @Composable
 fun WidgetList(
-    widgets: List<Widget>,
+    widgets: List<WidgetSummary>,
     modifier: Modifier = Modifier,
     onWidgetClick: (Widget) -> Unit = {},
+    onChooseAppsClick: (Widget) -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     LazyColumn(
@@ -27,8 +28,8 @@ fun WidgetList(
             .fillMaxHeight(),
         contentPadding = contentPadding,
     ) {
-        items(widgets, key = { it.id }) { widget ->
-            WidgetCard(widget = widget, onWidgetClick = onWidgetClick)
+        items(widgets, key = { it.widget.id }) { summary ->
+            WidgetCard(summary = summary, onWidgetClick = onWidgetClick, onChooseAppsClick = onChooseAppsClick)
         }
     }
 }

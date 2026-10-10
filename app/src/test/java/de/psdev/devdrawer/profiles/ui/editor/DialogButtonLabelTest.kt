@@ -30,18 +30,21 @@ class DialogButtonLabelTest {
     )
 
     @Test
-    fun `given the add package name filter dialog, when loaded, then its buttons are in sentence case`() {
+    fun `given the package pattern sheet, when shown, then its button is in sentence case`() {
         // Given / When
         composeTestRule.setContent {
             DevDrawerTheme {
-                AddPackageNamePackageFilterDialog(
-                    viewState = AddPackageNamePackageFilterDialogViewModel.ViewState.Loaded(listOf("com.example.app"))
+                PackagePatternSheet(
+                    preview = PatternPreview(pattern = "com.example.*", isValid = true),
+                    onPatternChange = {},
+                    onAdd = {},
+                    onDismiss = {}
                 )
             }
         }
 
         // Then
-        assertSentenceCase("Cancel", "Add")
+        assertSentenceCase("Add")
     }
 
     @Test

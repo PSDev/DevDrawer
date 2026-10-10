@@ -37,6 +37,10 @@ data class PackageFilter(
     @delegate:Ignore
     private val filterRegex: Regex? by lazy { runCatching { filter.replace("*", ".*").toRegex() }.getOrNull() }
 
+    /** A package name filter that is non-blank and compiles; an invalid one matches nothing. */
+    val isValidPattern: Boolean
+        get() = type == FilterType.PACKAGE_NAME && filter.isNotBlank() && filterRegex != null
+
     fun matches(packageHashInfo: PackageHashInfo): Boolean = when (type) {
         FilterType.PACKAGE_NAME -> filterRegex?.matches(packageHashInfo.packageName) == true
         FilterType.SIGNATURE -> filter == packageHashInfo.signatureHashSha256

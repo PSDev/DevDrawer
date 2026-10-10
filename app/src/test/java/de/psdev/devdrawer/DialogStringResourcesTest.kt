@@ -12,8 +12,8 @@ import de.psdev.devdrawer.profiles.DeleteDialogState
 import de.psdev.devdrawer.profiles.WidgetInUseErrorAlertDialog
 import de.psdev.devdrawer.profiles.ui.editor.AddAppSignatureFilterSheet
 import de.psdev.devdrawer.profiles.ui.editor.AddAppSignaturePackageFilterDialogViewModel
-import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialog
-import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialogViewModel
+import de.psdev.devdrawer.profiles.ui.editor.PackagePatternSheet
+import de.psdev.devdrawer.profiles.ui.editor.PatternPreview
 import de.psdev.devdrawer.settings.ListPreference
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
 import org.junit.Rule
@@ -86,21 +86,24 @@ class DialogStringResourcesTest {
     }
 
     @Test
-    fun `given a German locale, when a filter dialog fails to load, then the error reads German`() {
+    fun `given a German locale, when a filter sheet fails to load or a pattern is invalid, then the message reads German`() {
         // Given / When
         composeTestRule.setContent {
             DevDrawerTheme {
                 AddAppSignatureFilterSheet(
                     viewState = AddAppSignaturePackageFilterDialogViewModel.ViewState.Error("kaputt")
                 )
-                AddPackageNamePackageFilterDialog(
-                    viewState = AddPackageNamePackageFilterDialogViewModel.ViewState.Error("defekt")
+                PackagePatternSheet(
+                    preview = PatternPreview(pattern = "com.("),
+                    onPatternChange = {},
+                    onAdd = {},
+                    onDismiss = {}
                 )
             }
         }
 
         // Then
-        assertTexts("Fehler: kaputt", "Fehler: defekt")
+        assertTexts("Fehler: kaputt", "Kein gültiges Muster")
     }
 
     private fun assertTexts(vararg texts: String) {

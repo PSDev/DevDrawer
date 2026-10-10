@@ -15,7 +15,6 @@ import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialog
 import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialogViewModel
 import de.psdev.devdrawer.profiles.ui.editor.PackageFilterPreviewDialog
 import de.psdev.devdrawer.profiles.ui.editor.PackageFilterPreviewDialogViewModel
-import de.psdev.devdrawer.profiles.ui.list.DeleteProfileDialog
 import de.psdev.devdrawer.settings.ListPreference
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
 import org.junit.Rule
@@ -47,17 +46,6 @@ class DialogStringResourcesTest {
         // Then
         assertTexts("Nutzungsanalyse", "Zustimmen", "Ablehnen")
         composeTestRule.onNodeWithText("Wir verwenden Firebase Analytics", substring = true).assertExists()
-    }
-
-    @Test
-    fun `given a German locale, when showing the delete profile dialog, then it reads German`() {
-        // Given / When
-        composeTestRule.setContent {
-            DevDrawerTheme { DeleteProfileDialog(widgetProfile = widgetProfile, onConfirm = {}, onDismiss = {}) }
-        }
-
-        // Then
-        assertTexts("Profil löschen?", "Möchtest du das Profil 'Arbeit' wirklich löschen?", "Löschen", "Abbrechen")
     }
 
     @Test

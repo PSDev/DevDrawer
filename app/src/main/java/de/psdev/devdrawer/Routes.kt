@@ -19,4 +19,7 @@ data object AboutRoute : NavKey
 data class WidgetEditorRoute(val id: Int) : NavKey
 
 @Serializable
+data class WidgetSetupRoute(val widgetId: Int) : NavKey
+
+@Serializable
 data class WidgetProfileEditorRoute(val id: String) : NavKey

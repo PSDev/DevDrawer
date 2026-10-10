@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import de.psdev.devdrawer.database.Widget
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -21,7 +22,16 @@ class MainActivity : BaseActivity() {
     companion object : KLogging() {
         /** Set by the widget's empty state: open the widget's setup instead of its editor. */
         const val EXTRA_OPEN_SETUP = "open_setup"
+
+        private const val STATE_EXTERNAL_SETUP_WIDGET_ID = "external_setup_widget_id"
+        private const val STATE_IS_CONFIGURATION = "is_configuration"
     }
+
+    /** The widget whose setup was opened from outside the app (launcher or widget); the activity closes when it's done. */
+    private var externalSetupWidgetId: Int = INVALID_APPWIDGET_ID
+
+    /** True while the launcher waits for this activity's result to place or reconfigure [externalSetupWidgetId]. */
+    private var isConfiguration: Boolean = false
 
     // Holds intents delivered via onNewIntent so they can be handled inside the Compose tree.
     private val newIntent = mutableStateOf<Intent?>(null)
@@ -32,6 +42,11 @@ class MainActivity : BaseActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            externalSetupWidgetId = savedInstanceState.getInt(STATE_EXTERNAL_SETUP_WIDGET_ID, INVALID_APPWIDGET_ID)
+            isConfiguration = savedInstanceState.getBoolean(STATE_IS_CONFIGURATION, false)
+            if (isConfiguration) setConfigurationResult(RESULT_CANCELED)
+        }
         enableEdgeToEdge()
         setContent {
             val navigationState = rememberNavigationState(
@@ -59,7 +74,8 @@ class MainActivity : BaseActivity() {
             DevDrawerApp(
                 navigationState = navigationState,
                 navigator = navigator,
-                trackingService = trackingService
+                trackingService = trackingService,
+                onWidgetSetupDone = { widget -> onWidgetSetupDone(widget, navigator) }
             )
         }
         lifecycleScope.launch {
@@ -67,6 +83,12 @@ class MainActivity : BaseActivity() {
                 trackingService.checkOptIn()
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_EXTERNAL_SETUP_WIDGET_ID, externalSetupWidgetId)
+        outState.putBoolean(STATE_IS_CONFIGURATION, isConfiguration)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -77,8 +99,30 @@ class MainActivity : BaseActivity() {
 
     private fun handleIntent(intent: Intent, navigator: Navigator) {
         val widgetId = intent.getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID)
-        if (widgetId != INVALID_APPWIDGET_ID) {
-            navigator.navigate(WidgetEditorRoute(widgetId))
+        val launch = widgetLaunchFor(
+            action = intent.action,
+            widgetId = widgetId,
+            openSetup = intent.getBooleanExtra(EXTRA_OPEN_SETUP, false)
+        ) ?: return
+        if (launch.route is WidgetSetupRoute) {
+            externalSetupWidgetId = widgetId
+            isConfiguration = launch.isConfiguration
+            // Leaving setup without finishing it removes a widget the launcher is placing.
+            if (isConfiguration) setConfigurationResult(RESULT_CANCELED)
         }
+        navigator.navigate(launch.route)
+    }
+
+    private fun onWidgetSetupDone(widget: Widget, navigator: Navigator) {
+        if (widget.id == externalSetupWidgetId) {
+            if (isConfiguration) setConfigurationResult(RESULT_OK)
+            finish()
+        } else {
+            navigator.goBack()
+        }
+    }
+
+    private fun setConfigurationResult(resultCode: Int) {
+        setResult(resultCode, Intent().putExtra(EXTRA_APPWIDGET_ID, externalSetupWidgetId))
     }
 }

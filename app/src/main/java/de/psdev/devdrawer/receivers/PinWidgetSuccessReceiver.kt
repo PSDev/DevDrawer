@@ -4,13 +4,9 @@ import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import de.psdev.devdrawer.appwidget.SaveWidgetWorker
 import mu.KLogging
 
+/** Called by the launcher once the user confirms placing a widget requested from inside the app. */
 class PinWidgetSuccessReceiver : BroadcastReceiver() {
 
     companion object : KLogging() {
@@ -18,21 +14,10 @@ class PinWidgetSuccessReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        logger.warn { "onReceive[context=$context, intent=$intent]" }
-        val widgetId = intent.getIntExtra(
-            AppWidgetManager.EXTRA_APPWIDGET_ID,
-            AppWidgetManager.INVALID_APPWIDGET_ID
-        )
+        val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        logger.info { "Widget $widgetId pinned" }
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            val inputData = Data.Builder().putInt(SaveWidgetWorker.ARG_WIDGET_ID, widgetId).build()
-            val request = OneTimeWorkRequestBuilder<SaveWidgetWorker>()
-                .setInputData(inputData)
-                .build()
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                "SAVE_WIDGET_$widgetId",
-                ExistingWorkPolicy.REPLACE,
-                request
-            )
+            PinnedWidgets.widgetPinned(widgetId)
         }
     }
 }

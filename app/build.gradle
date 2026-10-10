@@ -50,6 +50,11 @@ android {
             includeAndroidResources = true
         }
     }
+    sourceSets {
+        // Room schema exports for MigrationTestHelper. Robolectric reads the app's merged assets, so they go into
+        // debug builds (a few KB of JSON); release builds don't include them.
+        debug.assets.srcDirs += files("$rootDir/schemas")
+    }
     final def keystorePropertiesFile = rootProject.file("release.properties")
     signingConfigs {
         debug {
@@ -123,6 +128,7 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.mockk
     testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.androidx.room.testing
 
     //
     // Runtime dependencies

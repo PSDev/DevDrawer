@@ -10,11 +10,8 @@ import de.psdev.devdrawer.database.WidgetHeaderColor
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-// SDK 36 requires Java 21; use SDK 33 which is compatible with the project's Java 17 toolchain.
-@Config(sdk = [33])
 class DevDrawerWidgetContentTest {
 
     private fun state(apps: List<WidgetAppItem>, hiddenAppCount: Int = 0) = WidgetUiState(

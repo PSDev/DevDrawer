@@ -26,8 +26,7 @@ import org.robolectric.annotation.Config
  * Dialog text comes from string resources, so it is translated: under a German locale every dialog reads German.
  */
 @RunWith(RobolectricTestRunner::class)
-// SDK 36 requires Java 21; use SDK 33 which is compatible with the project's Java 17 toolchain.
-@Config(sdk = [33], qualifiers = "de")
+@Config(qualifiers = "de")
 class DialogStringResourcesTest {
 
     @get:Rule

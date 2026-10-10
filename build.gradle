@@ -4,10 +4,8 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
-    alias(libs.plugins.navigation.safeargs) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.sonarqube)
 }
 
 apply from: rootProject.file('gradle/versioning.gradle')
@@ -29,7 +27,7 @@ tasks.register('clean', Delete) {
 }
 
 wrapper {
-    gradleVersion = '9.4.1'
+    gradleVersion = '9.8.1'
     distributionType = "all"
 }
 

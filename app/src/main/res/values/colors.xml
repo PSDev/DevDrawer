@@ -21,27 +21,4 @@
     <color name="widgetSelectedColor">#4DFFC107</color>
     <color name="widgetIconColor">#000</color>
 
-    <array name="widget_colors">
-        <item>@color/black</item>
-        <item>@color/white</item>
-        <item>@color/amber_400</item>
-        <item>@color/blue_400</item>
-        <item>@color/blue_grey_400</item>
-        <item>@color/brown_400</item>
-        <item>@color/cyan_400</item>
-        <item>@color/deep_orange_400</item>
-        <item>@color/deep_purple_400</item>
-        <item>@color/green_400</item>
-        <item>@color/grey_400</item>
-        <item>@color/indigo_400</item>
-        <item>@color/light_blue_400</item>
-        <item>@color/light_green_400</item>
-        <item>@color/lime_400</item>
-        <item>@color/orange_400</item>
-        <item>@color/pink_400</item>
-        <item>@color/purple_400</item>
-        <item>@color/red_400</item>
-        <item>@color/teal_400</item>
-        <item>@color/yellow_400</item>
-    </array>
 </resources>

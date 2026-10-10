@@ -1,39 +1,35 @@
 [versions]
 activityCompose = "1.13.0"
-androidGradlePlugin = "9.4.0"
-appcompat = "1.7.1"
+androidGradlePlugin = "9.4.1"
+appcompat = "1.8.0"
 browser = "1.10.0"
-colorpicker = "2.3"
-coreKtx = "1.19.0"
-coreSplashscreen = "1.2.0"
+coreKtx = "1.19.1"
 dagger = "2.60.1"
-firebaseBom = "34.16.0"
+firebaseBom = "35.0.0"
 googleServices = "4.5.0"
-firebaseCrashlytics = "3.0.7"
-navigation = "2.9.8"
-ksp = "2.3.6"
-sonarqube = "7.3.1.8318"
-playPublisher = "4.0.0"
+firebaseCrashlytics = "3.0.8"
+ksp = "2.3.12"
+playPublisher = "4.1.1"
 hilt = "1.4.0"
-kotlin = "2.4.10"
+kotlin = "2.4.21"
+material = "1.14.0"
 kotlinLogging = "3.0.5"
 kotlinxCoroutinesAndroid = "1.11.0"
 kotlinxSerializationJson = "1.11.0"
-aboutLibraries = "15.0.3"
+aboutLibraries = "15.2.0"
 androidx-lifecycle = "2.11.0"
 androidx-preference = "1.2.1"
-mockkVersion = "1.14.11"
-okhttp = "5.4.0"
-okio = "3.17.0"
+mockk = "1.14.11"
+okio = "3.18.2"
 playUpdate = "2.1.0"
 playReview = "2.0.2"
-robolectric = "4.16.1"
+robolectric = "4.17"
 junit = "4.13.2"
-androidxComposeBom = "2026.06.01"
-androidx-room = "2.8.4"
-androidx-work = "2.11.2"
+androidxComposeBom = "2026.09.00"
+androidx-room = "2.8.5"
+androidx-work = "2.12.0"
 slf4jAndroidLogger = "1.0.5"
-nav3 = "1.1.4"
+nav3 = "1.2.0"
 
 [libraries]
 # Core module (required for accessing library data)
@@ -44,32 +40,21 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
-androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt" }
+androidx-hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hilt" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt" }
-androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-testing = { module = "androidx.lifecycle:lifecycle-runtime-testing", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
-androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
-androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "playUpdate" }
-app-update = { module = "com.google.android.play:app-update", version.ref = "playUpdate" }
-colorpicker = { module = "com.github.dhaval2404:colorpicker", version.ref = "colorpicker" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -81,30 +66,24 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagge
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt" }
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlinLogging" }
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkVersion" }
-mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockkVersion" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
-review = { module = "com.google.android.play:review", version.ref = "playReview" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 junit = { module = "junit:junit", version.ref = "junit" }
 slf4j-android-logger = { module = "de.psdev.slf4j-android-logger:slf4j-android-logger", version.ref = "slf4jAndroidLogger" }
 
 [plugins]
-org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
-navigation-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigation" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 play-publisher = { id = "com.github.triplet.play", version.ref = "playPublisher" }

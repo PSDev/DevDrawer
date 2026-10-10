@@ -92,7 +92,8 @@
     </array>
     <string name="pref_dynamic_color_title">Material You colors</string>
     <string name="pref_dynamic_color_summary">Use colors generated from your wallpaper</string>
-    <string name="pref_feature_analytics_opted_in_title">Opt-in to analytics</string>
+    <string name="pref_feature_analytics_opted_in_title">Share usage analytics</string>
+    <string name="pref_feature_analytics_opted_in_summary">Which screens you open and crash reports, via Firebase. No personal data.</string>
     <string name="clear">Clear</string>
     <string name="no_apps_available">No apps available or all already added as filter</string>
     <string name="more">More</string>

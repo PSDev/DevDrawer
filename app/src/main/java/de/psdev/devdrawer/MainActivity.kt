@@ -10,9 +10,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import de.psdev.devdrawer.receivers.PinnedWidgets
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import mu.KLogging
 
@@ -58,6 +61,17 @@ class MainActivity : BaseActivity() {
             if (savedInstanceState == null) {
                 LaunchedEffect(Unit) {
                     handleIntent(intent, navigator)
+                }
+            }
+
+            // A widget placed from the app's "Add widget" button gets its setup once the app is back in front.
+            val lifecycleOwner = LocalLifecycleOwner.current
+            LaunchedEffect(navigator) {
+                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                    PinnedWidgets.pendingSetup.filterNotNull().collect { widgetId ->
+                        PinnedWidgets.setupOpened(widgetId)
+                        navigator.navigate(WidgetSetupRoute(widgetId))
+                    }
                 }
             }
 

@@ -54,6 +54,8 @@ class AnalyticsOptInCardTest {
         // When
         composeTestRule.onNodeWithText("Usage analytics").assertExists()
         composeTestRule.onNodeWithText("No personal data", substring = true).assertExists()
+        // Crash reports are sent regardless of this choice, so the card must not offer them.
+        composeTestRule.onNodeWithText("crash", substring = true, ignoreCase = true).assertDoesNotExist()
         composeTestRule.onNodeWithText("No thanks").assertIsEnabled().performClick()
         composeTestRule.onNodeWithText("Allow").assertIsEnabled().performClick()
 

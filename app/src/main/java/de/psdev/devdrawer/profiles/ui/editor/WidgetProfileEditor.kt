@@ -199,7 +199,17 @@ internal fun WidgetProfileEditor(
             singleLine = true,
             value = viewState.widgetName ?: widgetProfile.name,
             onValueChange = onNameChange,
-            label = { Text(text = stringResource(id = R.string.name)) }
+            label = { Text(text = stringResource(id = R.string.name)) },
+            // Every edit here changes these widgets, so say which they are.
+            supportingText = {
+                Text(
+                    if (viewState.usedByWidgets.isEmpty()) {
+                        stringResource(R.string.profile_not_used)
+                    } else {
+                        stringResource(R.string.profile_used_by, viewState.usedByWidgets.joinToString())
+                    }
+                )
+            }
         )
 
         Column {

@@ -6,6 +6,7 @@ import de.psdev.devdrawer.appwidget.PackageHashInfo
 import de.psdev.devdrawer.database.DevDrawerDatabase
 import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
+import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.fakes.FakeAppsService
 import de.psdev.devdrawer.profiles.PackageFilterRepository
@@ -258,5 +259,19 @@ class WidgetProfileEditorViewModelTest {
 
         // Then
         assertEquals("Mine", database.widgetProfileDao().findById("p1")?.name)
+    }
+
+    @Test
+    fun `given widgets using the profile, when loaded, then the editor names them`() = runTest {
+        // Given
+        database.widgetDao().insert(Widget(id = 1, name = "Work apps", color = 0, profileId = "p1"))
+        database.widgetDao().insert(Widget(id = 2, name = "Clients", color = 0, profileId = "p1"))
+        val viewModel = createViewModel()
+
+        // When
+        val state = viewModel.state.first { it.usedByWidgets.size == 2 }
+
+        // Then
+        assertEquals(listOf("Clients", "Work apps"), state.usedByWidgets)
     }
 }

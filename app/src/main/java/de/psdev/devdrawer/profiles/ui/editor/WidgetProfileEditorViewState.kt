@@ -13,7 +13,9 @@ data class WidgetProfileEditorViewState(
     /** Installed apps the edited filters match, by name. */
     val matchingApps: List<AppInfo> = emptyList(),
     /** How many installed apps each filter matches on its own, by filter id. */
-    val filterAppCounts: Map<String, Int> = emptyMap()
+    val filterAppCounts: Map<String, Int> = emptyMap(),
+    /** Names of the widgets showing this profile, which every edit affects. */
+    val usedByWidgets: List<String> = emptyList()
 ) {
     companion object {
         val Empty = WidgetProfileEditorViewState()

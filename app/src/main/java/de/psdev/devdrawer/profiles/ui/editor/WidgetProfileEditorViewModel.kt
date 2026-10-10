@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -68,14 +69,18 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
     val state = combine(
         database.widgetProfileDao().widgetProfileWithIdObservable(profileId),
         widgetNameState,
-        matches
-    ) { widgetProfile, name, (filters, matchingApps, filterAppCounts) ->
+        matches,
+        database.widgetDao().findAllFlow().map { widgets ->
+            widgets.filter { it.profileId == profileId }.map { it.name }.sortedWith(String.CASE_INSENSITIVE_ORDER)
+        }
+    ) { widgetProfile, name, (filters, matchingApps, filterAppCounts), usedByWidgets ->
         WidgetProfileEditorViewState(
             widgetProfile = widgetProfile,
             widgetName = name ?: widgetProfile?.name.orEmpty(),
             packageFilters = filters,
             matchingApps = matchingApps,
-            filterAppCounts = filterAppCounts
+            filterAppCounts = filterAppCounts,
+            usedByWidgets = usedByWidgets
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetProfileEditorViewState.Empty)
 

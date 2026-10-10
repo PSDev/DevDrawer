@@ -13,15 +13,13 @@ import de.psdev.devdrawer.fakes.FakePackageFilterRepository
 import de.psdev.devdrawer.fakes.FakeSortOrderSettings
 import de.psdev.devdrawer.fakes.FakeWidgetProfileRepository
 import de.psdev.devdrawer.fakes.FakeWidgetRepository
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,8 +49,7 @@ class WidgetEditorViewModelTest {
             listOf(PackageFilter(type = FilterType.PACKAGE_NAME, filter = "com.example.*", profileId = "profile-1"))
         ),
         appsService = FakeAppsService(mapOf(zeta to "Zeta", alpha to "Alpha")),
-        sortOrderSettings = FakeSortOrderSettings(SortOrder.LAST_UPDATED),
-        trackingService = mockk(relaxed = true)
+        sortOrderSettings = FakeSortOrderSettings(SortOrder.LAST_UPDATED)
     )
 
     @Test
@@ -79,28 +76,10 @@ class WidgetEditorViewModelTest {
         assertEquals(listOf("My Profile" to 2, "Other" to 0), state.profiles.map { it.profile.name to it.appCount })
         assertEquals(listOf("Zeta", "Alpha"), state.previewApps.map { it.name })
         assertEquals(SortOrder.LAST_UPDATED, state.defaultSortOrder)
-        assertFalse(state.isDirty)
     }
 
     @Test
-    fun `given a loaded widget, when the name is changed, then editable name updates without affecting persisted name`() = runTest {
-        // Given
-        val viewModel = createViewModel()
-        backgroundScope.launch { viewModel.state.collect {} }
-        advanceUntilIdle()
-
-        // When
-        viewModel.onNameChanged("Renamed")
-        advanceUntilIdle()
-
-        // Then
-        assertEquals("Renamed", viewModel.state.value.editableWidget?.name)
-        assertEquals("Test Widget", viewModel.state.value.persistedWidget?.name)
-        assertTrue(viewModel.state.value.isDirty)
-    }
-
-    @Test
-    fun `given a loaded widget, when a header colour is picked, then only the editable widget changes`() = runTest {
+    fun `given a loaded widget, when a header colour is picked, then it is saved right away`() = runTest {
         // Given
         val viewModel = createViewModel()
         backgroundScope.launch { viewModel.state.collect {} }
@@ -112,7 +91,57 @@ class WidgetEditorViewModelTest {
 
         // Then
         assertEquals(WidgetHeaderColor.DARK, viewModel.state.value.editableWidget?.headerColor)
-        assertEquals(WidgetHeaderColor.AMBER, viewModel.state.value.persistedWidget?.headerColor)
+        assertEquals(WidgetHeaderColor.DARK, viewModel.state.value.persistedWidget?.headerColor)
+    }
+
+    @Test
+    fun `given a loaded widget, when the name is typed, then it is saved once typing pauses`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        advanceUntilIdle()
+
+        // When
+        viewModel.onNameChanged("Renamed")
+        advanceTimeBy(100)
+        runCurrent()
+
+        // Then
+        assertEquals("Renamed", viewModel.state.value.editableWidget?.name)
+        assertEquals("Test Widget", viewModel.state.value.persistedWidget?.name)
+        advanceUntilIdle()
+        assertEquals("Renamed", viewModel.state.value.persistedWidget?.name)
+    }
+
+    @Test
+    fun `given a name still being typed, when leaving the editor, then it is saved immediately`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        advanceUntilIdle()
+        viewModel.onNameChanged("Renamed")
+
+        // When
+        viewModel.flushPendingChanges()
+        runCurrent()
+
+        // Then
+        assertEquals("Renamed", viewModel.state.value.persistedWidget?.name)
+    }
+
+    @Test
+    fun `given a cleared name, when typing pauses, then the widget keeps its saved name`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        advanceUntilIdle()
+
+        // When
+        viewModel.onNameChanged("  ")
+        advanceUntilIdle()
+
+        // Then
+        assertEquals("Test Widget", viewModel.state.value.persistedWidget?.name)
     }
 
     @Test
@@ -132,7 +161,7 @@ class WidgetEditorViewModelTest {
     }
 
     @Test
-    fun `given a loaded widget, when another profile is selected, then the preview and selection follow it`() = runTest {
+    fun `given a loaded widget, when another profile is selected, then it is saved and the preview follows it`() = runTest {
         // Given
         val viewModel = createViewModel()
         backgroundScope.launch { viewModel.state.collect {} }
@@ -144,39 +173,7 @@ class WidgetEditorViewModelTest {
 
         // Then
         assertEquals("profile-2", viewModel.state.value.editableWidget?.profileId)
-        assertEquals("profile-1", viewModel.state.value.persistedWidget?.profileId)
+        assertEquals("profile-2", viewModel.state.value.persistedWidget?.profileId)
         assertEquals(emptyList<String>(), viewModel.state.value.previewApps.map { it.name })
-    }
-
-    @Test
-    fun `given a renamed widget, when changes are saved, then the persisted widget reflects the new name`() = runTest {
-        // Given
-        val viewModel = createViewModel()
-        backgroundScope.launch { viewModel.state.collect {} }
-        advanceUntilIdle()
-        viewModel.onNameChanged("Saved Name")
-
-        // When
-        viewModel.saveChanges()
-        advanceUntilIdle()
-
-        // Then
-        assertEquals("Saved Name", viewModel.state.value.persistedWidget?.name)
-        assertFalse(viewModel.state.value.isDirty)
-    }
-
-    @Test
-    fun `given a loaded widget, when the widget is deleted, then the persisted widget becomes null`() = runTest {
-        // Given
-        val viewModel = createViewModel()
-        backgroundScope.launch { viewModel.state.collect {} }
-        advanceUntilIdle()
-
-        // When
-        viewModel.deleteWidget(widget)
-        advanceUntilIdle()
-
-        // Then
-        assertNull(viewModel.state.value.persistedWidget)
     }
 }

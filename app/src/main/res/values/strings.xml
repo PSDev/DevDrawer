@@ -158,7 +158,7 @@
     <string name="widget_card_summary">Profile “%1$s” · %2$s</string>
     <string name="widget_card_no_apps">No apps match · Choose apps</string>
     <string name="pin_new_widget">Add widget to home screen</string>
-    <string name="delete_widget">Delete widget</string>
+    <string name="widget_remove_hint">To remove this widget, long-press it on your home screen and drag it to Remove.</string>
     <string name="widget_preview">Widget preview</string>
     <string name="header_color">Header colour</string>
     <string name="header_color_amber">Amber</string>

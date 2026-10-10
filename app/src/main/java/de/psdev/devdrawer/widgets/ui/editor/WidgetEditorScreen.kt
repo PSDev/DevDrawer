@@ -2,9 +2,6 @@ package de.psdev.devdrawer.widgets.ui.editor
 
 import android.content.res.Configuration
 import android.os.Build
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,13 +19,10 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,14 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import de.psdev.devdrawer.AppBarActionsProvider
-import de.psdev.devdrawer.ProvideMenu
 import de.psdev.devdrawer.R
 import de.psdev.devdrawer.appwidget.AppInfo
 import de.psdev.devdrawer.appwidget.SortOrder
@@ -72,24 +64,12 @@ fun WidgetEditorScreen(
     viewModel: WidgetEditorViewModel = hiltViewModel<WidgetEditorViewModel, WidgetEditorViewModel.Factory> {
         it.create(id)
     },
-    menuCallback: AppBarActionsProvider,
-    onBack: () -> Unit,
     onEditWidgetProfile: (WidgetProfile) -> Unit
 ) {
     val viewState by viewModel.state.collectAsStateWithLifecycle()
-    val persistedWidget = viewState.persistedWidget
-    ProvideMenu(menuCallback, persistedWidget) {
-        if (persistedWidget != null) {
-            IconButton(onClick = {
-                viewModel.deleteWidget(persistedWidget)
-                onBack()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.delete_widget)
-                )
-            }
-        }
+    // Changes save as they are made; a name still being typed is saved when the editor closes.
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.flushPendingChanges() }
     }
     WidgetEditor(
         viewState = viewState,
@@ -97,8 +77,7 @@ fun WidgetEditorScreen(
         onHeaderColorSelected = viewModel::onHeaderColorSelected,
         onSortOrderSelected = viewModel::onSortOrderSelected,
         onEditWidgetProfile = onEditWidgetProfile,
-        onWidgetProfileSelected = viewModel::onWidgetProfileSelected,
-        onSaveChangesClick = viewModel::saveChanges
+        onWidgetProfileSelected = viewModel::onWidgetProfileSelected
     )
 }
 
@@ -110,8 +89,7 @@ fun WidgetEditor(
     onHeaderColorSelected: (WidgetHeaderColor) -> Unit = {},
     onSortOrderSelected: (SortOrder?) -> Unit = {},
     onEditWidgetProfile: (WidgetProfile) -> Unit = {},
-    onWidgetProfileSelected: (WidgetProfile) -> Unit = {},
-    onSaveChangesClick: () -> Unit = {}
+    onWidgetProfileSelected: (WidgetProfile) -> Unit = {}
 ) {
     val widget = viewState.editableWidget
     if (widget == null) {
@@ -120,60 +98,47 @@ fun WidgetEditor(
         }
         return
     }
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            WidgetPreview(
-                widget = widget,
-                apps = viewState.previewApps,
-                appCount = viewState.previewAppCount
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                value = widget.name,
-                onValueChange = onNameChange,
-                label = { Text(text = stringResource(id = R.string.name)) }
-            )
-            HeaderColorPicker(selected = widget.headerColor, onSelected = onHeaderColorSelected)
-            SectionTitle(stringResource(R.string.editor_apps))
-            Column(modifier = Modifier.selectableGroup()) {
-                viewState.profiles.forEach { option ->
-                    ProfileRow(
-                        option = option,
-                        selected = option.profile.id == widget.profileId,
-                        onSelected = { onWidgetProfileSelected(option.profile) },
-                        onEdit = { onEditWidgetProfile(option.profile) }
-                    )
-                }
-            }
-            SortOrderPreference(
-                current = widget.sortOrder,
-                defaultSortOrder = viewState.defaultSortOrder,
-                onSelected = onSortOrderSelected
-            )
-        }
-        AnimatedVisibility(
-            visible = viewState.isDirty,
-            modifier = Modifier.align(Alignment.BottomEnd),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            FloatingActionButton(
-                onClick = onSaveChangesClick,
-                modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Save,
-                    contentDescription = stringResource(id = R.string.save)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        WidgetPreview(
+            widget = widget,
+            apps = viewState.previewApps,
+            appCount = viewState.previewAppCount
+        )
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            value = widget.name,
+            onValueChange = onNameChange,
+            label = { Text(text = stringResource(id = R.string.name)) }
+        )
+        HeaderColorPicker(selected = widget.headerColor, onSelected = onHeaderColorSelected)
+        SectionTitle(stringResource(R.string.editor_apps))
+        Column(modifier = Modifier.selectableGroup()) {
+            viewState.profiles.forEach { option ->
+                ProfileRow(
+                    option = option,
+                    selected = option.profile.id == widget.profileId,
+                    onSelected = { onWidgetProfileSelected(option.profile) },
+                    onEdit = { onEditWidgetProfile(option.profile) }
                 )
             }
         }
+        SortOrderPreference(
+            current = widget.sortOrder,
+            defaultSortOrder = viewState.defaultSortOrder,
+            onSelected = onSortOrderSelected
+        )
+        Text(
+            text = stringResource(R.string.widget_remove_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

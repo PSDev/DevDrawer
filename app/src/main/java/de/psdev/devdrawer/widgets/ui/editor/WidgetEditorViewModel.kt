@@ -6,8 +6,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.psdev.devdrawer.analytics.Events
-import de.psdev.devdrawer.analytics.TrackingService
 import de.psdev.devdrawer.apps.IAppsService
 import de.psdev.devdrawer.apps.comparator
 import de.psdev.devdrawer.apps.matching
@@ -21,17 +19,23 @@ import de.psdev.devdrawer.profiles.IWidgetProfileRepository
 import de.psdev.devdrawer.profiles.ProfileWithAppCount
 import de.psdev.devdrawer.settings.ISortOrderSettings
 import de.psdev.devdrawer.widgets.IWidgetRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = WidgetEditorViewModel.Factory::class)
 class WidgetEditorViewModel @AssistedInject constructor(
@@ -41,7 +45,6 @@ class WidgetEditorViewModel @AssistedInject constructor(
     packageFilterRepository: IPackageFilterRepository,
     private val appsService: IAppsService,
     private val sortOrderSettings: ISortOrderSettings,
-    private val trackingService: TrackingService
 ) : ViewModel() {
 
     @AssistedFactory
@@ -98,39 +101,63 @@ class WidgetEditorViewModel @AssistedInject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetEditorViewState.Empty)
 
+    /** Typing updates the field at once; the name is saved when typing pauses or the editor closes. */
     fun onNameChanged(newName: String) {
         editableWidgetState.update { it?.copy(name = newName) }
+        pendingNameSave?.cancel()
+        pendingNameSave = viewModelScope.launch {
+            delay(NAME_SAVE_DELAY_MS)
+            persist()
+        }
     }
 
     fun onHeaderColorSelected(headerColor: WidgetHeaderColor) {
         editableWidgetState.update { it?.copy(headerColor = headerColor) }
+        persist()
     }
 
     /** Null resets the widget to the sort order from Settings. */
     fun onSortOrderSelected(sortOrder: SortOrder?) {
         editableWidgetState.update { it?.copy(sortOrder = sortOrder) }
+        persist()
     }
 
     fun onWidgetProfileSelected(widgetProfile: WidgetProfile) {
         editableWidgetState.update { it?.copy(profileId = widgetProfile.id) }
+        persist()
     }
 
-    fun saveChanges() {
-        editableWidgetState.value?.let {
-            viewModelScope.launch {
-                widgetRepository.update(it)
-            }
+    /** Saves a name that is still waiting for typing to pause; called when the editor closes. */
+    fun flushPendingChanges() {
+        if (pendingNameSave?.isActive == true) {
+            pendingNameSave?.cancel()
+            persist()
         }
     }
 
-    fun deleteWidget(widget: Widget) {
+    private var pendingNameSave: Job? = null
+
+    private val saveMutex = Mutex()
+
+    /**
+     * Writes the latest edit, keeping the saved name while the field is blank. Writes run one at a time so a
+     * quick second change can't be overtaken by the first, and they finish even if the editor closes.
+     */
+    private fun persist() {
         viewModelScope.launch {
-            widgetRepository.delete(widget)
-            trackingService.trackAction(Events.WIDGET_DELETED)
+            withContext(NonCancellable) {
+                saveMutex.withLock {
+                    val edited = editableWidgetState.value ?: return@withLock
+                    val saved = widgetRepository.findById(widgetId) ?: return@withLock
+                    val widget = edited.copy(name = edited.name.trim().ifEmpty { saved.name })
+                    if (widget != saved) widgetRepository.update(widget)
+                }
+            }
         }
     }
 
     private companion object {
         const val PREVIEW_APP_COUNT = 3
+        const val NAME_SAVE_DELAY_MS = 500L
     }
 }

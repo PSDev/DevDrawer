@@ -109,7 +109,19 @@ fun WidgetProfileListScreen(
     onCreateWidgetProfileClick: () -> Unit = {}
 ) {
     when (viewState) {
-        is UiState.Loading, is UiState.Error -> LoadingView()
+        is UiState.Loading -> LoadingView()
+        is UiState.Error -> Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+        ) {
+            Text(text = stringResource(R.string.profiles_load_failed), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.error_message, viewState.cause.message ?: viewState.cause.javaClass.simpleName),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
         is UiState.Success -> {
             val profiles = viewState.data
             if (profiles.isEmpty()) {

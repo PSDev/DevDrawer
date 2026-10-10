@@ -11,8 +11,11 @@ import de.psdev.devdrawer.fakes.FakePackageFilterRepository
 import de.psdev.devdrawer.fakes.FakeWidgetProfileRepository
 import de.psdev.devdrawer.fakes.FakeWidgetRepository
 import de.psdev.devdrawer.ui.UiState
+import de.psdev.devdrawer.widgets.IWidgetRepository
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -45,14 +48,15 @@ class WidgetProfilesViewModelTest {
 
     private fun createViewModel(
         profiles: List<WidgetProfile> = listOf(profile1, profile2),
-        widgets: List<Widget> = emptyList()
+        widgets: List<Widget> = emptyList(),
+        widgetRepository: IWidgetRepository = FakeWidgetRepository(widgets)
     ): WidgetProfilesViewModel {
         profileRepository = FakeWidgetProfileRepository(profiles)
         filterRepository = FakePackageFilterRepository(listOf(filter1))
         return WidgetProfilesViewModel(
             application = RuntimeEnvironment.getApplication(),
             widgetProfileRepository = profileRepository,
-            widgetRepository = FakeWidgetRepository(widgets),
+            widgetRepository = widgetRepository,
             packageFilterRepository = filterRepository,
             appsService = FakeAppsService(
                 mapOf(
@@ -171,5 +175,21 @@ class WidgetProfilesViewModelTest {
         assertNotNull(created)
         assertEquals("Profile 3", created?.name)
         assertEquals(3, viewModel.summaries().size)
+    }
+
+    @Test
+    fun `given loading fails, when observed, then the error is reported instead of loading forever`() = runTest {
+        // Given
+        val failing = object : IWidgetRepository by FakeWidgetRepository() {
+            override fun widgetsFlow(): Flow<List<Widget>> = flow { throw IllegalStateException("database closed") }
+        }
+        val viewModel = createViewModel(widgetRepository = failing)
+
+        // When
+        backgroundScope.launch { viewModel.viewState.collect {} }
+        advanceUntilIdle()
+
+        // Then
+        assertTrue(viewModel.viewState.value is UiState.Error)
     }
 }

@@ -54,8 +54,6 @@ fun DevDrawerHost(
         entry<WidgetEditorRoute> { key ->
             WidgetEditorScreen(
                 id = key.id,
-                menuCallback = menuCallback,
-                onBack = { navigator.goBack() },
                 onEditWidgetProfile = { profile ->
                     navigator.navigate(WidgetProfileEditorRoute(profile.id))
                 }

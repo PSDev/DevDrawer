@@ -18,9 +18,6 @@ data class WidgetEditorViewState(
     /** The Settings sort order, used while the widget has none of its own. */
     val defaultSortOrder: SortOrder = SortOrder.LAST_UPDATED
 ) {
-    val isDirty: Boolean
-        get() = editableWidget != null && editableWidget != persistedWidget
-
     companion object {
         val Empty = WidgetEditorViewState()
     }

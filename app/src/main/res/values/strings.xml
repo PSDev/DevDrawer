@@ -215,4 +215,7 @@
     <string name="open_app_screen">Open %1$s</string>
     <string name="main_screen">Main screen · %1$s</string>
     <string name="screen_open_failed">Couldn\'t open this screen</string>
+    <string name="app_not_installed">This app is no longer installed</string>
+    <string name="system_app_uninstall">System apps can\'t be uninstalled</string>
+    <string name="action_unavailable">Your device can\'t do this</string>
 </resources>

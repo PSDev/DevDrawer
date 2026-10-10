@@ -20,7 +20,8 @@ data class AppInfo(
     val lastUpdateTime: Long,
     val signatureHashSha256: String,
     val versionName: String = "",
-    val versionCode: Long = 0
+    val versionCode: Long = 0,
+    val canUninstall: Boolean = true
 )
 
 fun PackageHashInfo.toAppInfo(context: Context): AppInfo? = try {
@@ -43,7 +44,8 @@ fun PackageHashInfo.toAppInfo(context: Context): AppInfo? = try {
         lastUpdateTime = lastUpdateTime,
         signatureHashSha256 = signatureHashSha256,
         versionName = packageInfo.versionName ?: "",
-        versionCode = versionCode
+        versionCode = versionCode,
+        canUninstall = applicationInfo.canUninstall
     )
 } catch (e: Exception) {
     logger.warn(e) { "Error: ${e.message}" }

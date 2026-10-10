@@ -18,5 +18,7 @@ data class WidgetAppItem(
     val name: String,
     val packageName: String,
     /** Scaled to the row's icon size so the widget's RemoteViews stay small; null shows a placeholder. */
-    val icon: Bitmap?
+    val icon: Bitmap?,
+    /** False for system apps, which only offer app details. */
+    val canUninstall: Boolean = true
 )

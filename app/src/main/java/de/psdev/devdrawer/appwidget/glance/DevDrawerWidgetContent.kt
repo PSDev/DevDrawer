@@ -181,13 +181,18 @@ private fun AppRow(context: Context, app: WidgetAppItem) {
                 style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 12.sp)
             )
         }
-        Image(
-            provider = ImageProvider(R.drawable.ic_baseline_delete_24),
-            contentDescription = context.getString(R.string.uninstall_app, app.name),
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant),
-            modifier = GlanceModifier.size(48.dp).padding(12.dp)
-                .clickable(clickHandlingAction(app.packageName, Constants.LAUNCH_UNINSTALL))
-        )
+        if (app.canUninstall) {
+            Image(
+                provider = ImageProvider(R.drawable.ic_baseline_delete_24),
+                contentDescription = context.getString(R.string.uninstall_app, app.name),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant),
+                modifier = GlanceModifier.size(48.dp).padding(12.dp)
+                    .clickable(clickHandlingAction(app.packageName, Constants.LAUNCH_UNINSTALL))
+            )
+        } else {
+            // Keeps App details aligned with the rows above and below.
+            Spacer(GlanceModifier.size(48.dp))
+        }
         Image(
             provider = ImageProvider(R.drawable.ic_baseline_info_24),
             contentDescription = context.getString(R.string.app_details_for, app.name),

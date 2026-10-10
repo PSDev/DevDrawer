@@ -28,14 +28,22 @@ class CleanupWidgetsWorker @AssistedInject constructor(
         @JvmField
         val TAG: String = CleanupWidgetsWorker::class.java.simpleName
 
-        fun enableWorker(application: Application) {
-            val workManager = WorkManager.getInstance(application)
+        /** Unique name of a one-off cleanup; separate from [TAG] so the periodic work can't cancel it. */
+        const val CLEANUP_NOW = "CleanupWidgetsWorker.now"
 
-            workManager.enqueueUniqueWork(
-                TAG,
+        /** Removes the records of widgets that are no longer on the home screen, as soon as possible. */
+        fun runOnce(context: Context) {
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                CLEANUP_NOW,
                 ExistingWorkPolicy.APPEND_OR_REPLACE,
                 OneTimeWorkRequestBuilder<CleanupWidgetsWorker>().build()
             )
+        }
+
+        fun enableWorker(application: Application) {
+            val workManager = WorkManager.getInstance(application)
+
+            runOnce(application)
             workManager.enqueueUniquePeriodicWork(
                 TAG,
                 ExistingPeriodicWorkPolicy.REPLACE,

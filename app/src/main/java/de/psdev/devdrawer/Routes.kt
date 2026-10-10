@@ -22,4 +22,4 @@ data class WidgetEditorRoute(val id: Int) : NavKey
 data class WidgetSetupRoute(val widgetId: Int) : NavKey
 
 @Serializable
-data class WidgetProfileEditorRoute(val id: String) : NavKey
+data class WidgetProfileEditorRoute(val id: String, val isNew: Boolean = false) : NavKey

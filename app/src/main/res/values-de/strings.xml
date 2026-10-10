@@ -6,7 +6,7 @@
     <string name="profiles">Profile</string>
     <string name="widgets">Widgets</string>
     <string name="no_profiles">Keine Profile</string>
-    <string name="new_profile">Neu</string>
+    <string name="new_profile_name">Profil %1$d</string>
     <string name="name">Name</string>
     <string name="edit_profile">Profil bearbeiten</string>
     <string name="add">Hinzufügen</string>

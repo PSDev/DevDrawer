@@ -25,11 +25,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = WidgetProfileEditorViewModel.Factory::class)
 class WidgetProfileEditorViewModel @AssistedInject constructor(
     @Assisted private val profileId: String,
+    /** Just created from the Profiles tab; discarded again if left without changes. */
+    @Assisted private val isNew: Boolean,
     private val database: DevDrawerDatabase,
     private val packageFilterRepository: IPackageFilterRepository,
     private val appsService: IAppsService
@@ -37,7 +41,7 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(profileId: String): WidgetProfileEditorViewModel
+        fun create(profileId: String, isNew: Boolean): WidgetProfileEditorViewModel
     }
 
     /** The name as typed; saved once typing pauses or the editor closes. */
@@ -102,12 +106,23 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         }
     }
 
-    /** Saves a name that is still waiting for typing to pause; called when the editor closes. */
-    fun flushPendingChanges() {
+    /**
+     * Saves a name still waiting for typing to pause, and discards a new profile that was left untouched
+     * (no filters, no name typed) so backing out of "Create new profile" leaves nothing behind.
+     */
+    fun onEditorClosed() {
         val name = widgetNameState.value
         if (pendingNameSave?.isActive == true && name != null) {
             pendingNameSave?.cancel()
             saveName(name)
+        }
+        if (isNew && name.isNullOrBlank()) {
+            write {
+                val profile = database.widgetProfileDao().findById(profileId) ?: return@write
+                if (database.packageFilterDao().findAllByProfile(profileId).isEmpty()) {
+                    database.widgetProfileDao().delete(profile)
+                }
+            }
         }
     }
 
@@ -132,9 +147,14 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         }
     }
 
-    /** Edits are written straight away and finish even if the editor closes meanwhile. */
+    private val writeMutex = Mutex()
+
+    /**
+     * Edits are written straight away, one at a time and in order (so closing the editor right after adding a
+     * filter sees that filter), and finish even if the editor closes meanwhile.
+     */
     private fun write(block: suspend () -> Unit) {
-        viewModelScope.launch { withContext(NonCancellable) { block() } }
+        viewModelScope.launch { withContext(NonCancellable) { writeMutex.withLock { block() } } }
     }
 
     private data class FilterMatches(

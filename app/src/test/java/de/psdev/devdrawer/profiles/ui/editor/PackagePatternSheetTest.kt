@@ -99,12 +99,16 @@ class PackagePatternSheetTest {
     }
 
     @Test
-    fun `given a pattern that matches no app yet, when shown, then it cannot be added`() {
-        // Given / When: typing has only just started
-        show(PatternPreview(pattern = "c", isValid = true, matchCount = 0, apps = emptyList()))
+    fun `given a valid pattern that matches no app yet, when shown, then it can still be added`() {
+        // Given: e.g. a company prefix before any of its apps is installed
+        var added: String? = null
+        show(PatternPreview(pattern = "com.mycompany.*", isValid = true, matchCount = 0, apps = emptyList()), onAdd = { added = it })
+
+        // When
+        composeTestRule.onNodeWithText("0 apps match").assertExists()
+        composeTestRule.onNodeWithText("Add").assertIsEnabled().performClick()
 
         // Then
-        composeTestRule.onNodeWithText("0 apps match").assertExists()
-        composeTestRule.onNodeWithText("Add").assertIsNotEnabled()
+        assertEquals("com.mycompany.*", added)
     }
 }

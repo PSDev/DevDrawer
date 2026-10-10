@@ -93,8 +93,7 @@ fun PackagePatternSheet(
             }
             Button(
                 modifier = Modifier.align(Alignment.End),
-                // A pattern matching nothing yet is usually still being typed ("c", "com").
-                enabled = upToDate && preview.isValid && preview.matchCount > 0,
+                enabled = upToDate && preview.isValid,
                 onClick = { onAdd(text.trim()) }
             ) {
                 Text(stringResource(R.string.add))

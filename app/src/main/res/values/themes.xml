@@ -28,14 +28,13 @@
         <item name="preferenceTheme">@style/Theme.Settings.Preferences</item>
     </style>
 
-    <style name="AppTheme.Dialog.NoActionBar" parent="Theme.MaterialComponents.DayNight.Dialog">
-        <!-- Theme colors -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
-        <item name="colorOnPrimary">@color/colorOnPrimary</item>
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
-        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+    <!-- Transparent window for activities that only show a Compose bottom sheet. -->
+    <style name="AppTheme.Translucent" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Settings.Preferences" parent="PreferenceThemeOverlay.v14.Material">

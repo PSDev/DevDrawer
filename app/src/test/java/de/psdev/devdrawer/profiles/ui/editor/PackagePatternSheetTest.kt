@@ -85,4 +85,16 @@ class PackagePatternSheetTest {
         // Then
         assertEquals("com.", typed.last())
     }
+
+    @Test
+    fun `given a preview that lags behind, when typing, then the field still shows exactly what was typed`() {
+        // Given: the preview never catches up, like a slow recomputation
+        show(PatternPreview())
+
+        // When
+        composeTestRule.onNodeWithText("Package filter").performTextInput("com.example.*")
+
+        // Then
+        composeTestRule.onNodeWithText("com.example.*").assertExists()
+    }
 }

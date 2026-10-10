@@ -194,11 +194,17 @@ internal fun WidgetProfileEditor(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // The field keeps its own text: the view state echoes the name back asynchronously, and feeding that into
+        // the field would drop or reorder characters typed quickly.
+        var name by rememberSaveable(widgetProfile.id) { mutableStateOf(viewState.widgetName ?: widgetProfile.name) }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            value = viewState.widgetName ?: widgetProfile.name,
-            onValueChange = onNameChange,
+            value = name,
+            onValueChange = {
+                name = it
+                onNameChange(it)
+            },
             label = { Text(text = stringResource(id = R.string.name)) },
             // Every edit here changes these widgets, so say which they are.
             supportingText = {

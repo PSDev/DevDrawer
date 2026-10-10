@@ -13,6 +13,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -51,11 +55,18 @@ fun PackagePatternSheet(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            val invalid = preview.pattern.isNotBlank() && !preview.isValid
+            // The field keeps its own text: the preview is computed asynchronously, and feeding it back into the
+            // field would drop or reorder characters typed quickly. It only describes the text once it caught up.
+            var text by rememberSaveable { mutableStateOf(preview.pattern) }
+            val upToDate = preview.pattern == text
+            val invalid = upToDate && text.isNotBlank() && !preview.isValid
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = preview.pattern,
-                onValueChange = onPatternChange,
+                value = text,
+                onValueChange = {
+                    text = it
+                    onPatternChange(it)
+                },
                 singleLine = true,
                 isError = invalid,
                 label = { Text(stringResource(R.string.packagefilter)) },
@@ -64,7 +75,7 @@ fun PackagePatternSheet(
                     invalid -> {
                         { Text(stringResource(R.string.pattern_invalid)) }
                     }
-                    preview.pattern.isNotBlank() -> {
+                    upToDate && text.isNotBlank() -> {
                         { Text(pluralStringResource(R.plurals.pattern_match_count, preview.matchCount, preview.matchCount)) }
                     }
                     else -> null
@@ -82,8 +93,8 @@ fun PackagePatternSheet(
             }
             Button(
                 modifier = Modifier.align(Alignment.End),
-                enabled = preview.isValid,
-                onClick = { onAdd(preview.pattern.trim()) }
+                enabled = upToDate && preview.isValid,
+                onClick = { onAdd(text.trim()) }
             ) {
                 Text(stringResource(R.string.add))
             }

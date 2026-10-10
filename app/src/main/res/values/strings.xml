@@ -86,12 +86,13 @@
 
     <!-- Settings -->
     <string name="settings_category_general">General</string>
-    <string name="settings_category_ui">User Interface</string>
+    <string name="settings_category_ui">Appearance</string>
     <string name="settings_category_analytics">Analytics</string>
     <string name="settings_category_about">About</string>
 
-    <string name="pref_show_activity_choice_title">Show activity choice on launch</string>
-    <string name="pref_sort_order_title">Widget Sorting Options</string>
+    <string name="pref_show_activity_choice_title">Ask which screen to open</string>
+    <string name="pref_show_activity_choice_summary">When an app has several screens, tapping it in the widget asks which one to start</string>
+    <string name="pref_sort_order_title">Default sort order</string>
     <string name="pref_theme_title">Theme</string>
     <array name="theme_labels">
         <item>System default</item>

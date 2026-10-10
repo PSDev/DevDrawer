@@ -43,11 +43,12 @@
     <string name="loading">Wird geladen…</string>
     <string name="last_modified">Zuletzt geändert</string>
     <string name="settings_category_general">Allgemein</string>
-    <string name="settings_category_ui">Benutzeroberfläche</string>
+    <string name="settings_category_ui">Darstellung</string>
     <string name="settings_category_analytics">Analyse</string>
     <string name="settings_category_about">Über</string>
-    <string name="pref_show_activity_choice_title">Activity-Auswahl beim Start anzeigen</string>
-    <string name="pref_sort_order_title">Widget-Sortierung</string>
+    <string name="pref_show_activity_choice_title">Nachfragen, welcher Bildschirm geöffnet wird</string>
+    <string name="pref_show_activity_choice_summary">Wenn eine App mehrere Bildschirme hat, fragt ein Tipp im Widget, welcher gestartet werden soll</string>
+    <string name="pref_sort_order_title">Standard-Sortierung</string>
     <string name="pref_theme_title">Design</string>
     <string name="pref_dynamic_color_title">Material-You-Farben</string>
     <string name="pref_dynamic_color_summary">Farben aus deinem Hintergrundbild verwenden</string>

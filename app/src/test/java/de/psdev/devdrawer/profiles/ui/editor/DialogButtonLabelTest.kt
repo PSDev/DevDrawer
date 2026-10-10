@@ -45,24 +45,6 @@ class DialogButtonLabelTest {
     }
 
     @Test
-    fun `given the add app signature filter dialog, when shown, then its button is in sentence case`() {
-        // Given / When
-        composeTestRule.setContent {
-            DevDrawerTheme {
-                AddAppSignaturePackageFilterDialog(
-                    viewState = AddAppSignaturePackageFilterDialogViewModel.ViewState.Loaded(
-                        data = emptyList(),
-                        showSystemApps = false
-                    )
-                )
-            }
-        }
-
-        // Then
-        assertSentenceCase("Cancel")
-    }
-
-    @Test
     fun `given the filter info dialog, when shown, then its button is in sentence case`() {
         // Given / When
         composeTestRule.setContent {

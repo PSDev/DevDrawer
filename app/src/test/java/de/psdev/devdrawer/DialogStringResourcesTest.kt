@@ -9,7 +9,7 @@ import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.profiles.DeleteDialogState
 import de.psdev.devdrawer.profiles.WidgetInUseErrorAlertDialog
-import de.psdev.devdrawer.profiles.ui.editor.AddAppSignaturePackageFilterDialog
+import de.psdev.devdrawer.profiles.ui.editor.AddAppSignatureFilterSheet
 import de.psdev.devdrawer.profiles.ui.editor.AddAppSignaturePackageFilterDialogViewModel
 import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialog
 import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialogViewModel
@@ -89,7 +89,7 @@ class DialogStringResourcesTest {
         // Given / When
         composeTestRule.setContent {
             DevDrawerTheme {
-                AddAppSignaturePackageFilterDialog(
+                AddAppSignatureFilterSheet(
                     viewState = AddAppSignaturePackageFilterDialogViewModel.ViewState.Error("kaputt")
                 )
                 AddPackageNamePackageFilterDialog(

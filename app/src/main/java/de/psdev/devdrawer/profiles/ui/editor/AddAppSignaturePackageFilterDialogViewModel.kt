@@ -29,7 +29,7 @@ class AddAppSignaturePackageFilterDialogViewModel @Inject constructor(
             val availableApps = appsService.getInstalledPackages(showSystemApps)
                 .filter { currentFilters.none { packageFilter -> packageFilter.matches(it) } }
                 .mapNotNull { it.toAppInfo(application) }
-                .sortedBy { it.name }
+                .sortedByDescending { it.lastUpdateTime }
             emit(ViewState.Loaded(availableApps, showSystemApps))
         }.flowOn(Dispatchers.IO)
 

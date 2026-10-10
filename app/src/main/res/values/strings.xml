@@ -103,7 +103,6 @@
     <string name="pref_dynamic_color_summary">Use colors generated from your wallpaper</string>
     <string name="pref_feature_analytics_opted_in_title">Opt-in to analytics</string>
     <string name="clear">Clear</string>
-    <string name="delete_profile">Delete profile?</string>
     <string name="delete_filter">Delete filter?</string>
     <string name="no_apps_available">No apps available or all already added as filter</string>
     <string name="more">More</string>
@@ -122,7 +121,6 @@
     <string name="analytics_opt_in">Opt-in</string>
     <string name="analytics_opt_out">Opt-out</string>
     <string name="analytics_opt_in_thanks">Thank you! You can change your decision anytime on the settings tab.</string>
-    <string name="delete_profile_confirmation">Do you really want to delete the profile \'%1$s\'?</string>
     <string name="error_message">Error: %1$s</string>
     <string name="profile_used_by_widgets">The profile %1$s is used by: \n%2$s</string>
     <string name="no_activities">This app has no activities</string>
@@ -180,4 +178,19 @@
     <string name="sort_by">Sort by</string>
     <string name="sort_default">Default (%1$s)</string>
     <string name="edit_profile_named">Edit profile %1$s</string>
+
+    <!-- Profiles -->
+    <string name="profile_copy_name">%1$s (copy)</string>
+    <string name="profile_no_filters">No filters · no apps</string>
+    <string name="profile_counts">%1$s · %2$s</string>
+    <string name="profile_used_by">Used by %1$s</string>
+    <string name="profile_not_used">Not used by any widget</string>
+    <string name="profile_more_options">More options for %1$s</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="profile_deleted">Profile “%1$s” deleted</string>
+    <string name="undo">Undo</string>
+    <plurals name="profile_filter_count">
+        <item quantity="one">%d filter</item>
+        <item quantity="other">%d filters</item>
+    </plurals>
 </resources>

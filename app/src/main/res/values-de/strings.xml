@@ -54,7 +54,6 @@
     <string name="pref_dynamic_color_summary">Farben aus deinem Hintergrundbild verwenden</string>
     <string name="pref_feature_analytics_opted_in_title">Analyse zulassen</string>
     <string name="clear">Leeren</string>
-    <string name="delete_profile">Profil löschen?</string>
     <string name="delete_filter">Filter löschen?</string>
     <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
     <string name="more">Mehr</string>
@@ -82,7 +81,6 @@
     <string name="analytics_opt_in">Zustimmen</string>
     <string name="analytics_opt_out">Ablehnen</string>
     <string name="analytics_opt_in_thanks">Danke! Du kannst deine Entscheidung jederzeit im Einstellungen-Tab ändern.</string>
-    <string name="delete_profile_confirmation">Möchtest du das Profil \'%1$s\' wirklich löschen?</string>
     <string name="error_message">Fehler: %1$s</string>
     <string name="profile_used_by_widgets">Das Profil %1$s wird verwendet von: \n%2$s</string>
     <string name="no_activities">Diese App hat keine Activities</string>
@@ -140,4 +138,19 @@
     <string name="sort_by">Sortieren nach</string>
     <string name="sort_default">Standard (%1$s)</string>
     <string name="edit_profile_named">Profil %1$s bearbeiten</string>
+
+    <!-- Profiles -->
+    <string name="profile_copy_name">%1$s (Kopie)</string>
+    <string name="profile_no_filters">Keine Filter · keine Apps</string>
+    <string name="profile_counts">%1$s · %2$s</string>
+    <string name="profile_used_by">Verwendet von %1$s</string>
+    <string name="profile_not_used">Von keinem Widget verwendet</string>
+    <string name="profile_more_options">Weitere Optionen für %1$s</string>
+    <string name="duplicate">Duplizieren</string>
+    <string name="profile_deleted">Profil „%1$s“ gelöscht</string>
+    <string name="undo">Rückgängig</string>
+    <plurals name="profile_filter_count">
+        <item quantity="one">%d Filter</item>
+        <item quantity="other">%d Filter</item>
+    </plurals>
 </resources>

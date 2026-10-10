@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.play.publisher)
     alias(libs.plugins.ksp)
-    id 'jacoco'
 }
 
 android {
@@ -24,8 +23,6 @@ android {
         versionCode project.ext.appVersionCode
         versionName project.ext.appVersionName
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
         resourceConfigurations += ['en', 'de']
 
         // Version info
@@ -49,16 +46,6 @@ android {
         }
     }
     testOptions {
-        managedDevices {
-            localDevices {
-                pixel8api34 {
-                    device = "Pixel 8 Pro"
-                    apiLevel = 34
-                    systemImageSource = "google"
-                    require64Bit = true
-                }
-            }
-        }
         unitTests {
             includeAndroidResources = true
         }
@@ -113,10 +100,6 @@ android {
     }
 }
 
-composeCompiler {
-    enableStrongSkippingMode = true
-}
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -133,14 +116,12 @@ dependencies {
     //
     def firebaseBom = platform(libs.firebase.bom)
     implementation(firebaseBom)
-    androidTestImplementation(firebaseBom)
     //
     // Test dependencies
     //
     testImplementation libs.junit
     testImplementation libs.robolectric
-    testImplementation libs.mockk.android
-    testImplementation libs.mockk.agent
+    testImplementation libs.mockk
     testImplementation libs.kotlinx.coroutines.test
 
     //
@@ -156,26 +137,17 @@ dependencies {
     implementation libs.androidx.browser
     implementation libs.androidx.core.ktx
 
-    implementation libs.androidx.core.splashscreen
-
     implementation libs.hilt.android
     ksp libs.hilt.compiler
-    implementation libs.androidx.hilt.navigation.compose
+    implementation libs.androidx.hilt.lifecycle.viewmodel.compose
     implementation libs.androidx.hilt.work
     ksp libs.androidx.hilt.compiler
 
-    implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation libs.androidx.lifecycle.common.java8
-    // optional - Test helpers for Lifecycle runtime
-    testImplementation libs.androidx.lifecycle.runtime.testing
-    // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
-    implementation libs.androidx.lifecycle.process
 
     // Navigation 3
     implementation libs.androidx.navigation3.runtime
     implementation libs.androidx.navigation3.ui
-    implementation libs.androidx.lifecycle.viewmodel.navigation3
 
     implementation libs.androidx.preference.ktx
     implementation libs.androidx.room.runtime
@@ -183,30 +155,24 @@ dependencies {
     implementation libs.androidx.room.ktx
 
     implementation libs.androidx.work.runtime.ktx
-    androidTestImplementation libs.androidx.work.testing
 
     // Compose
     def composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
-    androidTestImplementation(composeBom)
 
     // Material Design 3
     implementation libs.androidx.material3
+    // Material Components - required by the XML themes (themes.xml) and widget layouts
+    implementation libs.material
     // Android Studio Preview support
     implementation libs.androidx.ui.tooling.preview
     debugImplementation libs.androidx.ui.tooling
-    // UI Tests
-    androidTestImplementation libs.androidx.ui.test.junit4
-    debugImplementation libs.androidx.ui.test.manifest
     // Optional - Add full set of material icons
     implementation libs.androidx.material.icons.extended
     // Optional - Integration with activities
     implementation libs.androidx.activity.compose
     // Optional - Integration with ViewModels
     implementation libs.androidx.lifecycle.viewmodel.compose
-
-    // Color Picker
-    implementation libs.colorpicker
 
     // Firebase
     implementation libs.firebase.analytics
@@ -215,35 +181,21 @@ dependencies {
     implementation libs.firebase.perf
 
     // Google Play
-    implementation libs.review
     implementation libs.review.ktx
-    implementation libs.app.update
     implementation libs.app.update.ktx
 
     // Kotlin
-    implementation libs.kotlin.stdlib
     implementation libs.kotlinx.serialization.json
 
     // Kotlin Coroutines
     implementation libs.kotlinx.coroutines.android
 
-    // LeakCanary
-//    debugImplementation Libs.leakCanary
-//    implementation Libs.leakCanaryPlumberAndroid
-
     // Logging
     implementation libs.slf4j.android.logger
     implementation libs.kotlin.logging
 
-    // OkHttp
-    implementation(libs.okhttp)
-
     // Okio
     implementation(libs.okio)
-}
-
-jacoco {
-    toolVersion = "0.8.12"
 }
 
 play {

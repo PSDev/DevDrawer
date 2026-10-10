@@ -109,9 +109,9 @@
     <!-- Dialogs -->
     <string name="select_option">Select option</string>
     <string name="analytics_opt_in_title">Usage analytics</string>
-    <string name="analytics_opt_in_message">In order for us to be able to better understand your use of the app we would like to analyse your usage.\n\nWe use Firebase Analytics to track opened screens and certain interactions.\n\nWe don\'t store personally identifiable data.\n\nAdditionally we use Firebase Crashlytics for app crashes.\n\nThank you for considering!</string>
-    <string name="analytics_opt_in">Opt-in</string>
-    <string name="analytics_opt_out">Opt-out</string>
+    <string name="analytics_opt_in_text">Help improve DevDrawer by sharing which screens you open and crash reports, via Firebase. No personal data. You can change this anytime in Settings.</string>
+    <string name="analytics_opt_in">Allow</string>
+    <string name="analytics_opt_out">No thanks</string>
     <string name="analytics_opt_in_thanks">Thank you! You can change your decision anytime on the settings tab.</string>
     <string name="error_message">Error: %1$s</string>
     <string name="profile_used_by_widgets">The profile %1$s is used by: \n%2$s</string>

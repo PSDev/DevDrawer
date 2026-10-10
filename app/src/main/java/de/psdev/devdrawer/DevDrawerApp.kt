@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.StringRes
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,7 +13,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Grid3x3
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Widgets
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,30 +25,26 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import de.psdev.devdrawer.analytics.AnalyticsOptInCard
 import de.psdev.devdrawer.analytics.TrackingService
+import de.psdev.devdrawer.analytics.showsAnalyticsOptIn
 import de.psdev.devdrawer.database.Widget
 import de.psdev.devdrawer.settings.SettingsViewModel
 import de.psdev.devdrawer.settings.ThemeSetting
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 
@@ -113,22 +109,16 @@ fun DevDrawerApp(
             }
 
             val needsOptIn by trackingService.needsOptIn.collectAsState()
-            if (needsOptIn) {
-                AnalyticsOptInDialog(
-                    onOptIn = {
-                        trackingService.optIn()
-                        scope.launch {
-                            snackbarHostState.showSnackbar(
-                                message = optInThanksMessage,
-                                actionLabel = okLabel,
-                                duration = SnackbarDuration.Long
-                            )
-                        }
-                    },
-                    onOptOut = {
-                        trackingService.optOut()
-                    }
-                )
+            val onOptIn = {
+                trackingService.optIn()
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = optInThanksMessage,
+                        actionLabel = okLabel,
+                        duration = SnackbarDuration.Long
+                    )
+                }
+                Unit
             }
 
             Scaffold(
@@ -150,14 +140,19 @@ fun DevDrawerApp(
                     )
                 },
                 content = { innerPadding ->
-                    DevDrawerHost(
-                        navigationState = navigationState,
-                        navigator = navigator,
-                        menuCallback = setMenu,
-                        modifier = Modifier.padding(innerPadding),
-                        onWidgetSetupDone = onWidgetSetupDone,
-                        onWidgetSetupBack = onWidgetSetupBack
-                    )
+                    Column(modifier = Modifier.padding(innerPadding)) {
+                        if (showsAnalyticsOptIn(needsOptIn, currentRoute)) {
+                            AnalyticsOptInCard(onOptIn = onOptIn, onOptOut = trackingService::optOut)
+                        }
+                        DevDrawerHost(
+                            navigationState = navigationState,
+                            navigator = navigator,
+                            menuCallback = setMenu,
+                            modifier = Modifier.weight(1f),
+                            onWidgetSetupDone = onWidgetSetupDone,
+                            onWidgetSetupBack = onWidgetSetupBack
+                        )
+                    }
                 },
                 bottomBar = {
                     NavigationBar {
@@ -181,49 +176,6 @@ fun DevDrawerApp(
             )
         }
     }
-}
-
-@Composable
-fun AnalyticsOptInDialog(
-    onOptIn: () -> Unit,
-    onOptOut: () -> Unit
-) {
-    // Persist the dialog-show timestamp across config changes so rotation doesn't restart the delay.
-    val shownAt by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
-    var buttonsEnabled by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        if (!buttonsEnabled) {
-            val remaining = 2500L - (System.currentTimeMillis() - shownAt)
-            if (remaining > 0) delay(remaining)
-            buttonsEnabled = true
-        }
-    }
-
-    AlertDialog(
-        onDismissRequest = { /* Not cancelable */ },
-        title = {
-            Text(text = stringResource(id = R.string.analytics_opt_in_title), fontWeight = FontWeight.Bold)
-        },
-        text = {
-            Text(text = stringResource(id = R.string.analytics_opt_in_message))
-        },
-        confirmButton = {
-            TextButton(
-                enabled = buttonsEnabled,
-                onClick = onOptIn
-            ) {
-                Text(stringResource(id = R.string.analytics_opt_in))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                enabled = buttonsEnabled,
-                onClick = onOptOut
-            ) {
-                Text(stringResource(id = R.string.analytics_opt_out))
-            }
-        }
-    )
 }
 
 val topLevelRoutes = listOf(

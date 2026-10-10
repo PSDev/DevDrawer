@@ -104,7 +104,7 @@ internal fun AddPackageNamePackageFilterDialog(
                                 }
                             }
                         }
-                        is Error -> Text(text = "Error: ${viewState.message}")
+                        is Error -> Text(text = stringResource(id = R.string.error_message, viewState.message))
                     }
                 }
             }

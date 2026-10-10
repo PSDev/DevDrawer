@@ -39,7 +39,7 @@ fun <T> ListPreference(
     label: String,
     values: Map<T, String>,
     currentValue: T,
-    dialogTitle: String = "Select option",
+    dialogTitle: String = stringResource(id = R.string.select_option),
     onClick: (T) -> Unit = {}
 ) {
     var selectionDialog by remember {

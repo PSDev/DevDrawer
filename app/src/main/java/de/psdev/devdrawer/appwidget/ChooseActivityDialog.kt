@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
+import de.psdev.devdrawer.R
 import de.psdev.devdrawer.adapters.ActivityListAdapter
 import de.psdev.devdrawer.databinding.ActivityChoiceBinding
 import mu.KLogging
@@ -46,7 +47,7 @@ class ChooseActivityDialog: Activity(), AdapterView.OnItemClickListener {
             finish()
         }
         if (activitiesList.isEmpty()) {
-            Toast.makeText(this, "This app has no activities", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.no_activities, Toast.LENGTH_LONG).show()
             finish()
         }
         binding.listView.adapter = ActivityListAdapter(this, activitiesList)

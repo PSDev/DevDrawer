@@ -28,7 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,7 +55,7 @@ fun WidgetProfilesScreen(
     val viewState by viewModel.viewState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         WidgetProfileListScreen(
@@ -68,8 +68,8 @@ fun WidgetProfilesScreen(
                         is DeleteResult.InUse -> deleteDialogShown = DeleteDialogState.InUseError(result.profile, result.widgets)
                         is DeleteResult.Deleted -> scope.launch {
                             val action = snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.profile_deleted, result.profile.name),
-                                actionLabel = context.getString(R.string.undo),
+                                message = resources.getString(R.string.profile_deleted, result.profile.name),
+                                actionLabel = resources.getString(R.string.undo),
                                 duration = SnackbarDuration.Long
                             )
                             if (action == SnackbarResult.ActionPerformed) viewModel.undoDelete(result)

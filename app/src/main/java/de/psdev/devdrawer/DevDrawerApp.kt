@@ -86,7 +86,7 @@ fun DevDrawerApp(
                 if (currentRoute !in topLevelRoutes) {
                     {
                         IconButton(onClick = { backDispatcher?.onBackPressed() }) {
-                            Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                            Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
                     }
                 } else {

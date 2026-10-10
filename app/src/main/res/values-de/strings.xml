@@ -50,7 +50,6 @@
     <string name="clear">Leeren</string>
     <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
     <string name="more">Mehr</string>
-    <string name="toggle_system_apps">System-Apps ein-/ausblenden</string>
     <string name="include_system_apps">System-Apps einbeziehen</string>
     <string name="discard_changes">Änderungen verwerfen?</string>
     <string name="discard_changes_confirmation">Du hast ungespeicherte Änderungen. Möchtest du sie verwerfen?</string>
@@ -163,4 +162,9 @@
         <item quantity="one">+%d weitere App</item>
         <item quantity="other">+%d weitere Apps</item>
     </plurals>
+
+    <!-- App signature sheet -->
+    <string name="signature_sheet_hint">Jede App, die mit demselben Schlüssel signiert ist, passt.</string>
+    <string name="search_apps">Apps suchen</string>
+    <string name="search_no_results">Keine App passt zur Suche</string>
 </resources>

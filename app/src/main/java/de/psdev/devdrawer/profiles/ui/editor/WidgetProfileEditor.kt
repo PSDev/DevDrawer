@@ -105,7 +105,7 @@ fun WidgetProfileEditor(
             onSignatureClick = { currentDialog = WidgetProfileEditorDialogs.AddAppSignaturePackageFilter(viewState.packageFilters) },
             onPatternClick = { currentDialog = WidgetProfileEditorDialogs.AddPackageNamePackageFilter(viewState.packageFilters) }
         )
-        is WidgetProfileEditorDialogs.AddAppSignaturePackageFilter -> AddAppSignaturePackageFilterDialog(
+        is WidgetProfileEditorDialogs.AddAppSignaturePackageFilter -> AddAppSignatureFilterSheet(
             currentFilters = dialog.currentPackageFilters,
             closeDialog = {
                 currentDialog = WidgetProfileEditorDialogs.None

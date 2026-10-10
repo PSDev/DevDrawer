@@ -100,7 +100,6 @@
     <string name="no_apps_available">No apps available or all already added as filter</string>
     <string name="more">More</string>
 
-    <string name="toggle_system_apps">Toggle system apps</string>
     <string name="include_system_apps">Include system apps</string>
 
     <string name="discard_changes">Discard changes?</string>
@@ -203,4 +202,9 @@
         <item quantity="one">+%d more app</item>
         <item quantity="other">+%d more apps</item>
     </plurals>
+
+    <!-- App signature sheet -->
+    <string name="signature_sheet_hint">Every app signed with the same key will match.</string>
+    <string name="search_apps">Search apps</string>
+    <string name="search_no_results">No apps match your search</string>
 </resources>

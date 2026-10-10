@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,10 +36,8 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -51,7 +48,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.psdev.devdrawer.AppBarActionsProvider
@@ -65,6 +61,7 @@ import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.profiles.ProfileWithAppCount
 import de.psdev.devdrawer.settings.ListPreference
 import de.psdev.devdrawer.settings.label
+import de.psdev.devdrawer.ui.AppIcon
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
 import de.psdev.devdrawer.widgets.ui.widgetHeaderColors
 
@@ -241,8 +238,7 @@ private fun WidgetPreview(widget: Widget, apps: List<AppInfo>, appCount: Int) {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val icon = remember(app.packageName) { app.appIcon.toBitmap().asImageBitmap() }
-                    Image(bitmap = icon, contentDescription = null, modifier = Modifier.size(32.dp))
+                    AppIcon(icon = app.appIcon, size = 32.dp)
                     Text(
                         modifier = Modifier.padding(start = 12.dp),
                         text = app.name,

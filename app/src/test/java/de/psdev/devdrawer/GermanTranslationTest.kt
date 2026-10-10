@@ -25,11 +25,11 @@ class GermanTranslationTest {
     }
 
     @Test
-    fun `given a German locale, when reading yes, then it is translated`() {
+    fun `given a German locale, when reading discard, then it is translated`() {
         // Given / When
-        val result = context.getString(R.string.yes)
+        val result = context.getString(R.string.discard)
 
         // Then
-        assertEquals("Ja", result)
+        assertEquals("Verwerfen", result)
     }
 }

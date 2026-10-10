@@ -25,9 +25,13 @@ class FilterTypeLabelTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `given the profile editor, when loaded, then the add filter buttons are in sentence case`() {
+    fun `given the profile editor with filters, when loaded, then filters read as plain sentences`() {
         // Given
-        val widgetProfile = WidgetProfile(name = "Test profile")
+        val widgetProfile = WidgetProfile(id = "p1", name = "Test profile")
+        val filters = listOf(
+            PackageFilter(id = "a", type = FilterType.SIGNATURE, filter = "key", description = "DevDrawer2", profileId = "p1"),
+            PackageFilter(id = "b", type = FilterType.PACKAGE_NAME, filter = "com.example.*", profileId = "p1")
+        )
 
         // When
         composeTestRule.setContent {
@@ -35,14 +39,18 @@ class FilterTypeLabelTest {
                 WidgetProfileEditor(
                     viewState = WidgetProfileEditorViewState(
                         widgetProfile = widgetProfile,
-                        widgetName = widgetProfile.name
+                        widgetName = widgetProfile.name,
+                        packageFilters = filters,
+                        filterAppCounts = mapOf("a" to 2, "b" to 1)
                     )
                 )
             }
         }
 
         // Then
-        assertSentenceCase("Package name", "App signature")
+        assertSentenceCase("Signed like DevDrawer2", "Package matches com.example.*", "Add filter")
+        composeTestRule.onNodeWithText("Same signing key · 2 apps").assertExists()
+        composeTestRule.onNodeWithText("Package name pattern · 1 app").assertExists()
     }
 
     @Test

@@ -6,6 +6,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.psdev.devdrawer.apps.IAppsService
+import de.psdev.devdrawer.apps.comparator
+import de.psdev.devdrawer.apps.matching
+import de.psdev.devdrawer.appwidget.PackageHashInfo
+import de.psdev.devdrawer.appwidget.SortOrder
 import de.psdev.devdrawer.database.DevDrawerDatabase
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
@@ -19,7 +24,8 @@ import kotlinx.coroutines.launch
 class WidgetProfileEditorViewModel @AssistedInject constructor(
     @Assisted private val profileId: String,
     private val database: DevDrawerDatabase,
-    private val packageFilterRepository: IPackageFilterRepository
+    private val packageFilterRepository: IPackageFilterRepository,
+    private val appsService: IAppsService
 ) : ViewModel() {
 
     @AssistedFactory
@@ -33,12 +39,21 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
     private val dbFiltersFlow = database.packageFilterDao().findAllByProfileFlow(profileId)
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    private val installedPackages = MutableStateFlow<List<PackageHashInfo>>(emptyList())
+
+    init {
+        viewModelScope.launch {
+            installedPackages.value = appsService.installedPackages(includeSystemApps = true)
+        }
+    }
+
     val state = combine(
         database.widgetProfileDao().widgetProfileWithIdObservable(profileId),
         dbFiltersFlow,
         widgetNameState,
-        packageFiltersState
-    ) { widgetProfile, dbPackageFilters, name, inMemoryFilters ->
+        packageFiltersState,
+        installedPackages
+    ) { widgetProfile, dbPackageFilters, name, inMemoryFilters, packages ->
         val currentFilters = inMemoryFilters ?: dbPackageFilters
         val currentName = name ?: widgetProfile?.name.orEmpty()
 
@@ -50,9 +65,11 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
             widgetProfile = widgetProfile,
             widgetName = currentName,
             packageFilters = currentFilters,
-            isDirty = nameChanged || filtersChanged
+            isDirty = nameChanged || filtersChanged,
+            matchingApps = appsService.appInfos(packages.matching(currentFilters)).sortedWith(SortOrder.NAME.comparator()),
+            filterAppCounts = currentFilters.associate { it.id to packages.matching(listOf(it)).size }
         )
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetProfileEditorViewState.Empty)
 
     fun onNameChanged(name: String) {
         widgetNameState.value = name

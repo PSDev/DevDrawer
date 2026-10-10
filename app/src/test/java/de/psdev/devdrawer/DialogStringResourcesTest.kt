@@ -13,8 +13,6 @@ import de.psdev.devdrawer.profiles.ui.editor.AddAppSignaturePackageFilterDialog
 import de.psdev.devdrawer.profiles.ui.editor.AddAppSignaturePackageFilterDialogViewModel
 import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialog
 import de.psdev.devdrawer.profiles.ui.editor.AddPackageNamePackageFilterDialogViewModel
-import de.psdev.devdrawer.profiles.ui.editor.PackageFilterPreviewDialog
-import de.psdev.devdrawer.profiles.ui.editor.PackageFilterPreviewDialogViewModel
 import de.psdev.devdrawer.settings.ListPreference
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
 import org.junit.Rule
@@ -97,14 +95,11 @@ class DialogStringResourcesTest {
                 AddPackageNamePackageFilterDialog(
                     viewState = AddPackageNamePackageFilterDialogViewModel.ViewState.Error("defekt")
                 )
-                PackageFilterPreviewDialog(
-                    viewState = PackageFilterPreviewDialogViewModel.ViewState.Error("weg")
-                )
             }
         }
 
         // Then
-        assertTexts("Fehler: kaputt", "Fehler: defekt", "Fehler: weg")
+        assertTexts("Fehler: kaputt", "Fehler: defekt")
     }
 
     private fun assertTexts(vararg texts: String) {

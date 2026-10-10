@@ -30,17 +30,6 @@ class DialogButtonLabelTest {
     )
 
     @Test
-    fun `given the delete filter dialog, when shown, then its buttons are in sentence case`() {
-        // Given / When
-        composeTestRule.setContent {
-            DevDrawerTheme { DeletePackageFilterDialog(onDismiss = {}, onConfirm = {}) }
-        }
-
-        // Then
-        assertSentenceCase("Cancel", "Yes")
-    }
-
-    @Test
     fun `given the add package name filter dialog, when loaded, then its buttons are in sentence case`() {
         // Given / When
         composeTestRule.setContent {
@@ -78,21 +67,6 @@ class DialogButtonLabelTest {
         // Given / When
         composeTestRule.setContent {
             DevDrawerTheme { PackageFilterInfoDialog(packageFilter = packageFilter, onDismiss = {}) }
-        }
-
-        // Then
-        assertSentenceCase("Close")
-    }
-
-    @Test
-    fun `given the filter preview dialog, when loaded, then its button is in sentence case`() {
-        // Given / When
-        composeTestRule.setContent {
-            DevDrawerTheme {
-                PackageFilterPreviewDialog(
-                    viewState = PackageFilterPreviewDialogViewModel.ViewState.Loaded(emptyList())
-                )
-            }
         }
 
         // Then

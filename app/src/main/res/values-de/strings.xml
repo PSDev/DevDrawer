@@ -38,7 +38,6 @@
     <string name="ok">OK</string>
     <string name="error_profile_in_use">Profil kann nicht gelöscht werden, da es noch von Widgets verwendet wird</string>
     <string name="no">Nein</string>
-    <string name="yes">Ja</string>
     <string name="title_activity_compose">ComposeActivity</string>
     <string name="widget_profile_list_create_new">Neues Profil erstellen</string>
     <string name="loading">Wird geladen…</string>
@@ -54,7 +53,6 @@
     <string name="pref_dynamic_color_summary">Farben aus deinem Hintergrundbild verwenden</string>
     <string name="pref_feature_analytics_opted_in_title">Analyse zulassen</string>
     <string name="clear">Leeren</string>
-    <string name="delete_filter">Filter löschen?</string>
     <string name="no_apps_available">Keine Apps verfügbar oder alle bereits als Filter hinzugefügt</string>
     <string name="more">Mehr</string>
     <string name="toggle_system_apps">System-Apps ein-/ausblenden</string>
@@ -153,4 +151,18 @@
         <item quantity="one">%d Filter</item>
         <item quantity="other">%d Filter</item>
     </plurals>
+
+    <!-- Profile editor -->
+    <string name="filters_heading">Apps anzeigen, die …</string>
+    <string name="no_filters_hint">Noch keine Filter. Füge einen hinzu, um auszuwählen, welche Apps erscheinen.</string>
+    <string name="filter_package_matches">Paket passt zu %1$s</string>
+    <string name="filter_type_signature">Gleicher Signaturschlüssel</string>
+    <string name="remove_filter">Filter %1$s entfernen</string>
+    <string name="add_filter">Filter hinzufügen</string>
+    <string name="add_filter_hint">Eine App erscheint im Widget, wenn sie zu einem der Filter passt.</string>
+    <string name="add_filter_signature_title">Signiert wie eine deiner Apps</string>
+    <string name="add_filter_signature_text">Wähle eine installierte App. Jede App mit demselben Schlüssel passt, auch später installierte.</string>
+    <string name="add_filter_pattern_text">Passt auf Paketnamen, mit * als Platzhalter. Gut für ein Firmenpräfix wie com.mycompany.*</string>
+    <string name="matching_apps">Passende Apps (%1$d)</string>
+    <string name="show_all">Alle %1$d anzeigen</string>
 </resources>

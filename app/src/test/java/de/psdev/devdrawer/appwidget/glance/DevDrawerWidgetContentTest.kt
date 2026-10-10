@@ -81,4 +81,20 @@ class DevDrawerWidgetContentTest {
             onNode(hasText("6 apps · updated 15:12")).assertExists()
             onNode(hasText("+5 more apps")).assertExists()
         }
+
+    @Test
+    fun `given a system app, when rendered, then it offers app details but no uninstall`() =
+        runGlanceAppWidgetUnitTest {
+            // Given
+            setContext(ApplicationProvider.getApplicationContext())
+            setAppWidgetSize(DpSize(300.dp, 300.dp))
+            val apps = listOf(WidgetAppItem(name = "Settings", packageName = "com.android.settings", icon = null, canUninstall = false))
+
+            // When
+            provideComposable { DevDrawerWidgetContent(state(apps)) }
+
+            // Then
+            onNode(hasContentDescription("App details for Settings")).assertExists()
+            onNode(hasContentDescription("Uninstall Settings")).assertDoesNotExist()
+        }
 }

@@ -13,3 +13,7 @@ data class PackageHashInfo(
 fun PackageInfo.toPackageHashInfo(): PackageHashInfo = PackageHashInfo(packageName, firstInstallTime, lastUpdateTime, signatureHashSha256)
 val PackageInfo.isSystemApp: Boolean
     get() = applicationInfo?.flags?.and(ApplicationInfo.FLAG_SYSTEM) != 0
+
+/** Regular apps can be uninstalled; of system apps only updated ones, which then lose their updates. */
+val ApplicationInfo.canUninstall: Boolean
+    get() = flags and ApplicationInfo.FLAG_SYSTEM == 0 || flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP != 0

@@ -95,7 +95,8 @@ class DevDrawerGlanceWidget : GlanceAppWidget() {
     private fun AppInfo.toItem(context: Context): WidgetAppItem = WidgetAppItem(
         name = name,
         packageName = packageName,
-        icon = scaledIcon(context)
+        icon = scaledIcon(context),
+        canUninstall = canUninstall
     )
 
     private fun AppInfo.scaledIcon(context: Context): Bitmap? {

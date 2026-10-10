@@ -58,7 +58,7 @@ class DialogStringResourcesTest {
         }
 
         // Then
-        assertTexts("Bestätigen", "Möchtest du das Profil 'Arbeit' wirklich löschen?", "Löschen", "Abbrechen")
+        assertTexts("Profil löschen?", "Möchtest du das Profil 'Arbeit' wirklich löschen?", "Löschen", "Abbrechen")
     }
 
     @Test
@@ -75,7 +75,7 @@ class DialogStringResourcesTest {
         }
 
         // Then
-        assertTexts("Fehler", "Schließen")
+        assertTexts("Profil kann nicht gelöscht werden, da es noch von Widgets verwendet wird", "Schließen")
         composeTestRule.onNodeWithText("Das Profil Arbeit wird verwendet von:", substring = true).assertExists()
     }
 
@@ -87,7 +87,7 @@ class DialogStringResourcesTest {
         }
 
         // Then
-        assertTexts("Farbe auswählen")
+        assertTexts("Widget-Farbe wählen")
     }
 
     @Test

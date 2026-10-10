@@ -22,7 +22,7 @@ fun ColorSelectionDialog(
     AlertDialog(
         onDismissRequest = { },
         title = {
-            Text(text = stringResource(id = R.string.select_color))
+            Text(text = stringResource(id = R.string.pick_widget_color))
         },
         text = {
             ColorGrid(

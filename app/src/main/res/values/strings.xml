@@ -124,11 +124,8 @@
     <string name="analytics_opt_in">Opt-in</string>
     <string name="analytics_opt_out">Opt-out</string>
     <string name="analytics_opt_in_thanks">Thank you! You can change your decision anytime on the settings tab.</string>
-    <string name="confirm">Confirm</string>
     <string name="delete_profile_confirmation">Do you really want to delete the profile \'%1$s\'?</string>
-    <string name="error">Error</string>
     <string name="error_message">Error: %1$s</string>
     <string name="profile_used_by_widgets">The profile %1$s is used by: \n%2$s</string>
-    <string name="select_color">Select color</string>
     <string name="no_activities">This app has no activities</string>
 </resources>

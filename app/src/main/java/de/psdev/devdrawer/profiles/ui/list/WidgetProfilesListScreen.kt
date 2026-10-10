@@ -94,7 +94,7 @@ internal fun DeleteProfileDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(id = R.string.confirm))
+            Text(text = stringResource(id = R.string.delete_profile))
         },
         text = {
             Text(text = stringResource(id = R.string.delete_profile_confirmation, widgetProfile.name))

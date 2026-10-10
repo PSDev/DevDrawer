@@ -76,6 +76,7 @@ fun SettingsScreen(
                 PreferenceCategory(title = stringResource(id = R.string.settings_category_general))
                 SwitchPreference(
                     text = stringResource(id = R.string.pref_show_activity_choice_title),
+                    summary = stringResource(id = R.string.pref_show_activity_choice_summary),
                     enabled = settings.activityChooserEnabled
                 ) {
                     onActivityChooserChanged(it)

@@ -17,6 +17,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -161,5 +163,35 @@ class WidgetProfileEditorViewModelTest {
 
         // Then
         assertEquals("Mine", database.widgetProfileDao().findById("p1")?.name)
+    }
+
+    @Test
+    fun `given a package pattern, when typed, then the preview counts and lists the apps it matches`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.patternPreview.collect {} }
+
+        // When
+        viewModel.onPatternChanged("com.*")
+        val preview = viewModel.patternPreview.first { it.matchCount == 2 }
+
+        // Then
+        assertTrue(preview.isValid)
+        assertEquals(listOf("Client", "Other"), preview.apps.map { it.name })
+    }
+
+    @Test
+    fun `given an invalid package pattern, when typed, then the preview says so and matches nothing`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.patternPreview.collect {} }
+
+        // When
+        viewModel.onPatternChanged("com.(")
+        val preview = viewModel.patternPreview.first { it.pattern == "com.(" }
+
+        // Then
+        assertFalse(preview.isValid)
+        assertEquals(0, preview.matchCount)
     }
 }

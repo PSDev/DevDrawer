@@ -109,7 +109,10 @@ fun WidgetProfileEditor(
         WidgetProfileEditorDialogs.AddFilter -> AddFilterSheet(
             onDismiss = { currentDialog = WidgetProfileEditorDialogs.None },
             onSignatureClick = { currentDialog = WidgetProfileEditorDialogs.AddAppSignaturePackageFilter(viewState.packageFilters) },
-            onPatternClick = { currentDialog = WidgetProfileEditorDialogs.AddPackageNamePackageFilter(viewState.packageFilters) }
+            onPatternClick = {
+                viewModel.onPatternChanged("")
+                currentDialog = WidgetProfileEditorDialogs.AddPackagePattern
+            }
         )
         is WidgetProfileEditorDialogs.AddAppSignaturePackageFilter -> AddAppSignatureFilterSheet(
             currentFilters = dialog.currentPackageFilters,
@@ -128,22 +131,20 @@ fun WidgetProfileEditor(
                 currentDialog = WidgetProfileEditorDialogs.None
             }
         )
-        is WidgetProfileEditorDialogs.AddPackageNamePackageFilter -> AddPackageNamePackageFilterDialog(
-            currentFilters = dialog.currentPackageFilters,
-            closeDialog = {
-                currentDialog = WidgetProfileEditorDialogs.None
-            },
-            addFilter = { packageNameFilter ->
-                viewModel.addPackageFilter(
-                    PackageFilter(
-                        type = FilterType.PACKAGE_NAME,
-                        filter = packageNameFilter,
-                        profileId = viewState.widgetProfile?.id.orEmpty()
+        WidgetProfileEditorDialogs.AddPackagePattern -> {
+            val preview by viewModel.patternPreview.collectAsState()
+            PackagePatternSheet(
+                preview = preview,
+                onPatternChange = viewModel::onPatternChanged,
+                onAdd = { pattern ->
+                    viewModel.addPackageFilter(
+                        PackageFilter(type = FilterType.PACKAGE_NAME, filter = pattern, profileId = viewState.widgetProfile?.id.orEmpty())
                     )
-                )
-                currentDialog = WidgetProfileEditorDialogs.None
-            }
-        )
+                    currentDialog = WidgetProfileEditorDialogs.None
+                },
+                onDismiss = { currentDialog = WidgetProfileEditorDialogs.None }
+            )
+        }
         is WidgetProfileEditorDialogs.PackageFilterInfo -> PackageFilterInfoDialog(
             packageFilter = dialog.packageFilter,
             onDismiss = {
@@ -156,9 +157,7 @@ fun WidgetProfileEditor(
 private sealed class WidgetProfileEditorDialogs {
     data object None : WidgetProfileEditorDialogs()
     data object AddFilter : WidgetProfileEditorDialogs()
-    data class AddPackageNamePackageFilter(
-        val currentPackageFilters: List<PackageFilter>
-    ) : WidgetProfileEditorDialogs()
+    data object AddPackagePattern : WidgetProfileEditorDialogs()
 
     data class AddAppSignaturePackageFilter(
         val currentPackageFilters: List<PackageFilter>

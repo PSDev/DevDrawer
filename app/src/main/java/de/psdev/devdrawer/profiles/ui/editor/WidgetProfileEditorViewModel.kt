@@ -13,6 +13,7 @@ import de.psdev.devdrawer.appwidget.AppInfo
 import de.psdev.devdrawer.appwidget.PackageHashInfo
 import de.psdev.devdrawer.appwidget.SortOrder
 import de.psdev.devdrawer.database.DevDrawerDatabase
+import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.profiles.IPackageFilterRepository
 import kotlinx.coroutines.Job
@@ -20,6 +21,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -73,6 +75,24 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), WidgetProfileEditorViewState.Empty)
 
+    private val patternState = MutableStateFlow("")
+
+    /** What the package name pattern being entered would match; recomputed as it is typed. */
+    val patternPreview: StateFlow<PatternPreview> = combine(patternState, installedPackages) { pattern, packages ->
+        val filter = PackageFilter(type = FilterType.PACKAGE_NAME, filter = pattern.trim(), profileId = profileId)
+        val matched = if (filter.isValidPattern) packages.matching(listOf(filter)) else emptyList()
+        PatternPreview(
+            pattern = pattern,
+            isValid = filter.isValidPattern,
+            matchCount = matched.size,
+            apps = appsService.appInfos(matched).sortedWith(SortOrder.NAME.comparator()).take(PATTERN_PREVIEW_APP_COUNT)
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PatternPreview())
+
+    fun onPatternChanged(pattern: String) {
+        patternState.value = pattern
+    }
+
     fun onNameChanged(name: String) {
         widgetNameState.value = name
         pendingNameSave?.cancel()
@@ -125,5 +145,6 @@ class WidgetProfileEditorViewModel @AssistedInject constructor(
 
     private companion object {
         const val NAME_SAVE_DELAY_MS = 500L
+        const val PATTERN_PREVIEW_APP_COUNT = 5
     }
 }

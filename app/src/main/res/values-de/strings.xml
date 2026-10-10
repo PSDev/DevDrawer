@@ -23,7 +23,6 @@
     <string name="aboutLibraries_description_special1_name">Play Store</string>
     <string name="aboutLibraries_description_special2_name">Github</string>
     <string name="packagefilter">Paketfilter</string>
-    <string name="enter_package_name_filter">Paketnamen-Filter eingeben</string>
     <string name="select_signature_from_app">Signatur aus App auswählen</string>
     <string name="cancel">Abbrechen</string>
     <string name="no_widgets_created">Keine Widgets erstellt</string>
@@ -168,4 +167,9 @@
     <string name="signature_sheet_hint">Jede App, die mit demselben Schlüssel signiert ist, passt.</string>
     <string name="search_apps">Apps suchen</string>
     <string name="search_no_results">Keine App passt zur Suche</string>
+    <string name="pattern_invalid">Kein gültiges Muster</string>
+    <plurals name="pattern_match_count">
+        <item quantity="one">%d App passt</item>
+        <item quantity="other">%d Apps passen</item>
+    </plurals>
 </resources>

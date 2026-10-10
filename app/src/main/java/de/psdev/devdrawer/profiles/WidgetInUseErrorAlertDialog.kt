@@ -15,7 +15,7 @@ fun WidgetInUseErrorAlertDialog(
     AlertDialog(
         onDismissRequest = { },
         title = {
-            Text(text = stringResource(id = R.string.error))
+            Text(text = stringResource(id = R.string.error_profile_in_use))
         },
         text = {
             Text(

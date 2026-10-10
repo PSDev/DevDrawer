@@ -84,11 +84,8 @@
     <string name="analytics_opt_in">Zustimmen</string>
     <string name="analytics_opt_out">Ablehnen</string>
     <string name="analytics_opt_in_thanks">Danke! Du kannst deine Entscheidung jederzeit im Einstellungen-Tab ändern.</string>
-    <string name="confirm">Bestätigen</string>
     <string name="delete_profile_confirmation">Möchtest du das Profil \'%1$s\' wirklich löschen?</string>
-    <string name="error">Fehler</string>
     <string name="error_message">Fehler: %1$s</string>
     <string name="profile_used_by_widgets">Das Profil %1$s wird verwendet von: \n%2$s</string>
-    <string name="select_color">Farbe auswählen</string>
     <string name="no_activities">Diese App hat keine Activities</string>
 </resources>

@@ -97,4 +97,56 @@ class DevDrawerWidgetContentTest {
             onNode(hasContentDescription("App details for Settings")).assertExists()
             onNode(hasContentDescription("Uninstall Settings")).assertDoesNotExist()
         }
+
+    private val twoApps = listOf(
+        WidgetAppItem(name = "DevDrawer2", packageName = "de.psdev.devdrawer", icon = null),
+        WidgetAppItem(name = "Client", packageName = "com.example.client", icon = null)
+    )
+
+    @Test
+    fun `given a narrow widget, when rendered, then rows show only icon and name`() =
+        runGlanceAppWidgetUnitTest {
+            // Given
+            setContext(ApplicationProvider.getApplicationContext())
+            setAppWidgetSize(DpSize(200.dp, 300.dp))
+
+            // When
+            provideComposable { DevDrawerWidgetContent(state(twoApps)) }
+
+            // Then
+            onNode(hasText("DevDrawer2")).assertExists()
+            onNode(hasText("de.psdev.devdrawer")).assertDoesNotExist()
+            onNode(hasContentDescription("Uninstall DevDrawer2")).assertDoesNotExist()
+        }
+
+    @Test
+    fun `given a short widget, when rendered, then the apps become a strip of icons under the title`() =
+        runGlanceAppWidgetUnitTest {
+            // Given
+            setContext(ApplicationProvider.getApplicationContext())
+            setAppWidgetSize(DpSize(300.dp, 100.dp))
+
+            // When
+            provideComposable { DevDrawerWidgetContent(state(twoApps)) }
+
+            // Then
+            onNode(hasText("Work apps")).assertExists()
+            onNode(hasContentDescription("Open DevDrawer2")).assertExists()
+            onNode(hasContentDescription("Open Client")).assertExists()
+            onNode(hasText("de.psdev.devdrawer")).assertDoesNotExist()
+        }
+
+    @Test
+    fun `given a short widget without apps, when rendered, then it still offers to choose apps`() =
+        runGlanceAppWidgetUnitTest {
+            // Given
+            setContext(ApplicationProvider.getApplicationContext())
+            setAppWidgetSize(DpSize(300.dp, 100.dp))
+
+            // When
+            provideComposable { DevDrawerWidgetContent(state(emptyList())) }
+
+            // Then
+            onNode(hasText("Choose apps")).assertExists()
+        }
 }

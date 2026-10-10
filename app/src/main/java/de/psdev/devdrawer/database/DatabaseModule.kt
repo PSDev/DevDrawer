@@ -21,6 +21,7 @@ class DatabaseModule {
     ).apply {
         addMigrations(MigrationFrom1To2(application))
         addMigrations(MigrationFrom2To3)
+        addMigrations(MigrationFrom3To4)
     }.build()
 
 }

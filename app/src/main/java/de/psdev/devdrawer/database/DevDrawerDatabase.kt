@@ -16,7 +16,7 @@ abstract class DevDrawerDatabase: RoomDatabase() {
 
     companion object {
         const val NAME = "DevDrawer.db"
-        const val VERSION = 3
+        const val VERSION = 4
     }
 
     abstract fun widgetDao(): WidgetDao

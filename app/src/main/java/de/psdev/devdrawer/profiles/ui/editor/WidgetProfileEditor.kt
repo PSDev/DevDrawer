@@ -1,7 +1,6 @@
 package de.psdev.devdrawer.profiles.ui.editor
 
 import android.content.res.Configuration
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -27,18 +24,25 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -47,21 +51,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import de.psdev.devdrawer.AppBarActionsProvider
-import de.psdev.devdrawer.ProvideMenu
 import de.psdev.devdrawer.R
 import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.ui.theme.DevDrawerTheme
+import kotlinx.coroutines.launch
 
 private const val COLLAPSED_APP_COUNT = 5
 
 @Composable
 fun WidgetProfileEditor(
     profileId: String,
-    menuCallback: AppBarActionsProvider,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WidgetProfileEditorViewModel = hiltViewModel(
         creationCallback = { factory: WidgetProfileEditorViewModel.Factory ->
@@ -71,32 +72,37 @@ fun WidgetProfileEditor(
 ) {
     val viewState by viewModel.state.collectAsState(initial = WidgetProfileEditorViewState.Empty)
     var currentDialog by remember { mutableStateOf<WidgetProfileEditorDialogs>(WidgetProfileEditorDialogs.None) }
-    val hasChanges = viewState.isDirty
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val resources = LocalResources.current
 
-    BackHandler {
-        if (hasChanges) {
-            currentDialog = WidgetProfileEditorDialogs.DiscardChanges
-        } else {
-            onBack()
-        }
+    // Changes save as they are made; a name still being typed is saved when the editor closes.
+    DisposableEffect(viewModel) {
+        onDispose { viewModel.flushPendingChanges() }
     }
 
-    ProvideMenu(menuCallback, viewState) {
-        if (hasChanges) {
-            IconButton(onClick = { viewModel.saveChanges(viewState) }) {
-                Icon(imageVector = Icons.Outlined.Save, contentDescription = stringResource(id = R.string.save))
+    Box(modifier = modifier.fillMaxSize()) {
+        WidgetProfileEditor(
+            viewState = viewState,
+            modifier = Modifier.fillMaxSize(),
+            onNameChange = viewModel::onNameChanged,
+            onAddFilterClick = { currentDialog = WidgetProfileEditorDialogs.AddFilter },
+            onPackageFilterClick = { currentDialog = WidgetProfileEditorDialogs.PackageFilterInfo(it) },
+            onRemoveFilterClick = { filter ->
+                viewModel.deleteFilter(filter)
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    val result = snackbarHostState.showSnackbar(
+                        message = resources.getString(R.string.filter_removed),
+                        actionLabel = resources.getString(R.string.undo),
+                        duration = SnackbarDuration.Long
+                    )
+                    if (result == SnackbarResult.ActionPerformed) viewModel.restoreFilter(filter)
+                }
             }
-        }
+        )
+        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
     }
-
-    WidgetProfileEditor(
-        viewState = viewState,
-        modifier = modifier.fillMaxSize(),
-        onNameChange = viewModel::onNameChanged,
-        onAddFilterClick = { currentDialog = WidgetProfileEditorDialogs.AddFilter },
-        onPackageFilterClick = { currentDialog = WidgetProfileEditorDialogs.PackageFilterInfo(it) },
-        onRemoveFilterClick = viewModel::deleteFilter
-    )
 
     when (val dialog = currentDialog) {
         WidgetProfileEditorDialogs.None -> Unit
@@ -144,25 +150,6 @@ fun WidgetProfileEditor(
                 currentDialog = WidgetProfileEditorDialogs.None
             }
         )
-        WidgetProfileEditorDialogs.DiscardChanges -> AlertDialog(
-            onDismissRequest = { currentDialog = WidgetProfileEditorDialogs.None },
-            title = { Text(text = stringResource(R.string.discard_changes)) },
-            text = { Text(text = stringResource(R.string.discard_changes_confirmation)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    currentDialog = WidgetProfileEditorDialogs.None
-                    viewModel.clearLocalChanges()
-                    onBack()
-                }) {
-                    Text(text = stringResource(R.string.discard))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { currentDialog = WidgetProfileEditorDialogs.None }) {
-                    Text(text = stringResource(R.string.cancel))
-                }
-            }
-        )
     }
 }
 
@@ -180,8 +167,6 @@ private sealed class WidgetProfileEditorDialogs {
     data class PackageFilterInfo(
         val packageFilter: PackageFilter
     ) : WidgetProfileEditorDialogs()
-
-    data object DiscardChanges : WidgetProfileEditorDialogs()
 }
 
 @Composable

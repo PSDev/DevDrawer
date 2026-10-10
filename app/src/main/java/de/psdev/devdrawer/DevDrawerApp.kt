@@ -28,10 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -83,15 +81,6 @@ fun DevDrawerApp(
             val currentRoute =
                 navigationState.backStacks[navigationState.topLevelRoute]?.last() ?: navigationState.topLevelRoute
 
-            val (menuComposable, setMenu) = remember {
-                mutableStateOf<AppBarActions?>(null)
-            }
-
-            // Reset state on navigation change
-            LaunchedEffect(currentRoute) {
-                setMenu(null)
-            }
-
             val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
             val navigationIcon: @Composable () -> Unit =
                 if (currentRoute !in topLevelRoutes) {
@@ -133,9 +122,6 @@ fun DevDrawerApp(
                         navigationIcon = navigationIcon,
                         title = {
                             Text(text = stringResource(id = currentRoute.title))
-                        },
-                        actions = {
-                            menuComposable?.invoke(this)
                         }
                     )
                 },
@@ -147,7 +133,6 @@ fun DevDrawerApp(
                         DevDrawerHost(
                             navigationState = navigationState,
                             navigator = navigator,
-                            menuCallback = setMenu,
                             modifier = Modifier.weight(1f),
                             onWidgetSetupDone = onWidgetSetupDone,
                             onWidgetSetupBack = onWidgetSetupBack

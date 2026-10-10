@@ -45,7 +45,6 @@
 
     <string name="profiles">Profiles</string>
     <string name="widgets">Widgets</string>
-    <string name="save">Save</string>
     <string name="no_profiles">No profiles</string>
     <string name="new_profile">New</string>
     <string name="name">Name</string>
@@ -56,7 +55,6 @@
     <string name="close">Close</string>
     <string name="info">Info</string>
     <string name="app_signature">App signature</string>
-    <string name="hint_profile_editing">You can edit profiles by long-clicking an entry</string>
     <string name="delete">Delete</string>
     <string name="add_package_name">Package name</string>
     <string name="app_icon">App icon</string>
@@ -102,9 +100,6 @@
 
     <string name="include_system_apps">Include system apps</string>
 
-    <string name="discard_changes">Discard changes?</string>
-    <string name="discard_changes_confirmation">You have unsaved changes. Do you want to discard them?</string>
-    <string name="discard">Discard</string>
 
     <!-- Dialogs -->
     <string name="select_option">Select option</string>
@@ -185,6 +180,7 @@
     <string name="duplicate">Duplicate</string>
     <string name="profile_deleted">Profile “%1$s” deleted</string>
     <string name="undo">Undo</string>
+    <string name="filter_removed">Filter removed</string>
     <plurals name="profile_filter_count">
         <item quantity="one">%d filter</item>
         <item quantity="other">%d filters</item>

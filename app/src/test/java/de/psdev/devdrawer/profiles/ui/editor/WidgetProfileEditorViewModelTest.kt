@@ -8,11 +8,12 @@ import de.psdev.devdrawer.database.FilterType
 import de.psdev.devdrawer.database.PackageFilter
 import de.psdev.devdrawer.database.WidgetProfile
 import de.psdev.devdrawer.fakes.FakeAppsService
-import de.psdev.devdrawer.fakes.FakePackageFilterRepository
+import de.psdev.devdrawer.profiles.PackageFilterRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -63,7 +64,7 @@ class WidgetProfileEditorViewModelTest {
     private fun createViewModel() = WidgetProfileEditorViewModel(
         profileId = "p1",
         database = database,
-        packageFilterRepository = FakePackageFilterRepository(),
+        packageFilterRepository = PackageFilterRepository(RuntimeEnvironment.getApplication(), database),
         appsService = appsService
     )
 
@@ -81,7 +82,7 @@ class WidgetProfileEditorViewModelTest {
     }
 
     @Test
-    fun `given an added filter not yet saved, when the state updates, then matching apps include its apps`() = runTest {
+    fun `given a new filter, when added, then it is saved and its apps match`() = runTest {
         // Given
         val viewModel = createViewModel()
         backgroundScope.launch { viewModel.state.collect {} }
@@ -94,10 +95,11 @@ class WidgetProfileEditorViewModelTest {
         // Then
         assertEquals(listOf("Client", "DevDrawer2", "Other"), state.matchingApps.map { it.name })
         assertEquals(mapOf("f1" to 2, "f2" to 1), state.filterAppCounts)
+        assertEquals(setOf("f1", "f2"), database.packageFilterDao().findAllByProfile("p1").map { it.id }.toSet())
     }
 
     @Test
-    fun `given a removed filter not yet saved, when the state updates, then its apps disappear`() = runTest {
+    fun `given a filter, when removed, then it is deleted and can be restored`() = runTest {
         // Given
         val viewModel = createViewModel()
         backgroundScope.launch { viewModel.state.collect {} }
@@ -105,9 +107,59 @@ class WidgetProfileEditorViewModelTest {
 
         // When
         viewModel.deleteFilter(signatureFilter)
-        val state = viewModel.state.first { it.packageFilters.isEmpty() }
+        val removed = viewModel.state.first { it.packageFilters.isEmpty() }
 
         // Then
-        assertEquals(emptyList<String>(), state.matchingApps.map { it.name })
+        assertEquals(emptyList<String>(), removed.matchingApps.map { it.name })
+        assertEquals(emptyList<PackageFilter>(), database.packageFilterDao().findAllByProfile("p1"))
+        viewModel.restoreFilter(signatureFilter)
+        viewModel.state.first { it.packageFilters == listOf(signatureFilter) }
+    }
+
+    @Test
+    fun `given a new name, when typing pauses, then the profile is renamed`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        viewModel.state.first { it.widgetProfile != null }
+
+        // When
+        viewModel.onNameChanged("Work apps")
+
+        // Then
+        assertEquals("Work apps", viewModel.state.first { it.widgetName == "Work apps" }.widgetName)
+        viewModel.state.first { it.widgetProfile?.name == "Work apps" }
+    }
+
+    @Test
+    fun `given a name still being typed, when leaving the editor, then it is saved immediately`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        viewModel.state.first { it.widgetProfile != null }
+        viewModel.onNameChanged("Work apps")
+
+        // When
+        viewModel.flushPendingChanges()
+
+        // Then
+        viewModel.state.first { it.widgetProfile?.name == "Work apps" }
+    }
+
+    @Test
+    fun `given a cleared name, when typing pauses, then the profile keeps its saved name`() = runTest {
+        // Given
+        val viewModel = createViewModel()
+        backgroundScope.launch { viewModel.state.collect {} }
+        viewModel.state.first { it.widgetProfile != null }
+
+        // When
+        viewModel.onNameChanged(" ")
+        advanceUntilIdle()
+        viewModel.addPackageFilter(PackageFilter(id = "f2", type = FilterType.PACKAGE_NAME, filter = "com.example.*", profileId = "p1"))
+        viewModel.state.first { it.packageFilters.size == 2 }
+
+        // Then
+        assertEquals("Mine", database.widgetProfileDao().findById("p1")?.name)
     }
 }

@@ -15,6 +15,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.LocalSize
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
@@ -61,14 +62,26 @@ fun DevDrawerWidgetContent(state: WidgetUiState) {
     } else {
         background.cornerRadius(16.dp)
     }
+    val size = LocalSize.current
     Column(modifier = rounded) {
-        Header(state)
+        if (size.height < SHORT_HEIGHT) {
+            // About one cell tall: the title, then the apps as a strip of icons.
+            Header(state, showDetails = false)
+            if (state.apps.isEmpty()) {
+                ChooseAppsButton(context, state.appWidgetId, GlanceModifier.fillMaxWidth().padding(8.dp))
+            } else {
+                IconStrip(context, state.apps, maxIcons = ((size.width - 16.dp).value / ICON_STRIP_SLOT.value).toInt())
+            }
+            return@Column
+        }
+        Header(state, showDetails = true)
         if (state.apps.isEmpty()) {
             EmptyState(context, state.appWidgetId)
         } else {
+            val compact = size.width < NARROW_WIDTH
             LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
                 items(state.apps, itemId = { it.packageName.hashCode().toLong() }) { app ->
-                    AppRow(context, app)
+                    AppRow(context, app, compact)
                 }
                 if (state.hiddenAppCount > 0) {
                     item {
@@ -84,8 +97,33 @@ fun DevDrawerWidgetContent(state: WidgetUiState) {
     }
 }
 
+/** Below this the widget shows its apps as a strip of icons. */
+private val SHORT_HEIGHT = 130.dp
+
+/** Below this rows drop the package name and the actions. */
+private val NARROW_WIDTH = 250.dp
+
+private val ICON_STRIP_SLOT = 52.dp
+
 @Composable
-private fun Header(state: WidgetUiState) {
+private fun IconStrip(context: Context, apps: List<WidgetAppItem>, maxIcons: Int) {
+    Row(
+        modifier = GlanceModifier.fillMaxSize().padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        apps.take(maxIcons.coerceAtLeast(1)).forEach { app ->
+            Image(
+                provider = app.icon?.let { ImageProvider(it) } ?: ImageProvider(R.drawable.ic_baseline_widgets_24),
+                contentDescription = context.getString(R.string.open_app_screen, app.name),
+                modifier = GlanceModifier.size(ICON_STRIP_SLOT).padding(6.dp)
+                    .clickable(clickHandlingAction(app.packageName, Constants.LAUNCH_APP))
+            )
+        }
+    }
+}
+
+@Composable
+private fun Header(state: WidgetUiState, showDetails: Boolean) {
     val context = LocalContext.current
     val light = state.headerColor.light
     val dark = state.headerColor.dark
@@ -107,13 +145,15 @@ private fun Header(state: WidgetUiState) {
                 maxLines = 1,
                 style = TextStyle(color = content, fontSize = 18.sp, fontWeight = FontWeight.Medium)
             )
-            Text(
-                text = context.getString(R.string.widget_subtitle, count, state.updatedAt),
-                maxLines = 1,
-                style = TextStyle(color = content, fontSize = 12.sp)
-            )
+            if (showDetails) {
+                Text(
+                    text = context.getString(R.string.widget_subtitle, count, state.updatedAt),
+                    maxLines = 1,
+                    style = TextStyle(color = content, fontSize = 12.sp)
+                )
+            }
         }
-        Image(
+        if (showDetails) Image(
             provider = ImageProvider(R.drawable.ic_baseline_refresh_24),
             contentDescription = context.getString(R.string.reload),
             colorFilter = ColorFilter.tint(content),
@@ -146,21 +186,27 @@ private fun EmptyState(context: Context, appWidgetId: Int) {
             style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 14.sp)
         )
         Spacer(GlanceModifier.height(12.dp))
-        Button(
-            text = context.getString(R.string.widget_choose_apps),
-            onClick = actionStartActivity(mainActivityIntent(context, appWidgetId, openSetup = true)),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = GlanceTheme.colors.primary,
-                contentColor = GlanceTheme.colors.onPrimary
-            )
-        )
+        ChooseAppsButton(context, appWidgetId)
     }
 }
 
 @Composable
-private fun AppRow(context: Context, app: WidgetAppItem) {
+private fun ChooseAppsButton(context: Context, appWidgetId: Int, modifier: GlanceModifier = GlanceModifier) {
+    Button(
+        modifier = modifier,
+        text = context.getString(R.string.widget_choose_apps),
+        onClick = actionStartActivity(mainActivityIntent(context, appWidgetId, openSetup = true)),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = GlanceTheme.colors.primary,
+            contentColor = GlanceTheme.colors.onPrimary
+        )
+    )
+}
+
+@Composable
+private fun AppRow(context: Context, app: WidgetAppItem, compact: Boolean) {
     Row(
-        modifier = GlanceModifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 8.dp, bottom = 8.dp)
+        modifier = GlanceModifier.fillMaxWidth().padding(start = 16.dp, end = if (compact) 16.dp else 4.dp, top = 8.dp, bottom = 8.dp)
             .clickable(clickHandlingAction(app.packageName, Constants.LAUNCH_APP)),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -175,12 +221,16 @@ private fun AppRow(context: Context, app: WidgetAppItem) {
                 maxLines = 1,
                 style = TextStyle(color = GlanceTheme.colors.onSurface, fontSize = 16.sp)
             )
-            Text(
-                text = app.packageName,
-                maxLines = 1,
-                style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 12.sp)
-            )
+            if (!compact) {
+                Text(
+                    text = app.packageName,
+                    maxLines = 1,
+                    style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 12.sp)
+                )
+            }
         }
+        // Narrow widgets show just the app; Uninstall and App details need the wider layout.
+        if (compact) return@Row
         if (app.canUninstall) {
             Image(
                 provider = ImageProvider(R.drawable.ic_baseline_delete_24),

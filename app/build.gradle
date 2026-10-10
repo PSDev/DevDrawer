@@ -191,6 +191,7 @@ dependencies {
     implementation libs.androidx.activity.compose
     // Optional - Integration with ViewModels
     implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.lifecycle.viewmodel.navigation3
 
     // Firebase
     implementation libs.firebase.analytics

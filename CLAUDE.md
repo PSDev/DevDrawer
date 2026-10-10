@@ -9,7 +9,7 @@ apps for quick launching, uninstalling, and reinstalling. It supports multiple w
 app filtering by package name/signature/regex, and dark mode.
 
 - **Package**: `de.psdev.devdrawer`
-- **Min SDK**: 26 | **Target/Compile SDK**: 36
+- **Min SDK**: 26 | **Target/Compile SDK**: 37
 - **Language**: Kotlin | **JVM target**: 17
 - **Debug build suffix**: `.debug` (so debug and release can coexist on device)
 
@@ -31,15 +31,12 @@ app filtering by package name/signature/regex, and dark mode.
 # Lint
 ./gradlew lint
 
-# Check dependency updates
-./gradlew dependencyUpdates
-
 # Print current version
 ./gradlew printVersion
 ```
 
-There are no unit or instrumentation test source sets currently (no `src/test/` or `src/androidTest/` directories exist
-yet).
+Unit tests live in `app/src/test/` (JUnit 4, Robolectric, MockK, kotlinx-coroutines-test; repository fakes in
+`fakes/`). There is no `src/androidTest/` source set and no instrumentation-test dependencies.
 
 ## Architecture
 
@@ -73,6 +70,8 @@ Hilt throughout. Key modules:
 
 - `ApplicationModule` — provides `SharedPreferences`
 - `DatabaseModule` — provides the Room DB and DAOs
+- `RepositoryModule` — binds the repository interfaces (`IWidgetRepository`, `IWidgetProfileRepository`,
+  `IPackageFilterRepository`) to their implementations
 
 ### Widget System
 
@@ -107,6 +106,11 @@ de.psdev.devdrawer/
 
 
 ## Build & Release
+
+- Dependency versions are managed in the version catalog `gradle/libs.versions.toml` (no dependency-updates plugin;
+  Renovate is configured via `renovate.json`)
+- `com.google.android.material:material` is required by the XML themes (`themes.xml`) and widget layouts, even though
+  all screens are Compose
 
 - Signing config is read from `release.properties` (local) or CI env vars (`keystore_password`, `keystore_alias`,
   `keystore_alias_password`) when `CI=true`
